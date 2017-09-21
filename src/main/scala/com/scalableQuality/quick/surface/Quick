@@ -1,0 +1,229 @@
+package com.scalableQuality.quick.surface
+
+import java.util.regex.Pattern
+
+import com.scalableQuality.quick.core.fileRepresentation.{ColumnDescription, ColumnsMatching, FileValidation, FixedLengthPosition}
+import com.scalableQuality.quick.core.others._
+import com.scalableQuality.quick.mantle.parsing.{ColumnIdentifier, FileParser, RawRow, RowParser}
+
+import scala.io.Source
+import scala.util.{Failure, Success, Try}
+
+object Quick extends App {
+
+  def loadFile(filePath:Option[String]): Either[String, List[RawRow] ] = filePath.map{
+    path => Try(Source.fromFile(path).getLines.toList) match {
+      case Success(list) =>
+        val rawRowList = list.zipWithIndex.map(tuple => RawRow(tuple._1, tuple._2))
+        Right(rawRowList)
+      case Failure(throwable) => Left("Failure")
+    }
+  }.getOrElse{
+    Left("None")
+  }
+
+  val BattingFlatFileRows = loadFile(Some("/home/gandalf/null/BattingFlatFile"))
+  val modedBattingFlatFileRows = loadFile(Some("/home/gandalf/null/modedBattingFlatFile"))
+  val regex = ValueMapper(List(MatchAgainst(Pattern.compile(".*"))))
+  val trimAndIgnoreCase = ValueMapper(List(Trim, ToUpperCase ))
+  val trim = ValueMapper(List(Trim))
+  val PlayerIdIdentifier = ColumnIdentifier(
+    Some("true"),
+    regex,
+    new FixedLengthPosition(1,11,""),
+    ShouldUseDuring(true, true,true),
+    trimAndIgnoreCase,
+    Some("PlayerId")
+  )
+
+  val yearIdentifier = ColumnIdentifier(
+    Some("true"),
+    regex,
+    new FixedLengthPosition(12,19,""),
+    ShouldUseDuring(true, true,true),
+    trimAndIgnoreCase,
+    Some("PlayerId")
+  )
+
+  val stintIdentifier = ColumnIdentifier(
+    Some("true"),
+    regex,
+    new FixedLengthPosition(20,26,""),
+    ShouldUseDuring(true, true,true),
+    trimAndIgnoreCase,
+    Some("stint")
+  )
+
+  val teamColumnDesc = ColumnDescription(
+    new FixedLengthPosition(27,34,""),
+    ShouldUseDuring(true, false, false),
+    trim,
+    Some("team")
+  )
+
+  val lgIdColumnDesc = ColumnDescription(
+    new FixedLengthPosition(35,40,""),
+    ShouldUseDuring(true, false, false),
+    trim,
+    Some("lgId")
+  )
+
+  val gColumnDesc = ColumnDescription(
+    new FixedLengthPosition(41,45,""),
+    ShouldUseDuring(true, false, false),
+    trim,
+    Some("G")
+  )
+
+  val abColumnDesc = ColumnDescription(
+    new FixedLengthPosition(46,50,""),
+    ShouldUseDuring(true, false, false),
+    trim,
+    Some("AB")
+  )
+
+  val rColumnDesc = ColumnDescription(
+    new FixedLengthPosition(51,55,""),
+    ShouldUseDuring(true, false, false),
+    trim,
+    Some("R")
+  )
+
+  val hColumnDesc = ColumnDescription(
+    new FixedLengthPosition(56,60,""),
+    ShouldUseDuring(true, false, false),
+    trim,
+    Some("H")
+  )
+
+  val b2ColumnDesc = ColumnDescription(
+    new FixedLengthPosition(61,64,""),
+    ShouldUseDuring(true, false, false),
+    trim,
+    Some("")
+  )
+
+  val b3ColumnDesc = ColumnDescription(
+    new FixedLengthPosition(65,68,""),
+    ShouldUseDuring(true, false, false),
+    trim,
+    Some("3B")
+  )
+
+  val hrColumnDesc = ColumnDescription(
+    new FixedLengthPosition(69,72,""),
+    ShouldUseDuring(true, false, false),
+    trim,
+    Some("HR")
+  )
+
+  val rbiColumnDesc = ColumnDescription(
+    new FixedLengthPosition(73,77,""),
+    ShouldUseDuring(true, false, false),
+    trim,
+    Some("RBI")
+  )
+
+  val sbColumnDesc = ColumnDescription(
+    new FixedLengthPosition(78,82,""),
+    ShouldUseDuring(true, false, false),
+    trim,
+    Some("SB")
+  )
+
+  val csColumnDesc = ColumnDescription(
+    new FixedLengthPosition(83,87,""),
+    ShouldUseDuring(true, false, false),
+    trim,
+    Some("CS")
+  )
+
+  val bbColumnDesc = ColumnDescription(
+    new FixedLengthPosition(88,92,""),
+    ShouldUseDuring(true, false, false),
+    trim,
+    Some("BB")
+  )
+
+  val soColumnDesc = ColumnDescription(
+    new FixedLengthPosition(93,97,""),
+    ShouldUseDuring(true, false, false),
+    trim,
+    Some("SO")
+  )
+
+  val IBBColumnDesc = ColumnDescription(
+    new FixedLengthPosition(98,102,""),
+    ShouldUseDuring(true, false, false),
+    trim,
+    Some("IBB")
+  )
+
+  val hbpColumnDesc = ColumnDescription(
+    new FixedLengthPosition(103,107,""),
+    ShouldUseDuring(true, false, false),
+    trim,
+    Some("HBP")
+  )
+
+  val shColumnDesc = ColumnDescription(
+    new FixedLengthPosition(108,111,""),
+    ShouldUseDuring(true, false, false),
+    trim,
+    Some("SH")
+  )
+
+  val SFColumnDesc = ColumnDescription(
+    new FixedLengthPosition(112,115,""),
+    ShouldUseDuring(true, false, false),
+    trim,
+    Some("")
+  )
+
+  val listOfParsers = List(
+    PlayerIdIdentifier,
+    yearIdentifier,
+    stintIdentifier,
+    teamColumnDesc,
+    lgIdColumnDesc,
+    gColumnDesc,
+    abColumnDesc,
+    rColumnDesc,
+    hColumnDesc,
+    b2ColumnDesc,
+    b3ColumnDesc,
+    hrColumnDesc,
+    rbiColumnDesc,
+    sbColumnDesc,
+    csColumnDesc,
+    bbColumnDesc,
+    soColumnDesc,
+    IBBColumnDesc,
+    hbpColumnDesc,
+    shColumnDesc,
+    SFColumnDesc
+  )
+
+  val rowParser = RowParser(listOfParsers, Some(""))
+  val fileParser = FileParser(List(rowParser))
+
+  (BattingFlatFileRows,modedBattingFlatFileRows) match {
+    case (Right(leftrows),Right(rightRows)) =>
+      val parsedLeftRows = fileParser.parse(leftrows,Some("Test"))
+      val parsedRightRows = fileParser.parse(rightRows,Some("Test"))
+      val validatedFiles = FileValidation(parsedLeftRows,parsedRightRows)
+      println("validation's over")
+      System.in.read()
+      val ending = ColumnsMatching(validatedFiles._1, validatedFiles._2)
+      println("shit's over")
+      System.in.read()
+    case _ =>
+      println("shit")
+  }
+}
+/*
+*
+*
+* Hello sassy_samurai,
+you can use both Allman and K&R styles of braces in scala, here is a simple example written in the scala REPL:
+*/
