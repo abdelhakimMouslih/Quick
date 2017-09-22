@@ -45,20 +45,27 @@ object FixedLengthPosition {
            lengthParameterValue: ParameterValue[Int]
            ): Either[ErrorMessage, FixedLengthPosition] = {
     val startsAtValidated = validateStartsAt(startsAtParameterValue)
-    val lengthValidated = validateLength(endsAtParameterValue)
+    val lengthValidated = validateLength(lengthParameterValue)
+
     (startsAtValidated, lengthValidated) match {
       case (Right(startsAt), Right(length)) =>
         val endsAt = calculateEndsAs(startsAt, length)
         Right(FixedLengthPosition(startsAt, endsAt, length))
+
+
       case (Right(startsAt), Left(lengthErrorMessage)) =>
         val endsAtValidated = validateEndsAt(startsAt, endsAtParameterValue)
+
         endsAtValidated match {
           case Right(endsAt) =>
             val length = calculateLength(startsAt, endsAt)
             Right(FixedLengthPosition(startsAt, endsAt, length))
+
           case Left(endsAtErrorMessage) =>
             connotMakeFixedLengthPosition(endsAtErrorMessage)
         }
+
+
       case (Left(errorMessage),_) =>
         connotMakeFixedLengthPosition(errorMessage)
     }
@@ -75,7 +82,7 @@ object FixedLengthPosition {
           "supply a startsAt value > 1"
         )
         Left(errMessage)
-      case ValidParameterValueFound(startsAt: Int) =>
+      case ValidParameterValueFound(startsAt) =>
         Right(startsAt)
     }
 
@@ -109,7 +116,6 @@ object FixedLengthPosition {
       case ValidParameterValueFound(length) =>
         Right(length)
     }
-
 
 
   private def connotMakeFixedLengthPosition(errorMessage: ErrorMessage): Either[ErrorMessage, FixedLengthPosition] = Left(
