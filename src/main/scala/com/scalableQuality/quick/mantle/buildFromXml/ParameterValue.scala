@@ -2,6 +2,7 @@ package com.scalableQuality.quick.mantle.buildFromXml
 
 import com.scalableQuality.quick.mantle.log.ErrorMessage
 
+//TODO add an identification message in case of error
 sealed trait ParameterValue[ValueType]
 
 sealed trait ParameterValueFound[ValueType] extends ParameterValue[ValueType]
