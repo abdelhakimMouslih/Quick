@@ -35,7 +35,7 @@ object ShouldUseDuring {
     val classParameters:XMLAttributesToClassParameters =
       XMLAttributesToClassParameters(elemMetaData, shouldUseDuringKeys)
     val useDuringValidationParameterValue = classParameters.safeGet(useDuringValidationKey)
-    val useDuringMatchingParameterValue = classParameters.safeGet(useDuringValidationKey)
+    val useDuringMatchingParameterValue = classParameters.safeGet(useDuringMatchingKey)
     val useDuringReportingParameterValue = classParameters.safeGet(useDuringReportingKey)
     val parametersValidated = validateClassParameters(
       useDuringValidationParameterValue,

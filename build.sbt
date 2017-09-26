@@ -24,10 +24,6 @@ scalacOptions ++= Seq(
 )
 
 // import libraries
-// adding Spec2, a testing framework
-libraryDependencies ++= Seq("org.specs2" %% "specs2-core" % "3.9.0" % "test")
-libraryDependencies ++= Seq("org.specs2" %% "specs2-scalacheck" % "3.9.0" % "test")
-scalacOptions in Test ++= Seq("-Yrangepos")
 // adding scopt, a CLI options parsing library
 libraryDependencies ++= Seq("com.github.scopt" %% "scopt" % "3.6.0" )
 // adding scala.xml, scala standard xml parsing library
@@ -49,3 +45,10 @@ libraryDependencies := {
       libraryDependencies.value :+ "org.scala-lang" % "scala-swing" % scalaVersion.value
   }
 }
+
+// adding ScalaTest
+libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.1"
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+
+// adding ScalaCheck
+libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.13.4" % "test"

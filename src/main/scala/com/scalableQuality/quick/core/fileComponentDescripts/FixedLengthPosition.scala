@@ -13,7 +13,7 @@ class FixedLengthPosition(
                           ) extends  ColumnPosition {
 
   override def extractColumnValue(row: RawRow): Option[String] = try {
-    Some(row.value.substring(startsAt, endsAt))
+    Some(row.value.substring(startsAt.toInt, endsAt))
   } catch {
     case e:Exception => None
   }
@@ -108,6 +108,23 @@ object FixedLengthPosition {
     }
   }
 
+  private def apply(
+                     startsAtOpt: Option[Int],
+                     endsAtOpt: Option[Int],
+                     lengthOpt: Option[Int]
+                   ): Either[ErrorMessage, FixedLengthPosition] = startsAtOpt match {
+    case None =>
+      val errorMessage = UnrecoverableError (
+        "verifying startsAt attribute",
+        "startsAt attribute is mandatory",
+        "specify a startsAt attribute"
+      )
+      Left(errorMessage)
+
+
+    case Some(startsAt) =>
+      FixedLengthPosition(startsAt, endsAtOpt, lengthOpt)
+  }
 
   private def FixedLengthPositionWithEndsAt(
                                              startsAt: Int,
@@ -143,23 +160,7 @@ object FixedLengthPosition {
   }
 
 
-  private def apply(
-           startsAtOpt: Option[Int],
-           endsAtOpt: Option[Int],
-           lengthOpt: Option[Int]
-           ): Either[ErrorMessage, FixedLengthPosition] = startsAtOpt match {
-    case None =>
-      val errorMessage = UnrecoverableError (
-        "verifying startsAt attribute",
-        "startsAt attribute is mandatory",
-        "specify a startsAt attribute"
-      )
-      Left(errorMessage)
 
-
-    case Some(startsAt) =>
-      FixedLengthPosition(startsAt, endsAtOpt, lengthOpt)
-  }
 
 
   private def mapToClassParameter(parameter: ParameterValue[Int]): Either[ErrorMessage, Option[Int]] = parameter match {
@@ -175,7 +176,7 @@ object FixedLengthPosition {
   }
 
   private def calculateLength(startsAt: Int, endsAt: Int) = endsAt - startsAt + 1
-  private def calculateEndsAs(startsAt: Int, length: Int) = startsAt + length - 2
+  private def calculateEndsAs(startsAt: Int, length: Int) = startsAt + length - 1
 
   private val startsAtKey = ParameterAttribute("startsAt", AttributeConversionFunctions.toInt)
   private val endsAtKey = ParameterAttribute("endsAt", AttributeConversionFunctions.toInt)
