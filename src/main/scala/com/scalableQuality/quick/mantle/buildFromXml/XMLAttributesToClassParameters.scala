@@ -64,6 +64,10 @@ object XMLAttributesToClassParameters {
   }
   def apply(
              xmlMetaData: MetaData,
-             attributeKeys: ParameterAttribute[_]*
-           ): XMLAttributesToClassParameters = XMLAttributesToClassParameters(xmlMetaData, attributeKeys.toList)
+             firstAttributeKey: ParameterAttribute[_],
+             restOfAttributeKeys: ParameterAttribute[_]*
+           ): XMLAttributesToClassParameters = XMLAttributesToClassParameters(
+    xmlMetaData,
+    firstAttributeKey :: restOfAttributeKeys.toList
+  )
 }

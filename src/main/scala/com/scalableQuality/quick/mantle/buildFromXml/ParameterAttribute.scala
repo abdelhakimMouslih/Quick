@@ -10,7 +10,9 @@ class ParameterAttribute[ValueType](
                                    ) {
   def valueFrom(attribute: Attribute): ParameterValueFound[ValueType] =
     ParameterValueFound(attributeConverter(attribute))
+
   def matches(attribute: Attribute): Boolean = attribute.key == this.key
+
   def notFound: ParameterValue[ValueType] =  ParameterValueNotFound(
     UnrecoverableError(
       s"extracting the ${this.key} attribute",

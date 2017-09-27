@@ -79,8 +79,10 @@ object RowIdentifier {
         makeColumnIdentifiersAndColumnDescriptions(restOfNodes, columnDescriptionList, columnIdentifierList)
     }
     val columnIdentifiersAndColumnDescriptions = makeColumnIdentifiersAndColumnDescriptions(rowDescriptionXmlElem.child.toList, Nil, Nil)
-    val classParametersFromXmlAttributes = XMLAttributesToClassParameters(rowDescriptionXmlElem.attributes)
+
+    val classParametersFromXmlAttributes = XMLAttributesToClassParameters(rowDescriptionXmlElem.attributes,RowIdentifier.orderedRowDescriptionLabelAttributeKey)
     val rowDescriptionLabelParameterValue = classParametersFromXmlAttributes.get(RowIdentifier.orderedRowDescriptionLabelAttributeKey)
+
     (rowDescriptionLabelParameterValue, columnIdentifiersAndColumnDescriptions) match {
       case (parameterValueError : ParameterValueError[_], _) =>
         createErrorMessage(parameterValueError.errorMessage)
@@ -93,9 +95,12 @@ object RowIdentifier {
   }
 
   private [RowIdentifier] val defaultIdentificationResult = false
+
   private val columnIdentifierElemLabel = "columnIdentifier"
   private val columnDescriptionElemLabel = "columnDescription"
+
   private val orderedRowDescriptionLabelAttributeKey = ParameterAttribute("label", AttributeConversionFunctions.extractValue)
+
   private def compareXmlElemLabelsWith(elem: Elem, label: String):Boolean = elem.label.toLowerCase == label.toLowerCase()
   private def createErrorMessage[T](childErrorMessage: ErrorMessage* ) : Either[ErrorMessage, T] = {
     val errorMessage = UnrecoverableError(

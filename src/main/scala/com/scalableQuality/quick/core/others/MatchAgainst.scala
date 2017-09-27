@@ -18,6 +18,7 @@ object MatchAgainst {
              pattern: Pattern
            ): MatchAgainst = new MatchAgainst(pattern)
 
+
   def apply(elemMetaData: MetaData): Either[ErrorMessage, MatchAgainst] = {
     val classParameterFromAttributes = XMLAttributesToClassParameters(elemMetaData, matchAgainstAttributeKey)
     val matchAgainstClassParameter = classParameterFromAttributes.get(matchAgainstAttributeKey)
@@ -28,7 +29,7 @@ object MatchAgainst {
         Right(MatchAgainst(pattern))
     }
   }
-  private val matchAgainstAttributeKey = ParameterAttribute("matchagainst", AttributeConversionFunctions.toPattern)
+  private val matchAgainstAttributeKey = ParameterAttribute("matchAgainst", AttributeConversionFunctions.toPattern)
   def errorMessage(childErrorMessage: ErrorMessage): Left[ErrorMessage, MatchAgainst] = {
     val errorMessage = UnrecoverableError(
       "Creating matchAgainst object",

@@ -70,7 +70,7 @@ class ColumnDescriptionTest extends FlatSpec with Matchers with TableDrivenPrope
     ("1","3","3","true","false","true","false","BlaBla")
   )
 
-  it should "return return Left[ErrorMessage, ColumnDescription] if any of the attributes have an invalid value" in
+  it should " return Left[ErrorMessage, ColumnDescription] if any of the attributes have an invalid value" in
     forAll(invalidAttributeValue) {
       (startsAt:String,
       endsAt:String,
@@ -91,6 +91,35 @@ class ColumnDescriptionTest extends FlatSpec with Matchers with TableDrivenPrope
       useDuringReporting={useDuringReporting}
       trimValue={trimValue}
       ignoreValueCase={ignoreValueCase}
+      />
+    val columnDescription = ColumnDescription(columnDescriptionElem.attributes)
+    columnDescription shouldBe a [Left[_,_]]
+  }
+
+  it should "return Left(errorMessage) if label attribute is missing" in {
+    val columnDescriptionElem = <ColumnDescription
+      startsAt="1"
+      endsAt="3"
+      />
+    val columnDescription = ColumnDescription(columnDescriptionElem.attributes)
+    columnDescription shouldBe a [Left[_,_]]
+  }
+
+  it should "return Left(errorMessage) if startsAt attribute is missing" in {
+    val columnDescriptionElem = <ColumnDescription
+      label="label"
+      endsAt="3"
+      />
+    val columnDescription = ColumnDescription(columnDescriptionElem.attributes)
+    columnDescription shouldBe a [Left[_,_]]
+  }
+
+
+
+  it should "return Left(errorMessage) if endsAt and length attribute are missing" in {
+    val columnDescriptionElem = <ColumnDescription
+      label="label"
+      startsAt="3"
       />
     val columnDescription = ColumnDescription(columnDescriptionElem.attributes)
     columnDescription shouldBe a [Left[_,_]]
