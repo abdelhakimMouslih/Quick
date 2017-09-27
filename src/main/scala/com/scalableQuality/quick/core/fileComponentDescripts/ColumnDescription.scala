@@ -33,7 +33,7 @@ object ColumnDescription {
     val labelAttribute = classParameters.get(labelKey)
     val positionAttribute = ColumnPosition(metaData)
     val shouldUseDuringAttribute = ShouldUseDuring(metaData)
-    val comparisonMapperAttribute = ValueMapper.comparisonValueMapper(metaData)
+    val comparisonMapperAttribute = ValueMapper(metaData)
     (labelAttribute, positionAttribute, shouldUseDuringAttribute, comparisonMapperAttribute) match {
       case (paramError: ParameterValueError[_],_,_,_) =>
         connotMake(paramError.errorMessage)

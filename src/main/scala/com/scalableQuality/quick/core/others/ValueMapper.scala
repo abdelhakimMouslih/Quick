@@ -28,7 +28,7 @@ object ValueMapper {
   }
 
   // TODO : improve attribute extraction
-  def comparisonValueMapper(elemMetaData: MetaData): Either[ErrorMessage, ValueMapper] = {
+  def apply(elemMetaData: MetaData): Either[ErrorMessage, ValueMapper] = {
 
     val classParameters:XMLAttributesToClassParameters =
       XMLAttributesToClassParameters(elemMetaData, valueMapperAttributeKeys)
