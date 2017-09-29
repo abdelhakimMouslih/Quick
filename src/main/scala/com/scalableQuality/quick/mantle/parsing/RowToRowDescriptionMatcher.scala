@@ -10,7 +10,7 @@ import scala.xml.{Elem, MetaData, Node}
 import scala.collection.mutable
 
 class RowToRowDescriptionMatcher(
-                                  listOfRowIdentifier : List[RowIdentifier],
+                                  val listOfRowIdentifier : List[RowIdentifier],
                                   leftFileLabel: Option[String],
                                   rightFileLabel: Option[String]
                                 ) {
@@ -127,26 +127,26 @@ class RowToRowDescriptionMatcher(
 
 object RowToRowDescriptionMatcher {
 
-  def apply(
+  private def apply(
              listOfRowIdentifier: List[RowIdentifier],
              leftFileLabel: Option[String],
              rightFileLabel: Option[String]
            ): RowToRowDescriptionMatcher = new RowToRowDescriptionMatcher(listOfRowIdentifier, leftFileLabel, rightFileLabel)
 
-  def apply(
+  private def apply(
              fileDescriptionElem: Elem,
              leftFileLabel: Option[String],
              rightFileLabel: Option[String]
            ): Either[ErrorMessage, RowToRowDescriptionMatcher] = {
 
     @tailrec def loop(
-                       rowDescriptionsElems: List[Node],
+                       rowDescriptionsElems: List[Elem],
                        rowIdentifierAccumulator: List[RowIdentifier]
                      ): Either[ErrorMessage, List[RowIdentifier]] = rowDescriptionsElems match {
       case Nil =>
         Right(rowIdentifierAccumulator)
 
-      case (rowDesc: Elem)::restOfRowDescriptions if rowDesc.label == rowDescriptionElemLabel =>
+      case rowDesc::restOfRowDescriptions if hasLabel(rowDesc, rowDescriptionElemLabel) =>
         val rowIdentifier = RowIdentifier(rowDesc)
         rowIdentifier match {
           case Left(errorMessage) =>
@@ -155,20 +155,17 @@ object RowToRowDescriptionMatcher {
             loop(restOfRowDescriptions, validRowIdentifier::rowIdentifierAccumulator)
         }
 
-      case (rowDesc: Elem)::restOfRowDescriptions if rowDesc.label != rowDescriptionElemLabel =>
+      case (rowDesc: Elem)::_ =>
         val errorMessage = UnrecoverableError(
           "creating file description",
           s"did not recognize ${rowDesc.label}",
           "put in a valid elem"
         )
         Left(errorMessage)
-
-      case _::restOfNodes =>
-        loop(restOfNodes, rowIdentifierAccumulator)
     }
 
 
-    val listOfRowIdentifier = loop(fileDescriptionElem.child.toList, Nil)
+    val listOfRowIdentifier = loop(collectAllChildElems(fileDescriptionElem), Nil)
     listOfRowIdentifier match {
       case Right(list) =>
         val rowToRowDescriptionMatcher = RowToRowDescriptionMatcher(list, leftFileLabel, rightFileLabel)
@@ -202,18 +199,18 @@ object RowToRowDescriptionMatcher {
     fileDescriptionsList match {
       case Left(errorMessage) =>
         Left(errorMessage)
-      case Right(listOfNodes) =>
-        val fileDescriptionElem = getFileDescriptionWithId(listOfNodes, parserIdOption)
+      case Right(listOfElems) =>
+        val fileDescriptionElem = getFileDescriptionWithId(listOfElems, parserIdOption)
         fileDescriptionElem
     }
   }
 
   private def getFileDescriptionWithId(
-                                        listOfFileDescriptions: List[Node],
+                                        listOfFileDescriptions: List[Elem],
                                         providedIdOption: Option[String]
                                       ): Either[ErrorMessage, Elem] = {
     @tailrec def loop(
-                       listOfFileDescriptions: List[Node],
+                       listOfFileDescriptions: List[Elem],
                        providedId: String
                      ): Either[ErrorMessage, Elem] = listOfFileDescriptions match {
       case Nil =>
@@ -223,16 +220,21 @@ object RowToRowDescriptionMatcher {
           "provide at least one file description to be used"
         )
         Left(errorMessage)
-      case (fileDescElem:Elem)::restOfNodes =>
+      case fileDescElem::restOfElems if hasLabel(fileDescElem, fileDescriptionElemLabel) =>
         val fileDescIdOpt = getId(fileDescElem.attributes)
         fileDescIdOpt match {
           case Some(fileDescId) if fileDescId == providedId =>
             Right(fileDescElem)
           case _ =>
-            loop(restOfNodes, providedId)
+            loop(restOfElems, providedId)
         }
-      case node::restOfNodes =>
-        loop(restOfNodes, providedId)
+      case elem::_ =>
+        val errorMessage = UnrecoverableError(
+          "creating file description",
+          s"did not recognize ${elem.label}",
+          "put in a valid elem"
+        )
+        Left(errorMessage)
     }
 
 
@@ -244,7 +246,7 @@ object RowToRowDescriptionMatcher {
           "provide at least one file description to be used"
         )
         Left(errorMessage)
-      case ( (fileDescElem: Elem)::Nil, None) =>
+      case ( (fileDescElem:Elem)::Nil, None) =>
         Right(fileDescElem)
       case (_, None) =>
         val errorMessage = UnrecoverableError(
@@ -271,23 +273,29 @@ object RowToRowDescriptionMatcher {
     }
   }
 
+
+  private def collectAllChildElems(node: Node): List[Elem] = node.child.toList.collect{
+    case elem: Elem => elem
+  }
+
   private def getFileDescriptionsList(
                                        fileDescRootElem: Elem
-                                     ): Either[ErrorMessage, List[Node]] = fileDescRootElem.label match {
-    case `fileDescriptionElemLabel` =>
+                                     ): Either[ErrorMessage, List[Elem]] =
+    if(hasLabel(fileDescRootElem, fileDescriptionElemLabel)) {
       Right(List(fileDescRootElem))
-    case `fileDescriptionsListElemLabel` =>
-      Right(fileDescRootElem.child.toList)
-    case _ =>
+    } else if(hasLabel(fileDescRootElem, fileDescriptionsListElemLabel)) {
+      Right(collectAllChildElems(fileDescRootElem))
+    } else {
       val errorMessage = UnrecoverableError(
         "looking for a file description xml element",
         "connot find a file description elem nor a files descriptions list elem",
         "provide a fileDescription elem"
       )
       Left(errorMessage)
-  }
+    }
 
 
+  private def hasLabel(elem: Elem, label: String) : Boolean = elem.label.toLowerCase == label.toLowerCase()
   private def cannotMake(errorMessage: ErrorMessage): Either[ErrorMessage, RowToRowDescriptionMatcher] = {
     val cannotMakeErrorMessage = UnrecoverableError(
       "creating a file desceription",
@@ -299,7 +307,7 @@ object RowToRowDescriptionMatcher {
   }
   private val fileDescriptionsListElemLabel = "FileDescriptionsList"
   private val fileDescriptionElemLabel = "UnorderedFileDescription"
-  private val rowDescriptionElemLabel = "OrderedRow"
+  private val rowDescriptionElemLabel = "OrderedRowDescription"
   private val fileDescriptionIdAttributeKey = ParameterAttribute("Id", AttributeConversionFunctions.extractValue)
   private val fileDescriptionAttributeKeysList = List(fileDescriptionIdAttributeKey)
 }

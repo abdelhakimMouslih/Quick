@@ -14,7 +14,7 @@ class RowIdentifierTest extends FlatSpec with Matchers {
     rowIdentifierEither shouldBe a [Right[_,_]]
   }
 
-  "RowIdentifier.apply(Elem)" should "handel both upper case and lower case ColumnDescriptions and ColumnIdentifier" in {
+  it should "handel both upper case and lower case ColumnDescriptions and ColumnIdentifier" in {
     val rowDescriptionElem =
       <RowDescrtiption label="Track2 data" >
         <COLUMNDESCRIPTION label="seperator" startsAt="1" length="1" />
@@ -36,13 +36,15 @@ class RowIdentifierTest extends FlatSpec with Matchers {
     rowIdentifierEither shouldBe a [Left[_,_]]
   }
 
-  it should "return Left[ErrorMessage] when no columnDescription and Column Identifiers are present " in {
+  it should "return Left[ErrorMessage] when no Column Identifiers are present " in {
     val rowDescriptionElem =
       <RowDescrtiption label="Track2 data" >
+        <ColumnDescription label="seperator" startsAt="1" length="1" />
       </RowDescrtiption>
     val rowIdentifierEither = RowIdentifier(rowDescriptionElem)
     rowIdentifierEither shouldBe a [Left[_,_]]
   }
+
 
   it should "return Left[ErrorMessage] when it encounters an unknown elem" in {
     val rowDescriptionElem =
@@ -66,13 +68,49 @@ class RowIdentifierTest extends FlatSpec with Matchers {
   }
 
   it should "return Left[ErrorMessage] when it fails to create a ColumnIdentifier" in {
-    val rowDescriptionElem =
-      <RowDescrtiption label="Track2 data" >
+    val rowDescriptionElem = <RowDescrtiption label="Track2 data" >
         <ColumnDescription label="seperator" startsAt="1" length="1" />
-        <ColumnIdentifier  label="Visa Card Number" startsAt="2" length="16"></ColumnIdentifier>
+        <ColumnIdentifier  label="Visa Card Number" startsAt="2" length="16" ></ColumnIdentifier>
       </RowDescrtiption>
     val rowIdentifierEither = RowIdentifier(rowDescriptionElem)
     rowIdentifierEither shouldBe a [Left[_,_]]
   }
 
+
+  "RowIdentifier.canIdentify" should "return true when the input string respects the rowDescription" in {
+    val track2dataRow = RawRow(";1234567890123445=99011200XXXX00000000?*",1)
+    val rowDescriptionElem =
+      <RowDescrtiption label="Track2 data" >
+        <ColumnIdentifier matchAgainst=";" label="Start sentinel" startsAt="1" length="1"/>
+        <ColumnIdentifier matchAgainst="[0-9]{16}" label="Card Number" startsAt="2" length="16"/>
+        <ColumnIdentifier matchAgainst="=" label="Field separator" startsAt="18" length="1"/>
+      </RowDescrtiption>
+    val rowIdentifierEither = RowIdentifier(rowDescriptionElem)
+    rowIdentifierEither match {
+      case Left(errorMessage) =>
+        fail(errorMessage.toString)
+
+      case Right(rowIdentifier) =>
+        rowIdentifier.canIdentify(track2dataRow) shouldBe true
+    }
+  }
+
+
+  "RowIdentifier.canIdentify" should "return false when the input string does not respect the rowDescription" in {
+    val track2dataRow = RawRow("not track 2",1)
+    val rowDescriptionElem =
+      <RowDescrtiption label="Track2 data" >
+        <ColumnIdentifier matchAgainst=";" label="Start sentinel" startsAt="1" length="1"/>
+        <ColumnIdentifier matchAgainst="[0-9]{16}" label="Card Number" startsAt="2" length="16"/>
+        <ColumnIdentifier matchAgainst="=" label="Field separator" startsAt="18" length="1"/>
+      </RowDescrtiption>
+    val rowIdentifierEither = RowIdentifier(rowDescriptionElem)
+    rowIdentifierEither match {
+      case Left(errorMessage) =>
+        fail(errorMessage.toString)
+
+      case Right(rowIdentifier) =>
+        rowIdentifier.canIdentify(track2dataRow) shouldBe false
+    }
+  }
 }

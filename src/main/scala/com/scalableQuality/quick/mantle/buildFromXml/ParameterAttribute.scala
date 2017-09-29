@@ -11,7 +11,7 @@ class ParameterAttribute[ValueType](
   def valueFrom(attribute: Attribute): ParameterValueFound[ValueType] =
     ParameterValueFound(attributeConverter(attribute))
 
-  def matches(attribute: Attribute): Boolean = attribute.key == this.key
+  def matches(attribute: Attribute): Boolean = attribute.key.toLowerCase == this.key.toLowerCase
 
   def notFound: ParameterValue[ValueType] =  ParameterValueNotFound(
     UnrecoverableError(
