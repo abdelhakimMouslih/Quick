@@ -8,7 +8,7 @@ import com.scalableQuality.quick.mantle.parsing.RawRow
 import scala.xml.MetaData
 
 
-class ColumnDescription (
+case class ColumnDescription (
                                val position: ColumnPosition,
                                val shouldUseDuring: ShouldUseDuring,
                                comparisonMapper: ValueMapper,
@@ -19,14 +19,14 @@ class ColumnDescription (
 }
 
 object ColumnDescription {
-  def apply(
+  /*def apply(
              position: ColumnPosition,
              shouldUseDuring: ShouldUseDuring,
              comparisonMapper: ValueMapper,
              label: String
            ): ColumnDescription = new ColumnDescription(position, shouldUseDuring, comparisonMapper, label)
 
-
+*/
 
   def apply(metaData: MetaData): Either[ErrorMessage, ColumnDescription] = {
     val classParameters = XMLAttributesToClassParameters(metaData,ColumnDescriptionAttributeKeys)

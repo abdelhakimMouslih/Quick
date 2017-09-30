@@ -9,10 +9,10 @@ import com.scalableQuality.quick.core.Reporting.ComparisonBetweenTwoColumns
 
 import scala.annotation.tailrec
 
-class OrderedRowDescription(
-                  columnsDescriptions: List[ColumnDescription],
-                  val label: String
-                ) {
+case class OrderedRowDescription(
+                             val columnsDescriptions: List[ColumnDescription],
+                             val label: String
+                           ) {
 
   def keepOnlyColumnsDescriptionsUsedIn(
               columnUsages: ColumnUsageStages*
@@ -77,11 +77,12 @@ class OrderedRowDescription(
 }
 
 object OrderedRowDescription {
-  def apply(
+  /*def apply(
              columnsDescriptions: List[ColumnDescription],
              label: String
            ): OrderedRowDescription = new OrderedRowDescription(columnsDescriptions, label)
 
+*/
   // the sha1Digest object, shaSum function and getSignature function are
   // in the companion object to avoid creating an sha1Digest object for
   // each OrderedRow instance
@@ -112,6 +113,7 @@ object OrderedRowDescription {
                          ): Option[StringBuilder] = stringBuilderOption match {
       case None =>
         val newStringBuilder = new StringBuilder(columnValue)
+        newStringBuilder append columnValue.length.toString
         Some(newStringBuilder)
       case Some(stringBuilder) =>
         stringBuilder append columnValue
@@ -120,11 +122,18 @@ object OrderedRowDescription {
     }
     @tailrec def loop(
                        columns: List[Option[String]],
-                       concatenatedPreviousColumnValuesOpt: Option[StringBuilder] = None,
-                       digestedBytes: List[Option[List[Byte]]] = Nil
+                       concatenatedPreviousColumnValuesOpt: Option[StringBuilder],
+                       digestedBytes: List[Option[List[Byte]]]
                      ): List[Option[List[Byte]]] = columns match {
       case Nil =>
-        digestedBytes.reverse
+        concatenatedPreviousColumnValuesOpt match {
+          case None =>
+            digestedBytes.reverse
+          case Some(columnValue) =>
+            val signatureOfPreviousColumnValues = sha1Sum(columnValue.toString.getBytes)
+            val finalDigestedBytes = Some(signatureOfPreviousColumnValues)
+            (finalDigestedBytes :: digestedBytes).reverse
+        }
       case Some(columnValue)::restOfColumnValues =>
         val concatenatedStrings: Option[StringBuilder] = appendColumnValue(concatenatedPreviousColumnValuesOpt, columnValue)
         loop(restOfColumnValues, concatenatedStrings, digestedBytes)
@@ -136,10 +145,10 @@ object OrderedRowDescription {
             val signatureOfPreviousColumnValues = sha1Sum(concatenatedPreviousColumnValues.toString.getBytes)
             loop(restOfColumnValues,
               None,
-              Some(signatureOfPreviousColumnValues) :: None :: digestedBytes
+              None :: Some(signatureOfPreviousColumnValues) :: digestedBytes
             )
         }
     }
-    loop(columns)
+    loop(columns, None, Nil)
   }
 }
