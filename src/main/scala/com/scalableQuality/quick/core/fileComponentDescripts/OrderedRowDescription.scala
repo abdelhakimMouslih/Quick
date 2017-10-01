@@ -31,9 +31,8 @@ case class OrderedRowDescription(
     colDesc <- columnsDescriptions
   } yield ComparisonBetweenTwoColumns(
     colDesc,
-    leftFileRawRow.flatMap(colDesc.columnValue),
-    leftFileRawRow.flatMap(colDesc.columnValue),
-    leftFileRawRow.flatMap(colDesc.comparisonValue) == leftFileRawRow.flatMap(colDesc.comparisonValue)
+    leftFileRawRow,
+    rightFileRawRow
   )
 
   // validationSignatureOf and matchingSignatureOf functions return
@@ -42,14 +41,14 @@ case class OrderedRowDescription(
                              row: RawRow
                            ): List[Option[List[Byte]]] = {
     val validationValue = validationValuesOf(row)
-    OrderedRowDescription.getSignature(validationValue)
+    getSignature(validationValue)
   }
 
   def matchingSignatureOf(
                            row: RawRow
                          ): List[Option[List[Byte]]] = {
     val matchingValue = matchingValuesOf(row)
-    OrderedRowDescription.getSignature(matchingValue)
+    getSignature(matchingValue)
   }
 
 
@@ -74,26 +73,6 @@ case class OrderedRowDescription(
     ) yield colDesc.comparisonValue(row)
 
 
-}
-
-object OrderedRowDescription {
-  /*def apply(
-             columnsDescriptions: List[ColumnDescription],
-             label: String
-           ): OrderedRowDescription = new OrderedRowDescription(columnsDescriptions, label)
-
-*/
-  // the sha1Digest object, shaSum function and getSignature function are
-  // in the companion object to avoid creating an sha1Digest object for
-  // each OrderedRow instance
-  private val sha1Digest = MessageDigest.getInstance("SHA1")
-  private def sha1Sum(bytes: Array[Byte]): List[Byte] = {
-    sha1Digest.reset()
-    sha1Digest.update(bytes)
-    sha1Digest.digest().toList
-  }
-
-
   // to avoid considering a row with absent columns values equivalent
   // to a row with empty columns the getSignature function will
   // return a list consisting of Some[List[Byte]] to represent the
@@ -105,8 +84,15 @@ object OrderedRowDescription {
   // below List(Some("AAA"),Some("AA")) and List(Some("AA"),Some("AAA"))
 
   private[fileComponentDescripts] def getSignature(
-                                                columns: List[Option[String]]
-                                              ): List[Option[List[Byte]]] = {
+                                                    columns: List[Option[String]]
+                                                  ): List[Option[List[Byte]]] = {
+    def sha1Sum(bytes: Array[Byte]): List[Byte] = {
+      val sha1Digest = MessageDigest.getInstance("SHA1")
+      sha1Digest.reset()
+      sha1Digest.update(bytes)
+      sha1Digest.digest().toList
+    }
+
     def appendColumnValue(
                            stringBuilderOption: Option[StringBuilder],
                            columnValue: String

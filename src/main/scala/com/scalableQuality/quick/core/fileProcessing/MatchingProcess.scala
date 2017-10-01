@@ -13,7 +13,7 @@ object MatchingProcess {
            leftFile: List[RawRow],
            rightFile: List[RawRow]
            ): List[(Option[RawRow], Option[RawRow])] = if (orderedRowDescription.isMatchable) {
-    val leftFileAsHashMap = buildValidationHashMap(orderedRowDescription, leftFile)
+    val leftFileAsHashMap = buildMatchingHashMap(orderedRowDescription, leftFile)
     matchRows(
       leftFileAsHashMap,
       orderedRowDescription,
@@ -29,17 +29,17 @@ object MatchingProcess {
   private type matchingSignature =  immutable.List[Option[List[Byte]]]
   private type matchingSignatureHashMap = mutable.HashMap[matchingSignature, mutable.Set[RawRow]] with mutable.MultiMap[matchingSignature, RawRow]
 
-  private def buildValidationHashMap(
+  private def buildMatchingHashMap(
                                       orderedRowDescription: OrderedRowDescription,
                                       file: List[RawRow]
                                     ): matchingSignatureHashMap = {
-    val validationHashMap = new mutable.HashMap[matchingSignature, mutable.Set[RawRow]] with mutable.MultiMap[matchingSignature, RawRow]
+    val matchingHashMap = new mutable.HashMap[matchingSignature, mutable.Set[RawRow]] with mutable.MultiMap[matchingSignature, RawRow]
     file.foreach{
       row =>
-        val matchingSignature = orderedRowDescription.validationSignatureOf(row)
-        validationHashMap.addBinding(matchingSignature, row)
+        val matchingSignature = orderedRowDescription.matchingSignatureOf(row)
+        matchingHashMap.addBinding(matchingSignature, row)
     }
-    validationHashMap
+    matchingHashMap
   }
 
   @tailrec private def matchRows(

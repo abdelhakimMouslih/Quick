@@ -1,8 +1,8 @@
 package com.scalableQuality.quick.core.fileComponentDescripts
 
+import com.scalableQuality.quick.core.Reporting.{InvalidColumns, IrrelevantColumns, ReportingColumns, ValidColumns}
 import com.scalableQuality.quick.core.others.{MatchingStage, ReportingStage, ValidationStage}
 import com.scalableQuality.quick.mantle.parsing.RawRow
-import com.sun.xml.internal.ws.developer.MemberSubmissionAddressing.Validation
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -417,5 +417,65 @@ class OrderedRowDescriptionTest extends FlatSpec with Matchers with GeneratorDri
     }
   }
 
-  ""
+  "OrderedRowDescription.compare" should "return ValidColumns, IrrelevantColumns, ReportingColumns and InvalidColumns" in {
+    val leftRawRow = Some(RawRow("OneTwoThreeFour",1))
+    val rightRawRow = Some(RawRow("OneBwoRRreeSour",2))
+    val validColumnsDescriptionElem = <ColumnDescription
+      label="valid column"
+      startsAt="1"
+      endsAt="3"
+      useDuringValidation="true"
+      useDuringReporting="false"
+      />
+    val irrelevantColumnsDescriptionElem = <ColumnDescription
+      label="valid column"
+      startsAt="4"
+      endsAt="6"
+      useDuringValidation="false"
+      useDuringReporting="false"
+      />
+    val reportingColumnsDescriptionElem = <ColumnDescription
+      label="valid column"
+      startsAt="7"
+      endsAt="11"
+      useDuringValidation="false"
+      useDuringReporting="true"
+      />
+    val invalidColumnsDescriptionElem = <ColumnDescription
+      label="valid column"
+      startsAt="12"
+      endsAt="15"
+      useDuringValidation="true"
+      useDuringReporting="false"
+      />
+    val validColumnsDescriptionEither = ColumnDescription(validColumnsDescriptionElem.attributes)
+    val irrelevantColumnsDescriptionEither = ColumnDescription(irrelevantColumnsDescriptionElem.attributes)
+    val reportingColumnsDescriptionEither = ColumnDescription(reportingColumnsDescriptionElem.attributes)
+    val invalidColumnsDescriptionEither = ColumnDescription(invalidColumnsDescriptionElem.attributes)
+    (
+      validColumnsDescriptionEither,
+      irrelevantColumnsDescriptionEither,
+      reportingColumnsDescriptionEither,
+      invalidColumnsDescriptionEither
+    ) match {
+      case (
+        Right(validColumnsDescription),
+        Right(irrelevantColumnsDescription),
+        Right(reportingColumnsDescription),
+        Right(invalidColumnsDescription)
+        ) =>
+
+        val columnDescriptionList = List(validColumnsDescription,irrelevantColumnsDescription,reportingColumnsDescription,invalidColumnsDescription)
+        val orderedRowDescription = OrderedRowDescription(columnDescriptionList,"compare testing")
+
+        val expectedReportingColumns = ReportingColumns(reportingColumnsDescription, leftRawRow, rightRawRow)
+        val expectedInvalidColumns = InvalidColumns(invalidColumnsDescription, leftRawRow, rightRawRow)
+        val expectedComparison = List(ValidColumns,IrrelevantColumns,expectedReportingColumns,expectedInvalidColumns)
+
+        orderedRowDescription.compare(leftRawRow, rightRawRow) shouldBe expectedComparison
+      case _ =>
+        fail
+    }
+  }
+
 }

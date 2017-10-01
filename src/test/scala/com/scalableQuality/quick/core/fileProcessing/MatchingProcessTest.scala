@@ -4,8 +4,9 @@ import com.scalableQuality.quick.core.fileComponentDescripts.{ColumnDescription,
 import com.scalableQuality.quick.mantle.parsing.RawRow
 import org.scalatest.{FlatSpec, Matchers}
 
-class ValidationProcessTest extends FlatSpec with Matchers {
-  "ValidationProcess.apply" should "return an empty list if the two files contain the same rows" in {
+class MatchingProcessTest extends FlatSpec with Matchers {
+
+  "MatchingProcess.apply" should "should match all the rows" in {
     val firstRow = RawRow("Row1FirstColumnSecondColumnThirdColumn",1)
     val secondRow = RawRow("Row2FirstColumnSecondColumnThirdColumn",2)
     val thirdRow = RawRow("Row3FirstColumnSecondColumnThirdColumn",3)
@@ -13,26 +14,26 @@ class ValidationProcessTest extends FlatSpec with Matchers {
       label="rowNumber"
       startsAt="1"
       endsAt="4"
-      useDuringValidation="true"
+      useDuringMatching="true"
       />
     val firstColumnDescriptionElem = <ColumnDescription
       label="FirstColumn"
       startsAt="5"
       endsAt="15"
-      useDuringValidation="true"
+      useDuringMatching="true"
       />
     val secondColumnDescriptionElem = <ColumnDescription
       label="SecondColumn"
       startsAt="16"
       endsAt="27"
-      useDuringValidation="true"
+      useDuringMatching="true"
       />
 
     val thirdColumnDescriptionElem = <ColumnDescription
       label="ThirdColumn"
       startsAt="28"
       endsAt="38"
-      useDuringValidation="true"
+      useDuringMatching="true"
       />
     val rowNumberColumnDescriptionEither = ColumnDescription(rowNumberColumnDescriptionElem.attributes)
     val firstColumnDescriptionEither = ColumnDescription(firstColumnDescriptionElem.attributes)
@@ -52,16 +53,21 @@ class ValidationProcessTest extends FlatSpec with Matchers {
         ) =>
         val columnDescriptionList = List(rowNumberColumnDescription,firstColumnDescription,secondColumnDescription,thirdColumnDescription)
         val orderedRowDescription = OrderedRowDescription(columnDescriptionList, "test row")
-        val leftFile = List(secondRow, firstRow, thirdRow)
-        val rightFile = List(firstRow, thirdRow, secondRow)
-        val expectedResult = (Nil, Nil)
-        ValidationProcess(orderedRowDescription,leftFile, rightFile) shouldBe expectedResult
+
+        val leftFile = List(firstRow, secondRow, thirdRow)
+        val rightFile = List(firstRow, secondRow, thirdRow)
+
+        val matchedFirstRow = (Some(firstRow),Some(firstRow))
+        val matchedSecondRow = (Some(secondRow),Some(secondRow))
+        val matchedThirdRow = (Some(thirdRow),Some(thirdRow))
+        val expectedResult = List(matchedThirdRow, matchedSecondRow,matchedFirstRow)
+
+        MatchingProcess(orderedRowDescription,leftFile, rightFile) shouldBe expectedResult
       case _ => fail
     }
   }
 
-
-  it should "return left file rows that are absent from the right file" in {
+  it should "return only left file rows is right file is empty " in {
     val firstRow = RawRow("Row1FirstColumnSecondColumnThirdColumn",1)
     val secondRow = RawRow("Row2FirstColumnSecondColumnThirdColumn",2)
     val thirdRow = RawRow("Row3FirstColumnSecondColumnThirdColumn",3)
@@ -69,26 +75,26 @@ class ValidationProcessTest extends FlatSpec with Matchers {
       label="rowNumber"
       startsAt="1"
       endsAt="4"
-      useDuringValidation="true"
+      useDuringMatching="true"
       />
     val firstColumnDescriptionElem = <ColumnDescription
       label="FirstColumn"
       startsAt="5"
       endsAt="15"
-      useDuringValidation="true"
+      useDuringMatching="true"
       />
     val secondColumnDescriptionElem = <ColumnDescription
       label="SecondColumn"
       startsAt="16"
       endsAt="27"
-      useDuringValidation="true"
+      useDuringMatching="true"
       />
 
     val thirdColumnDescriptionElem = <ColumnDescription
       label="ThirdColumn"
       startsAt="28"
       endsAt="38"
-      useDuringValidation="true"
+      useDuringMatching="true"
       />
     val rowNumberColumnDescriptionEither = ColumnDescription(rowNumberColumnDescriptionElem.attributes)
     val firstColumnDescriptionEither = ColumnDescription(firstColumnDescriptionElem.attributes)
@@ -108,122 +114,21 @@ class ValidationProcessTest extends FlatSpec with Matchers {
         ) =>
         val columnDescriptionList = List(rowNumberColumnDescription,firstColumnDescription,secondColumnDescription,thirdColumnDescription)
         val orderedRowDescription = OrderedRowDescription(columnDescriptionList, "test row")
-        val leftFile = List(secondRow, firstRow, thirdRow)
-        val rightFile = List(firstRow)
-        val expectedResult = (List(thirdRow, secondRow), Nil)
-        ValidationProcess(orderedRowDescription,leftFile, rightFile) shouldBe expectedResult
-      case _ => fail
-    }
-  }
-  it should "return right file rows that are absent from the left file" in {
-    val firstRow = RawRow("Row1FirstColumnSecondColumnThirdColumn",1)
-    val secondRow = RawRow("Row2FirstColumnSecondColumnThirdColumn",2)
-    val thirdRow = RawRow("Row3FirstColumnSecondColumnThirdColumn",3)
-    val rowNumberColumnDescriptionElem = <ColumnDescription
-      label="rowNumber"
-      startsAt="1"
-      endsAt="4"
-      useDuringValidation="true"
-      />
-    val firstColumnDescriptionElem = <ColumnDescription
-      label="FirstColumn"
-      startsAt="5"
-      endsAt="15"
-      useDuringValidation="true"
-      />
-    val secondColumnDescriptionElem = <ColumnDescription
-      label="SecondColumn"
-      startsAt="16"
-      endsAt="27"
-      useDuringValidation="true"
-      />
 
-    val thirdColumnDescriptionElem = <ColumnDescription
-      label="ThirdColumn"
-      startsAt="28"
-      endsAt="38"
-      useDuringValidation="true"
-      />
-    val rowNumberColumnDescriptionEither = ColumnDescription(rowNumberColumnDescriptionElem.attributes)
-    val firstColumnDescriptionEither = ColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = ColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = ColumnDescription(thirdColumnDescriptionElem.attributes)
-    (
-      rowNumberColumnDescriptionEither,
-      firstColumnDescriptionEither,
-      secondColumnDescriptionEither,
-      thirdColumnDescriptionEither
-    ) match {
-      case (
-        Right(rowNumberColumnDescription),
-        Right(firstColumnDescription),
-        Right(secondColumnDescription),
-        Right(thirdColumnDescription)
-        ) =>
-        val columnDescriptionList = List(rowNumberColumnDescription,firstColumnDescription,secondColumnDescription,thirdColumnDescription)
-        val orderedRowDescription = OrderedRowDescription(columnDescriptionList, "test row")
-        val leftFile = List(firstRow)
-        val rightFile = List(secondRow, firstRow, thirdRow)
-        val expectedResult = (Nil,List(thirdRow, secondRow))
-        ValidationProcess(orderedRowDescription,leftFile, rightFile) shouldBe expectedResult
-      case _ => fail
-    }
-  }
-  it should "return all left file rows if the right file is empty" in {
-    val firstRow = RawRow("Row1FirstColumnSecondColumnThirdColumn",1)
-    val secondRow = RawRow("Row2FirstColumnSecondColumnThirdColumn",2)
-    val thirdRow = RawRow("Row3FirstColumnSecondColumnThirdColumn",3)
-    val rowNumberColumnDescriptionElem = <ColumnDescription
-      label="rowNumber"
-      startsAt="1"
-      endsAt="4"
-      useDuringValidation="true"
-      />
-    val firstColumnDescriptionElem = <ColumnDescription
-      label="FirstColumn"
-      startsAt="5"
-      endsAt="15"
-      useDuringValidation="true"
-      />
-    val secondColumnDescriptionElem = <ColumnDescription
-      label="SecondColumn"
-      startsAt="16"
-      endsAt="27"
-      useDuringValidation="true"
-      />
-
-    val thirdColumnDescriptionElem = <ColumnDescription
-      label="ThirdColumn"
-      startsAt="28"
-      endsAt="38"
-      useDuringValidation="true"
-      />
-    val rowNumberColumnDescriptionEither = ColumnDescription(rowNumberColumnDescriptionElem.attributes)
-    val firstColumnDescriptionEither = ColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = ColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = ColumnDescription(thirdColumnDescriptionElem.attributes)
-    (
-      rowNumberColumnDescriptionEither,
-      firstColumnDescriptionEither,
-      secondColumnDescriptionEither,
-      thirdColumnDescriptionEither
-    ) match {
-      case (
-        Right(rowNumberColumnDescription),
-        Right(firstColumnDescription),
-        Right(secondColumnDescription),
-        Right(thirdColumnDescription)
-        ) =>
-        val columnDescriptionList = List(rowNumberColumnDescription,firstColumnDescription,secondColumnDescription,thirdColumnDescription)
-        val orderedRowDescription = OrderedRowDescription(columnDescriptionList, "test row")
-        val leftFile = List(secondRow, firstRow, thirdRow)
+        val leftFile = List(firstRow, secondRow, thirdRow)
         val rightFile = Nil
-        val expectedResult = (List(thirdRow, secondRow, firstRow), Nil)
-        ValidationProcess(orderedRowDescription,leftFile, rightFile) shouldBe expectedResult
+
+        val matchedFirstRow = (Some(firstRow),None)
+        val matchedSecondRow = (Some(secondRow),None)
+        val matchedThirdRow = (Some(thirdRow),None)
+        val expectedResult = List(matchedSecondRow, matchedThirdRow,matchedFirstRow)
+
+        MatchingProcess(orderedRowDescription,leftFile, rightFile) shouldBe expectedResult
       case _ => fail
     }
   }
-  it should "return all right file rows if the left file is empty" in {
+
+  it should "return only right file rows is left file is empty " in {
     val firstRow = RawRow("Row1FirstColumnSecondColumnThirdColumn",1)
     val secondRow = RawRow("Row2FirstColumnSecondColumnThirdColumn",2)
     val thirdRow = RawRow("Row3FirstColumnSecondColumnThirdColumn",3)
@@ -231,26 +136,26 @@ class ValidationProcessTest extends FlatSpec with Matchers {
       label="rowNumber"
       startsAt="1"
       endsAt="4"
-      useDuringValidation="true"
+      useDuringMatching="true"
       />
     val firstColumnDescriptionElem = <ColumnDescription
       label="FirstColumn"
       startsAt="5"
       endsAt="15"
-      useDuringValidation="true"
+      useDuringMatching="true"
       />
     val secondColumnDescriptionElem = <ColumnDescription
       label="SecondColumn"
       startsAt="16"
       endsAt="27"
-      useDuringValidation="true"
+      useDuringMatching="true"
       />
 
     val thirdColumnDescriptionElem = <ColumnDescription
       label="ThirdColumn"
       startsAt="28"
       endsAt="38"
-      useDuringValidation="true"
+      useDuringMatching="true"
       />
     val rowNumberColumnDescriptionEither = ColumnDescription(rowNumberColumnDescriptionElem.attributes)
     val firstColumnDescriptionEither = ColumnDescription(firstColumnDescriptionElem.attributes)
@@ -270,13 +175,20 @@ class ValidationProcessTest extends FlatSpec with Matchers {
         ) =>
         val columnDescriptionList = List(rowNumberColumnDescription,firstColumnDescription,secondColumnDescription,thirdColumnDescription)
         val orderedRowDescription = OrderedRowDescription(columnDescriptionList, "test row")
+
         val leftFile = Nil
-        val rightFile = List(secondRow, firstRow, thirdRow)
-        val expectedResult = (Nil, List(secondRow, firstRow, thirdRow))
-        ValidationProcess(orderedRowDescription,leftFile, rightFile) shouldBe expectedResult
+        val rightFile = List(firstRow, secondRow, thirdRow)
+
+        val matchedFirstRow = (None, Some(firstRow))
+        val matchedSecondRow = (None, Some(secondRow))
+        val matchedThirdRow = (None, Some(thirdRow))
+        val expectedResult = List(matchedFirstRow, matchedSecondRow, matchedThirdRow)
+
+        MatchingProcess(orderedRowDescription,leftFile, rightFile) shouldBe expectedResult
       case _ => fail
     }
   }
+
   it should "can handle incomplete rows" in {
     val firstRow = RawRow("Row1FirstColumnSecondColumn",1)
     val secondRow = RawRow("Row2FirstColumnSecondColumn",2)
@@ -285,26 +197,26 @@ class ValidationProcessTest extends FlatSpec with Matchers {
       label="rowNumber"
       startsAt="1"
       endsAt="4"
-      useDuringValidation="true"
+      useDuringMatching="true"
       />
     val firstColumnDescriptionElem = <ColumnDescription
       label="FirstColumn"
       startsAt="5"
       endsAt="15"
-      useDuringValidation="true"
+      useDuringMatching="true"
       />
     val secondColumnDescriptionElem = <ColumnDescription
       label="SecondColumn"
       startsAt="16"
       endsAt="27"
-      useDuringValidation="true"
+      useDuringMatching="true"
       />
 
     val thirdColumnDescriptionElem = <ColumnDescription
       label="ThirdColumn"
       startsAt="28"
       endsAt="38"
-      useDuringValidation="true"
+      useDuringMatching="true"
       />
     val rowNumberColumnDescriptionEither = ColumnDescription(rowNumberColumnDescriptionElem.attributes)
     val firstColumnDescriptionEither = ColumnDescription(firstColumnDescriptionElem.attributes)
@@ -324,45 +236,54 @@ class ValidationProcessTest extends FlatSpec with Matchers {
         ) =>
         val columnDescriptionList = List(rowNumberColumnDescription,firstColumnDescription,secondColumnDescription,thirdColumnDescription)
         val orderedRowDescription = OrderedRowDescription(columnDescriptionList, "test row")
-        val leftFile = List(secondRow, firstRow, thirdRow)
-        val rightFile = List(firstRow, thirdRow, secondRow)
-        val expectedResult = (Nil, Nil)
-        ValidationProcess(orderedRowDescription,leftFile, rightFile) shouldBe expectedResult
+
+        val leftFile = List(firstRow, secondRow, thirdRow)
+        val rightFile = List(firstRow, secondRow, thirdRow)
+
+        val matchedFirstRow = (Some(firstRow),Some(firstRow))
+        val matchedSecondRow = (Some(secondRow),Some(secondRow))
+        val matchedThirdRow = (Some(thirdRow),Some(thirdRow))
+        val expectedResult = List(matchedThirdRow, matchedSecondRow,matchedFirstRow)
+
+        MatchingProcess(orderedRowDescription,leftFile, rightFile) shouldBe expectedResult
       case _ => fail
     }
   }
 
-  it should "return left file rows that are different from right file rows and vice versa " in {
+
+  it should "should match only matched rows" in {
     val firstRow = RawRow("Row1FirstColumnSecondColumnThirdColumn",1)
-    val differentFirstRow = RawRow("Row1MirstColumnMecondColumnMhirdColumn",1)
     val secondRow = RawRow("Row2FirstColumnSecondColumnThirdColumn",2)
     val differentSecondRow = RawRow("Row2MirstColumnMecondColumnMhirdColumn",2)
     val thirdRow = RawRow("Row3FirstColumnSecondColumnThirdColumn",3)
+    val differentThirdRow = RawRow("Row3MirstColumnMecondColumnMhirdColumn",3)
+
     val rowNumberColumnDescriptionElem = <ColumnDescription
       label="rowNumber"
       startsAt="1"
       endsAt="4"
-      useDuringValidation="true"
+      useDuringMatching="true"
       />
     val firstColumnDescriptionElem = <ColumnDescription
       label="FirstColumn"
       startsAt="5"
       endsAt="15"
-      useDuringValidation="true"
+      useDuringMatching="true"
       />
     val secondColumnDescriptionElem = <ColumnDescription
       label="SecondColumn"
       startsAt="16"
       endsAt="27"
-      useDuringValidation="true"
+      useDuringMatching="false"
       />
 
     val thirdColumnDescriptionElem = <ColumnDescription
       label="ThirdColumn"
       startsAt="28"
       endsAt="38"
-      useDuringValidation="true"
+      useDuringMatching="false"
       />
+
     val rowNumberColumnDescriptionEither = ColumnDescription(rowNumberColumnDescriptionElem.attributes)
     val firstColumnDescriptionEither = ColumnDescription(firstColumnDescriptionElem.attributes)
     val secondColumnDescriptionEither = ColumnDescription(secondColumnDescriptionElem.attributes)
@@ -381,15 +302,23 @@ class ValidationProcessTest extends FlatSpec with Matchers {
         ) =>
         val columnDescriptionList = List(rowNumberColumnDescription,firstColumnDescription,secondColumnDescription,thirdColumnDescription)
         val orderedRowDescription = OrderedRowDescription(columnDescriptionList, "test row")
-        val leftFile = List(secondRow, firstRow, thirdRow)
-        val rightFile = List(differentSecondRow, thirdRow, differentFirstRow)
-        val expectedResult = (List(secondRow,firstRow), List(differentFirstRow,differentSecondRow))
-        ValidationProcess(orderedRowDescription,leftFile, rightFile) shouldBe expectedResult
-      case _ => fail
+
+        val leftFile = List(firstRow, secondRow, thirdRow)
+        val rightFile = List(firstRow, differentSecondRow, differentThirdRow)
+
+        val matchedFirstRow = (Some(firstRow),Some(firstRow))
+        val matchedSecondRow = (Some(secondRow),None)
+        val matchedDifferentSecondRow = (None,Some(differentSecondRow))
+        val matchedThirdRow = (Some(thirdRow),None)
+        val matchedDifferentThirdRow = (None,Some(differentThirdRow))
+        val expectedResult = List(matchedSecondRow,matchedThirdRow,matchedDifferentThirdRow, matchedDifferentSecondRow,matchedFirstRow )
+
+        MatchingProcess(orderedRowDescription,leftFile, rightFile) shouldBe expectedResult
+      case _ => fail("message")
     }
   }
 
-  it should "count the second and the third... occurrence of the same row as invalid " in {
+  it should "match no rows from either files if the row description does not have a column description used for matching" in {
     val firstRow = RawRow("Row1FirstColumnSecondColumnThirdColumn",1)
     val secondRow = RawRow("Row2FirstColumnSecondColumnThirdColumn",2)
     val thirdRow = RawRow("Row3FirstColumnSecondColumnThirdColumn",3)
@@ -397,26 +326,26 @@ class ValidationProcessTest extends FlatSpec with Matchers {
       label="rowNumber"
       startsAt="1"
       endsAt="4"
-      useDuringValidation="true"
+      useDuringMatching="false"
       />
     val firstColumnDescriptionElem = <ColumnDescription
       label="FirstColumn"
       startsAt="5"
       endsAt="15"
-      useDuringValidation="true"
+      useDuringMatching="false"
       />
     val secondColumnDescriptionElem = <ColumnDescription
       label="SecondColumn"
       startsAt="16"
       endsAt="27"
-      useDuringValidation="true"
+      useDuringMatching="false"
       />
 
     val thirdColumnDescriptionElem = <ColumnDescription
       label="ThirdColumn"
       startsAt="28"
       endsAt="38"
-      useDuringValidation="true"
+      useDuringMatching="false"
       />
     val rowNumberColumnDescriptionEither = ColumnDescription(rowNumberColumnDescriptionElem.attributes)
     val firstColumnDescriptionEither = ColumnDescription(firstColumnDescriptionElem.attributes)
@@ -436,10 +365,25 @@ class ValidationProcessTest extends FlatSpec with Matchers {
         ) =>
         val columnDescriptionList = List(rowNumberColumnDescription,firstColumnDescription,secondColumnDescription,thirdColumnDescription)
         val orderedRowDescription = OrderedRowDescription(columnDescriptionList, "test row")
-        val leftFile = List(secondRow, firstRow, thirdRow)
-        val rightFile = List(firstRow, firstRow, firstRow)
-        val expectedResult = (List(thirdRow,secondRow), List(firstRow,firstRow))
-        ValidationProcess(orderedRowDescription,leftFile, rightFile) shouldBe expectedResult
+
+        val leftFile = List(firstRow, secondRow, thirdRow)
+        val rightFile = List(firstRow, secondRow, thirdRow)
+
+        val leftFirstMatchedRow = (Some(firstRow), None)
+        val leftSecondMatchedRow = (Some(secondRow), None)
+        val leftThirdMatchedRow = (Some(thirdRow), None)
+        val rightFirstMatchedRow = (None, Some(firstRow))
+        val rightSecondMatchedRow = (None, Some(secondRow))
+        val rightThirdMatchedRow = (None, Some(thirdRow))
+        val expectedResult = List(
+          leftFirstMatchedRow,
+          leftSecondMatchedRow,
+          leftThirdMatchedRow,
+          rightFirstMatchedRow,
+          rightSecondMatchedRow,
+          rightThirdMatchedRow
+        )
+        MatchingProcess(orderedRowDescription,leftFile, rightFile) shouldBe expectedResult
       case _ => fail
     }
   }

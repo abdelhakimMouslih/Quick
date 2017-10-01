@@ -15,7 +15,8 @@ class MatchAgainstTest extends FlatSpec with Matchers with GeneratorDrivenProper
     "?",
     "+",
     "*",
-    """\"""
+    """\""",
+    "["
   )
   it should "return Left(_) when the pattern presented is invalid" in forAll(invalidPatterns) {
     (pattern: String) =>
@@ -28,19 +29,6 @@ class MatchAgainstTest extends FlatSpec with Matchers with GeneratorDrivenProper
     val columnIdentifierElem = <ColumnIdentifier />
     val matchAgainstEither = MatchAgainst(columnIdentifierElem.attributes)
     matchAgainstEither shouldBe a [Left[_,_]]
-  }
-
-  "MatchAgainst.apply(String)" should "match the pattern literal" in forAll{
-    (string: String ) =>
-      val columnIdentifierElem = <ColumnIdentifier matchAgainst={string} />
-      val matchAgainstEither = MatchAgainst(columnIdentifierElem.attributes)
-      matchAgainstEither match {
-        case Left(_) =>
-          fail()
-
-        case Right(matchAgainst) =>
-          matchAgainst(string) shouldBe true
-      }
   }
 
   it should "match a string witht the specified pattern" in {

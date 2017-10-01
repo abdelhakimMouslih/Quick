@@ -127,30 +127,5 @@ class ColumnIdentifierTest extends FlatSpec with Matchers with GeneratorDrivenPr
     }
   }
 
-  val invalidPatterns = List(
-    "?",
-    "+",
-    "*",
-    """\"""
-  )
-  it should "return true if the whole string got identifier" in forAll{
-    (inputString: String) => whenever(inputString.length > 0 && ! invalidPatterns.contains(inputString)){
-      val inputStringRow = RawRow(inputString, 1)
-      val columnIdentifierElem = <ColumnIdentifier
-        matchAgainst={inputString}
-        label="input string"
-        startsAt="1"
-        length={inputString.length.toString}
-        />
-      val columnIdentifierEither = ColumnIdentifier(columnIdentifierElem.attributes)
-      columnIdentifierEither match {
-        case Left(_) =>
-          fail()
-
-        case Right((_,columnIdentifier)) =>
-          columnIdentifier(inputStringRow) shouldBe true
-      }
-    }
-  }
 
 }
