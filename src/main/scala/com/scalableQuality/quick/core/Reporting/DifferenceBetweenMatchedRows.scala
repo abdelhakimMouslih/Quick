@@ -4,7 +4,7 @@ import com.scalableQuality.quick.core.fileComponentDescripts.OrderedRowDescripti
 import com.scalableQuality.quick.mantle.parsing.RawRow
 
 case class DifferenceBetweenMatchedRows(
-                                         val metaDate: DifferenceBetweenMatchedRowsMetaData,
+                                         val metaData: DifferenceBetweenMatchedRowsMetaData,
                                          val columnComparisons: List[ComparisonBetweenTwoColumns]
                                   )
 

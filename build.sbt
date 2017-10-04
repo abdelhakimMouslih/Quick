@@ -1,11 +1,13 @@
+// project specifications
 name := "Quick"
-
 version := "0.1"
 
-scalaVersion := "2.11.11"
-
+// fat JAR specifications
+mainClass in assembly := Some("com.scalableQuality.quick.surface.main.Quick")
+assemblyJarName in assembly := "quick.jar"
 
 // compiler options
+scalaVersion := "2.11.11"
 scalacOptions ++= Seq(
   "-target:jvm-1.6",
   "-encoding", "UTF-8",
@@ -52,3 +54,4 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
 
 // adding ScalaCheck
 libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.13.4" % "test"
+

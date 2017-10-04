@@ -7,8 +7,8 @@ case class DifferenceBetweenMatchedRowsMetaData(
                                            leftFileLabel: String,
                                            rightFileLabel: String,
                                            rowLabel: String,
-                                           LeftFileRowLineNumber: String,
-                                           RightFileRowLineNumber: String
+                                           leftFileRowLineNumber: String,
+                                           rightFileRowLineNumber: String
                                            )
 
 object DifferenceBetweenMatchedRowsMetaData {
@@ -22,7 +22,7 @@ object DifferenceBetweenMatchedRowsMetaData {
     leftFileLabel.getOrElse("Left file"),
     rightFileLabel.getOrElse("Right file"),
     orderedRowDescription.label,
-    leftFileRawRow.map(_.lineNumber.toString).getOrElse("Absent"),
-    rightFileRawRow.map(_.lineNumber.toString).getOrElse("Absent")
+    leftFileRawRow.map(_.lineNumber.toString).getOrElse("N/A"),
+    rightFileRawRow.map(_.lineNumber.toString).getOrElse("N/A")
   )
 }
