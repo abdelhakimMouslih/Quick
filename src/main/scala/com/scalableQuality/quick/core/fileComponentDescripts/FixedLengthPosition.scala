@@ -60,7 +60,7 @@ object FixedLengthPosition {
 
   private def apply(startsAt: Int, endsAt: Int, length: Int): FixedLengthPosition = {
     val actualStartsAt = startsAt - 1
-    val toString = "%4d-%-4d,len:%3d".format(startsAt, endsAt, length)
+    val toString = "%4d-%-4d".format(startsAt, endsAt, length)
     new FixedLengthPosition(actualStartsAt, endsAt, toString)
   }
 

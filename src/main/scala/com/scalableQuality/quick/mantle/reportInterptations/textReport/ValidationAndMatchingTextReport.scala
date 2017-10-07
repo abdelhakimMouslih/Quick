@@ -5,7 +5,7 @@ import com.scalableQuality.quick.core.Reporting.ValidationAndMatchingReport
 object ValidationAndMatchingTextReport {
   def apply(
              validationAndMatchingTextReport: ValidationAndMatchingReport
-           ): Stream[List[String]] = {
+           ): List[ () => List[String] ] = {
     validationAndMatchingTextReport.interpret(DifferenceBetweenMatchedRowsTextReport(_))
   }
 }

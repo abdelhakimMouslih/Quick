@@ -1,5 +1,6 @@
 package com.scalableQuality.quick.mantle.parsing
 
+import com.scalableQuality.quick.core.Reporting.ValidationAndMatchingReport
 import com.scalableQuality.quick.core.fileComponentDescripts.OrderedRowDescription
 import com.scalableQuality.quick.core.fileProcessing.{ValidateAndMatchRows, ValidateAndMatchTwoFiles}
 import com.scalableQuality.quick.mantle.buildFromXml._
@@ -21,20 +22,33 @@ class RowToRowDescriptionMatcher(
     val groupLeftFileRowsByRowDescription = groupRowsByRowDescription(leftFileRows, listOfRowIdentifier)
     val groupRightFileRowsByRowDescription = groupRowsByRowDescription(rightFileRows, listOfRowIdentifier)
     val matchedGroups = matchGroupsRowsByRowDescription(groupLeftFileRowsByRowDescription, groupRightFileRowsByRowDescription)
-    val matchedGroupsStream = matchedGroups.toStream.map(
-      validateAndMatchParameters =>
-        ValidateAndMatchRows(
-          validateAndMatchParameters._1,
-          validateAndMatchParameters._2,
-          validateAndMatchParameters._3,
-          leftFileLabel,
-          rightFileLabel
+    val validationAndMatchingProcesses: List[() => ValidationAndMatchingReport] = matchedGroups.map {
+      validationAndMatchingParameters =>
+        lazyValidationAndMatchingProcesses(
+          validationAndMatchingParameters._1,
+          validationAndMatchingParameters._2,
+          validationAndMatchingParameters._3
         )
-    )
-    ValidateAndMatchTwoFiles(matchedGroupsStream)
+    }
+    ValidateAndMatchTwoFiles(validationAndMatchingProcesses)
   }
 
-  def matchGroupsRowsByRowDescription(
+  private def lazyValidationAndMatchingProcesses(
+                                                  orderedRowDescription: OrderedRowDescription,
+                                                  leftFileRows: List[RawRow],
+                                                  rightFileRows: List[RawRow],
+                                                  leftFileLabel: Option[String] = this.leftFileLabel,
+                                                  rightFileLabel: Option[String] = this.rightFileLabel
+                                                ): () => ValidationAndMatchingReport =
+    () => ValidateAndMatchRows(
+      orderedRowDescription,
+      leftFileRows,
+      rightFileRows,
+      leftFileLabel,
+      rightFileLabel
+    )
+
+  private def matchGroupsRowsByRowDescription(
                                        leftFileRowGroups : List[(OrderedRowDescription, List[RawRow])],
                                        rightFileRowGroups: List[(OrderedRowDescription, List[RawRow])]
                                      ): List[(OrderedRowDescription, List[RawRow], List[RawRow])] = {
@@ -47,14 +61,14 @@ class RowToRowDescriptionMatcher(
         val remainingRightFileRowGroups = rightFileRowGroups.map(rowGroup => (rowGroup._1, Nil, rowGroup._2))
         remainingRightFileRowGroups ::: accumulator
 
-      case (orderedRowDescription, rightFileRows)::restOfLeftFileRowGroups =>
+      case (orderedRowDescription, leftFileRows)::restOfLeftFileRowGroups =>
         val (matchingRightGroups, restOfRightFileRowGroups) = rightFileRowGroups.partition(_._1 == orderedRowDescription)
         val groupedByRowDescription = matchingRightGroups match {
           case Nil =>
-            (orderedRowDescription,rightFileRows, Nil)
+            (orderedRowDescription,leftFileRows, Nil)
 
           case (_, rightFileRows)::_ =>
-            (orderedRowDescription,rightFileRows, rightFileRows)
+            (orderedRowDescription,leftFileRows, rightFileRows)
         }
         loop(
           restOfLeftFileRowGroups,
@@ -62,6 +76,7 @@ class RowToRowDescriptionMatcher(
           groupedByRowDescription :: accumulator
         )
     }
+
     loop(leftFileRowGroups, rightFileRowGroups, Nil)
   }
 

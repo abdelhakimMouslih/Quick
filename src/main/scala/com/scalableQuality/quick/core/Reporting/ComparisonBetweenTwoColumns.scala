@@ -12,11 +12,12 @@ object ComparisonBetweenTwoColumns {
            leftFileRow: Option[RawRow],
            rightFileRow: Option[RawRow]
            ): ComparisonBetweenTwoColumns = ComparisonBetweenTwoColumns(
-    columnDescription,
-    leftFileRow.flatMap(columnDescription.columnValue),
-    rightFileRow.flatMap(columnDescription.columnValue),
-    leftFileRow.flatMap(columnDescription.comparisonValue) == rightFileRow.flatMap(columnDescription.comparisonValue)
-  )
+      columnDescription,
+      leftFileRow.flatMap(columnDescription.columnValue),
+      rightFileRow.flatMap(columnDescription.columnValue),
+      leftFileRow.flatMap(columnDescription.comparisonValue) == rightFileRow.flatMap(columnDescription.comparisonValue)
+    )
+
   def apply(
            columnDescription: ColumnDescription,
            leftFileColumnValue : => Option[String],
@@ -25,7 +26,6 @@ object ComparisonBetweenTwoColumns {
            ): ComparisonBetweenTwoColumns = {
     val shouldUseInReporting = columnDescription.shouldUseDuring(ReportingStage)
     val shouldUseInValidation = columnDescription.shouldUseDuring(ValidationStage)
-
     if (shouldUseInValidation) {
       if (theTwoColumnsAreEquivalent &&  shouldUseInReporting ) {
         ReportingColumns(

@@ -29,7 +29,7 @@ object ColumnComparisonTable {
     strongHorizontalDivider :: tableHeaderRow :: strongHorizontalDivider :: columnsComparisonRows ::: strongHorizontalDivider :: Nil
   }
 
-  private val dataRowSizes = ColumnComparisonTableColumnSizes(20, 17, 50)
+  private val dataRowSizes = ColumnComparisonTableColumnSizes(15, 10, 30)
 
   private val invalidColumnsRowBorders = ColumnComparisonTableColumnsBorders("? ", " | ", " |")
   private val reportingColumnsRowBorders = ColumnComparisonTableColumnsBorders("# ", " | ", " |")
@@ -57,11 +57,11 @@ object ColumnComparisonTable {
   private val strongHorizontalDivider = {
     val borderChar = "+"
     val fillerChar = "-"
-    val labelColumnSize = 22
-    val positionColumnSize = 19
-    val valueColumnSize = 52
+    val labelColumnSize = 17
+    val positionColumnSize = 12
+    val valueColumnSize = 32
     val strongHorizontalDividerBorders = ColumnComparisonTableColumnsBorders(borderChar,borderChar,borderChar)
-    val strongHorizontalDividerSizes = ColumnComparisonTableColumnSizes(labelColumnSize, labelColumnSize, labelColumnSize)
+    val strongHorizontalDividerSizes = ColumnComparisonTableColumnSizes(labelColumnSize, positionColumnSize, labelColumnSize)
     val strongHorizontalDividerFormat = ColumnComparisonTableRowFormat(strongHorizontalDividerBorders,strongHorizontalDividerSizes)
     val strongHorizontalDividerComponents = ColumnComparisonTableRow(
       fillerChar * labelColumnSize,
@@ -133,7 +133,6 @@ object ColumnComparisonTable {
           columnComparisonTableRowText :: accumulator
         )
     }
-
     loop(
       comparisonBetweenTwoColumnsList,
       sizes,

@@ -4,15 +4,13 @@ import com.scalableQuality.quick.core.Reporting.ValidationAndMatchingReport
 
 
 class ValidateAndMatchTwoFiles(
-                                validationAndMatchingProcesses : Stream[ValidationAndMatchingReport]
+                                val validationAndMatchingProcesses : List[() => ValidationAndMatchingReport]
                               ) {
-
+  lazy val validationAndMatchingReports : List[ValidationAndMatchingReport] = validationAndMatchingProcesses.map(_())
 }
-
-
 
 object ValidateAndMatchTwoFiles {
   def apply(
-             validationAndMatchingProcesses: Stream[ValidationAndMatchingReport]
+             validationAndMatchingProcesses: List[() => ValidationAndMatchingReport]
            ): ValidateAndMatchTwoFiles = new ValidateAndMatchTwoFiles(validationAndMatchingProcesses)
 }

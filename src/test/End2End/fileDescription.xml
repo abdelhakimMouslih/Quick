@@ -1,0 +1,39 @@
+<FileDescriptionsList>
+    <UnorderedFileDescription id="id" >
+        <OrderedRowDescription label="age and salary" >
+            <ColumnIdentifier
+                    matchAgainst=".*"
+                    label="First Name"
+                    startsAt="1"
+                    endsAt="15"
+                    useDuringValidation="true"
+                    useDuringMatching="true"
+                    useDuringReporting="true"
+            />
+            <ColumnDescription
+                    label="Last Name"
+                    startsAt="16"
+                    endsAt="30"
+                    useDuringValidation="true"
+                    useDuringMatching="true"
+                    useDuringReporting="true"
+            />
+            <ColumnDescription
+                    label="Age"
+                    startsAt="31"
+                    endsAt="33"
+                    useDuringValidation="true"
+                    useDuringMatching="false"
+                    useDuringReporting="true"
+            />
+            <ColumnDescription
+                    label="salary"
+                    startsAt="34"
+                    endsAt="38"
+                    useDuringValidation="true"
+                    useDuringMatching="false"
+                    useDuringReporting="true"
+            />
+        </OrderedRowDescription>
+    </UnorderedFileDescription>
+</FileDescriptionsList>

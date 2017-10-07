@@ -17,7 +17,7 @@ object DifferenceBetweenMatchedRows {
            matchedRows: (Option[RawRow], Option[RawRow])
            ): DifferenceBetweenMatchedRows = {
     val leftRawRow = matchedRows._1
-    val rightRawRow = matchedRows._1
+    val rightRawRow = matchedRows._2
     val metaData = DifferenceBetweenMatchedRowsMetaData(
       leftFileLabel,
       rightFileLabel,
