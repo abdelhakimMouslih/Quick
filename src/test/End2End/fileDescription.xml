@@ -29,7 +29,7 @@
             <ColumnDescription
                     label="salary"
                     startsAt="34"
-                    endsAt="38"
+                    endsAt="82"
                     useDuringValidation="true"
                     useDuringMatching="false"
                     useDuringReporting="true"

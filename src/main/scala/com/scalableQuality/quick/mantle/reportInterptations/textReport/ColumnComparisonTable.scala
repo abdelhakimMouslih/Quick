@@ -15,7 +15,7 @@ object ColumnComparisonTable {
       "Label",
       "Position",
       differenceBetweenMatchedRows.metaData.leftFileLabel,
-      differenceBetweenMatchedRows.metaData.leftFileLabel
+      differenceBetweenMatchedRows.metaData.rightFileLabel
     )
     val tableHeaderRow = normalColumnsRowFormatter(tableHeaderRowComponent)
 
@@ -31,8 +31,8 @@ object ColumnComparisonTable {
 
   private val dataRowSizes = ColumnComparisonTableColumnSizes(15, 10, 30)
 
-  private val invalidColumnsRowBorders = ColumnComparisonTableColumnsBorders("? ", " | ", " |")
-  private val reportingColumnsRowBorders = ColumnComparisonTableColumnsBorders("# ", " | ", " |")
+  private val invalidColumnsRowBorders = ColumnComparisonTableColumnsBorders("# ", " | ", " |")
+  private val reportingColumnsRowBorders = ColumnComparisonTableColumnsBorders("! ", " | ", " |")
   private val normalRowBorders = ColumnComparisonTableColumnsBorders("| ", " | ", " |")
 
   private val invalidColumnsRowFormatter = ColumnComparisonTableRowFormat(
