@@ -11,5 +11,5 @@ trait ColumnPosition {
 }
 
 object ColumnPosition {
-  def apply(metaData: MetaData): Either[ErrorMessage, ColumnPosition] = FixedLengthPosition(metaData)
+  def apply(metaData: MetaData): Either[ErrorMessage, ColumnPosition] = FixedPosition(metaData)
 }

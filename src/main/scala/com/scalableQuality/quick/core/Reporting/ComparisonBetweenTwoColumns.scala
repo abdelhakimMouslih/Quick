@@ -1,38 +1,28 @@
 package com.scalableQuality.quick.core.Reporting
 
-import com.scalableQuality.quick.core.fileComponentDescripts.{ColumnDescription, ColumnPosition}
-import com.scalableQuality.quick.core.others.{MatchingStage, ReportingStage, ValidationStage}
+import com.scalableQuality.quick.core.fileComponentDescripts.{ColumnDescriptionMetaData, ColumnPosition, FixedColumnDescription}
+import com.scalableQuality.quick.core.others.{ReportingStage, ValidationStage}
 import com.scalableQuality.quick.mantle.parsing.RawRow
 
 sealed trait ComparisonBetweenTwoColumns
 
 object ComparisonBetweenTwoColumns {
-  def apply(
-           columnDescription: ColumnDescription,
-           leftFileRow: Option[RawRow],
-           rightFileRow: Option[RawRow]
-           ): ComparisonBetweenTwoColumns = ComparisonBetweenTwoColumns(
-      columnDescription,
-      leftFileRow.flatMap(columnDescription.columnValue),
-      rightFileRow.flatMap(columnDescription.columnValue),
-      leftFileRow.flatMap(columnDescription.comparisonValue) == rightFileRow.flatMap(columnDescription.comparisonValue)
-    )
 
   def apply(
-           columnDescription: ColumnDescription,
-           leftFileColumnValue : => Option[String],
-           rightFileColumnValue: => Option[String],
-           theTwoColumnsAreEquivalent: => Boolean
+             columnDescriptionMetaData: ColumnDescriptionMetaData,
+             leftFileColumnValue : => Option[String],
+             rightFileColumnValue: => Option[String],
+             theTwoColumnsAreEquivalent: => Boolean
            ): ComparisonBetweenTwoColumns = {
-    val shouldUseInReporting = columnDescription.shouldUseDuring(ReportingStage)
-    val shouldUseInValidation = columnDescription.shouldUseDuring(ValidationStage)
+    val shouldUseInReporting = columnDescriptionMetaData.shouldUseDuring(ReportingStage)
+    val shouldUseInValidation = columnDescriptionMetaData.shouldUseDuring(ValidationStage)
     if (shouldUseInValidation) {
       if (theTwoColumnsAreEquivalent &&  shouldUseInReporting ) {
         ReportingColumns(
           leftFileColumnValue,
           rightFileColumnValue,
-          columnDescription.position,
-          columnDescription.label
+          columnDescriptionMetaData.position,
+          columnDescriptionMetaData.label
         )
       } else if (theTwoColumnsAreEquivalent) {
         ValidColumns
@@ -40,16 +30,16 @@ object ComparisonBetweenTwoColumns {
         InvalidColumns(
           leftFileColumnValue,
           rightFileColumnValue,
-          columnDescription.position,
-          columnDescription.label
+          columnDescriptionMetaData.position,
+          columnDescriptionMetaData.label
         )
       }
     } else if (shouldUseInReporting) {
       ReportingColumns(
         leftFileColumnValue,
         rightFileColumnValue,
-        columnDescription.position,
-        columnDescription.label
+        columnDescriptionMetaData.position,
+        columnDescriptionMetaData.label
       )
     } else {
       IrrelevantColumns
@@ -69,7 +59,7 @@ case object IrrelevantColumns extends ComparisonBetweenTwoColumns
 class ReportingColumns(
                         leftColumnValue: => Option[String],
                         rightColumnValue: => Option[String],
-                        val  columnPosition: ColumnPosition,
+                        val  columnPosition: String,
                         val columnLabel: String
                       ) extends ComparisonBetweenTwoColumns {
   lazy val leftFileColumnValue: Option[String] = leftColumnValue
@@ -89,18 +79,19 @@ object ReportingColumns {
   def apply(
              leftColumnValue: => Option[String],
              rightColumnValue: => Option[String],
-             columnPosition: ColumnPosition,
+             columnPosition: String,
              columnLabel: String
            ): ReportingColumns = new ReportingColumns(leftColumnValue,rightColumnValue,columnPosition,columnLabel)
+
   def apply(
-           columnDescription: ColumnDescription,
-           leftFileRawRow : Option[RawRow],
-           rightFileRawRow : Option[RawRow]
+             columnDescription: FixedColumnDescription,
+             leftFileRawRow : Option[RawRow],
+             rightFileRawRow : Option[RawRow]
            ): ReportingColumns = ReportingColumns(
     leftFileRawRow.flatMap(columnDescription.columnValue),
     rightFileRawRow.flatMap(columnDescription.columnValue),
-    columnDescription.position,
-    columnDescription.label
+    columnDescription.metaData.position,
+    columnDescription.metaData.label
   )
 }
 
@@ -109,7 +100,7 @@ object ReportingColumns {
 class InvalidColumns(
                       leftColumnValue: => Option[String],
                       rightColumnValue: => Option[String],
-                      val columnPosition: ColumnPosition,
+                      val columnPosition: String,
                       val columnLabel: String
                     ) extends ComparisonBetweenTwoColumns {
   lazy val leftFileColumnValue = leftColumnValue
@@ -128,19 +119,19 @@ object InvalidColumns {
   def apply(
              leftColumnValue: => Option[String],
              rightColumnValue: => Option[String],
-             columnPosition: ColumnPosition,
+             columnPosition: String,
              columnLabel: String
            ): InvalidColumns = new InvalidColumns(leftColumnValue, rightColumnValue, columnPosition, columnLabel )
 
   def apply(
-             columnDescription: ColumnDescription,
+             columnDescription: FixedColumnDescription,
              leftFileRawRow : Option[RawRow],
              rightFileRawRow : Option[RawRow]
            ): InvalidColumns = InvalidColumns(
     leftFileRawRow.flatMap(columnDescription.columnValue),
     rightFileRawRow.flatMap(columnDescription.columnValue),
-    columnDescription.position,
-    columnDescription.label
+    columnDescription.metaData.position,
+    columnDescription.metaData.label
   )
 }
 

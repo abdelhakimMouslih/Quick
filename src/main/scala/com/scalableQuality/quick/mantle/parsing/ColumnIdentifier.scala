@@ -1,6 +1,6 @@
 package com.scalableQuality.quick.mantle.parsing
 
-import com.scalableQuality.quick.core.fileComponentDescripts.ColumnDescription
+import com.scalableQuality.quick.core.fileComponentDescripts.FixedColumnDescription
 import com.scalableQuality.quick.core.others.{MatchAgainst, ValueMapper}
 import com.scalableQuality.quick.mantle.log.{ErrorMessage, UnrecoverableError}
 
@@ -8,7 +8,7 @@ import scala.xml.MetaData
 
 class ColumnIdentifier(
                         matchAgainst: MatchAgainst,
-                        columnDescription: ColumnDescription
+                        columnDescription: FixedColumnDescription
                       ) {
   def apply(row: RawRow): Boolean = {
     val extractedColumn = columnDescription.columnValue(row)
@@ -21,12 +21,12 @@ object ColumnIdentifier {
 
   def apply(
              matchAgainst: MatchAgainst,
-             columnDescription: ColumnDescription
+             columnDescription: FixedColumnDescription
            ): ColumnIdentifier = new ColumnIdentifier(matchAgainst, columnDescription)
 
 
-  def apply(elemMetaData: MetaData): Either[ErrorMessage,(ColumnDescription, ColumnIdentifier)] = {
-    val columnDescriptionEither = ColumnDescription(elemMetaData)
+  def apply(elemMetaData: MetaData): Either[ErrorMessage,(FixedColumnDescription, ColumnIdentifier)] = {
+    val columnDescriptionEither = FixedColumnDescription(elemMetaData)
     val matchAgainstEither = MatchAgainst(elemMetaData)
     (columnDescriptionEither, matchAgainstEither) match {
       case (Left(errorMessage), _) =>
@@ -42,7 +42,7 @@ object ColumnIdentifier {
 
 
   private def makeErrorMessage(childErrorMessage: ErrorMessage) :
-  Either[ErrorMessage,(ColumnDescription, ColumnIdentifier)] = {
+  Either[ErrorMessage,(FixedColumnDescription, ColumnIdentifier)] = {
     val errorMessage = UnrecoverableError(
       "creating a column identifier",
       "encountered a problem below",

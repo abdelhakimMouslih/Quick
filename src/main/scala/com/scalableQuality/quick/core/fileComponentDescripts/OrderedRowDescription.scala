@@ -10,8 +10,8 @@ import com.scalableQuality.quick.core.Reporting.ComparisonBetweenTwoColumns
 import scala.annotation.tailrec
 
 case class OrderedRowDescription(
-                             val columnsDescriptions: List[ColumnDescription],
-                             val label: String
+                                  val columnsDescriptions: List[FixedColumnDescription],
+                                  val label: String
                            ) {
 
   def keepOnlyColumnsDescriptionsUsedIn(
@@ -19,7 +19,7 @@ case class OrderedRowDescription(
               ): OrderedRowDescription = {
     val keptColumnDescriptions = for {
       colDesc <- columnsDescriptions
-      if colDesc.shouldUseDuring(columnUsages:_*)
+      if colDesc.metaData.shouldUseDuring(columnUsages:_*)
     } yield colDesc
     OrderedRowDescription(keptColumnDescriptions, this.label )
   }
@@ -29,11 +29,7 @@ case class OrderedRowDescription(
                rightFileRawRow: Option[RawRow]
              ): List[ComparisonBetweenTwoColumns] = for {
     colDesc <- columnsDescriptions
-  } yield ComparisonBetweenTwoColumns(
-    colDesc,
-    leftFileRawRow,
-    rightFileRawRow
-  )
+  } yield colDesc.compareTwoColumns(leftFileRawRow, rightFileRawRow)
 
   // validationSignatureOf and matchingSignatureOf functions return
   // List[Byte] instead of List[Option[String]] to avoid huge ram usage
@@ -53,14 +49,14 @@ case class OrderedRowDescription(
 
 
   def isMatchable: Boolean = columnsDescriptions.collectFirst {
-    case col if col shouldUseDuring MatchingStage => true
+    case col if col.metaData.shouldUseDuring(MatchingStage) => true
   }.getOrElse(false)
 
   private def validationValuesOf(
                                row: RawRow
                                ): List[Option[String]]  = for (
     colDesc <- this.columnsDescriptions
-      if colDesc shouldUseDuring ValidationStage
+      if colDesc.metaData.shouldUseDuring(ValidationStage)
   ) yield colDesc.comparisonValue(row)
 
 
@@ -69,7 +65,7 @@ case class OrderedRowDescription(
                            row: RawRow
                            ): List[Option[String]] = for (
       colDesc <- this.columnsDescriptions
-      if colDesc shouldUseDuring MatchingStage
+      if colDesc.metaData.shouldUseDuring(MatchingStage)
     ) yield colDesc.comparisonValue(row)
 
 

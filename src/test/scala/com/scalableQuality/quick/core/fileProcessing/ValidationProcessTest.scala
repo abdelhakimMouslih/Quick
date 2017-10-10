@@ -1,6 +1,6 @@
 package com.scalableQuality.quick.core.fileProcessing
 
-import com.scalableQuality.quick.core.fileComponentDescripts.{ColumnDescription, OrderedRowDescription}
+import com.scalableQuality.quick.core.fileComponentDescripts.{FixedColumnDescription, OrderedRowDescription}
 import com.scalableQuality.quick.mantle.parsing.RawRow
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -34,10 +34,10 @@ class ValidationProcessTest extends FlatSpec with Matchers {
       endsAt="38"
       useDuringValidation="true"
       />
-    val rowNumberColumnDescriptionEither = ColumnDescription(rowNumberColumnDescriptionElem.attributes)
-    val firstColumnDescriptionEither = ColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = ColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = ColumnDescription(thirdColumnDescriptionElem.attributes)
+    val rowNumberColumnDescriptionEither = FixedColumnDescription(rowNumberColumnDescriptionElem.attributes)
+    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
     (
       rowNumberColumnDescriptionEither,
       firstColumnDescriptionEither,
@@ -90,10 +90,10 @@ class ValidationProcessTest extends FlatSpec with Matchers {
       endsAt="38"
       useDuringValidation="true"
       />
-    val rowNumberColumnDescriptionEither = ColumnDescription(rowNumberColumnDescriptionElem.attributes)
-    val firstColumnDescriptionEither = ColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = ColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = ColumnDescription(thirdColumnDescriptionElem.attributes)
+    val rowNumberColumnDescriptionEither = FixedColumnDescription(rowNumberColumnDescriptionElem.attributes)
+    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
     (
       rowNumberColumnDescriptionEither,
       firstColumnDescriptionEither,
@@ -144,10 +144,10 @@ class ValidationProcessTest extends FlatSpec with Matchers {
       endsAt="38"
       useDuringValidation="true"
       />
-    val rowNumberColumnDescriptionEither = ColumnDescription(rowNumberColumnDescriptionElem.attributes)
-    val firstColumnDescriptionEither = ColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = ColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = ColumnDescription(thirdColumnDescriptionElem.attributes)
+    val rowNumberColumnDescriptionEither = FixedColumnDescription(rowNumberColumnDescriptionElem.attributes)
+    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
     (
       rowNumberColumnDescriptionEither,
       firstColumnDescriptionEither,
@@ -198,10 +198,10 @@ class ValidationProcessTest extends FlatSpec with Matchers {
       endsAt="38"
       useDuringValidation="true"
       />
-    val rowNumberColumnDescriptionEither = ColumnDescription(rowNumberColumnDescriptionElem.attributes)
-    val firstColumnDescriptionEither = ColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = ColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = ColumnDescription(thirdColumnDescriptionElem.attributes)
+    val rowNumberColumnDescriptionEither = FixedColumnDescription(rowNumberColumnDescriptionElem.attributes)
+    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
     (
       rowNumberColumnDescriptionEither,
       firstColumnDescriptionEither,
@@ -252,10 +252,10 @@ class ValidationProcessTest extends FlatSpec with Matchers {
       endsAt="38"
       useDuringValidation="true"
       />
-    val rowNumberColumnDescriptionEither = ColumnDescription(rowNumberColumnDescriptionElem.attributes)
-    val firstColumnDescriptionEither = ColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = ColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = ColumnDescription(thirdColumnDescriptionElem.attributes)
+    val rowNumberColumnDescriptionEither = FixedColumnDescription(rowNumberColumnDescriptionElem.attributes)
+    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
     (
       rowNumberColumnDescriptionEither,
       firstColumnDescriptionEither,
@@ -306,10 +306,10 @@ class ValidationProcessTest extends FlatSpec with Matchers {
       endsAt="38"
       useDuringValidation="true"
       />
-    val rowNumberColumnDescriptionEither = ColumnDescription(rowNumberColumnDescriptionElem.attributes)
-    val firstColumnDescriptionEither = ColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = ColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = ColumnDescription(thirdColumnDescriptionElem.attributes)
+    val rowNumberColumnDescriptionEither = FixedColumnDescription(rowNumberColumnDescriptionElem.attributes)
+    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
     (
       rowNumberColumnDescriptionEither,
       firstColumnDescriptionEither,
@@ -363,10 +363,10 @@ class ValidationProcessTest extends FlatSpec with Matchers {
       endsAt="38"
       useDuringValidation="true"
       />
-    val rowNumberColumnDescriptionEither = ColumnDescription(rowNumberColumnDescriptionElem.attributes)
-    val firstColumnDescriptionEither = ColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = ColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = ColumnDescription(thirdColumnDescriptionElem.attributes)
+    val rowNumberColumnDescriptionEither = FixedColumnDescription(rowNumberColumnDescriptionElem.attributes)
+    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
     (
       rowNumberColumnDescriptionEither,
       firstColumnDescriptionEither,
@@ -418,10 +418,10 @@ class ValidationProcessTest extends FlatSpec with Matchers {
       endsAt="38"
       useDuringValidation="true"
       />
-    val rowNumberColumnDescriptionEither = ColumnDescription(rowNumberColumnDescriptionElem.attributes)
-    val firstColumnDescriptionEither = ColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = ColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = ColumnDescription(thirdColumnDescriptionElem.attributes)
+    val rowNumberColumnDescriptionEither = FixedColumnDescription(rowNumberColumnDescriptionElem.attributes)
+    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
     (
       rowNumberColumnDescriptionEither,
       firstColumnDescriptionEither,

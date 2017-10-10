@@ -1,6 +1,6 @@
 package com.scalableQuality.quick.mantle.parsing
 
-import com.scalableQuality.quick.core.fileComponentDescripts.{ColumnDescription, OrderedRowDescription}
+import com.scalableQuality.quick.core.fileComponentDescripts.{FixedColumnDescription, OrderedRowDescription}
 import com.scalableQuality.quick.mantle.buildFromXml._
 import com.scalableQuality.quick.mantle.log.{ErrorMessage, UnrecoverableError}
 
@@ -40,15 +40,15 @@ object RowIdentifier {
   def apply(rowDescriptionXmlElem : Elem): Either[ErrorMessage, RowIdentifier] = {
 
     @tailrec def makeColumnIdentifiersAndColumnDescriptions (
-                                                             xmlNodes: List[Node],
-                                                             columnDescriptionList: List[ColumnDescription],
-                                                             columnIdentifierList: List[ColumnIdentifier]
+                                                              xmlNodes: List[Node],
+                                                              columnDescriptionList: List[FixedColumnDescription],
+                                                              columnIdentifierList: List[ColumnIdentifier]
                                                            ):
-    Either[ErrorMessage, (List[ColumnDescription],List[ColumnIdentifier])] = xmlNodes match {
+    Either[ErrorMessage, (List[FixedColumnDescription],List[ColumnIdentifier])] = xmlNodes match {
       case Nil =>
         Right((columnDescriptionList, columnIdentifierList))
       case (elem: Elem)::restOfNodes if compareXmlElemLabelsWith(elem,RowIdentifier.columnDescriptionElemLabel) =>
-        val columnDescriptionEither = ColumnDescription(elem.attributes)
+        val columnDescriptionEither = FixedColumnDescription(elem.attributes)
         columnDescriptionEither match {
           case Left(errorMessage) =>
             createErrorMessage(errorMessage)

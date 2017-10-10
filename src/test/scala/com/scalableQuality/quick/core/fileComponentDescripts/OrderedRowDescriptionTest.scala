@@ -30,9 +30,9 @@ class OrderedRowDescriptionTest extends FlatSpec with Matchers with GeneratorDri
       endsAt="12"
       useDuringMatching={thirdColumnMatching.toString}
       />
-      val firstColumnDescriptionEither = ColumnDescription(firstColumnDescriptionElem.attributes)
-      val secondColumnDescriptionEither = ColumnDescription(secondColumnDescriptionElem.attributes)
-      val thirdColumnDescriptionEither = ColumnDescription(thirdColumnDescriptionElem.attributes)
+      val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+      val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+      val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
       (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
         case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
@@ -62,9 +62,9 @@ class OrderedRowDescriptionTest extends FlatSpec with Matchers with GeneratorDri
       startsAt="8"
       endsAt="12"
       />
-    val firstColumnDescriptionEither = ColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = ColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = ColumnDescription(thirdColumnDescriptionElem.attributes)
+    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
     (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
       case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
@@ -98,9 +98,9 @@ class OrderedRowDescriptionTest extends FlatSpec with Matchers with GeneratorDri
       endsAt="12"
       useDuringMatching="true"
       />
-    val firstColumnDescriptionEither = ColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = ColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = ColumnDescription(thirdColumnDescriptionElem.attributes)
+    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
     (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
       case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
@@ -134,9 +134,9 @@ class OrderedRowDescriptionTest extends FlatSpec with Matchers with GeneratorDri
       endsAt="12"
       useDuringReporting="true"
       />
-    val firstColumnDescriptionEither = ColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = ColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = ColumnDescription(thirdColumnDescriptionElem.attributes)
+    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
     (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
       case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
@@ -171,9 +171,9 @@ class OrderedRowDescriptionTest extends FlatSpec with Matchers with GeneratorDri
       endsAt="12"
       useDuringReporting="true"
       />
-    val firstColumnDescriptionEither = ColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = ColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = ColumnDescription(thirdColumnDescriptionElem.attributes)
+    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
     (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
       case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
@@ -210,9 +210,9 @@ class OrderedRowDescriptionTest extends FlatSpec with Matchers with GeneratorDri
       useDuringValidation="true"
       />
 
-    val firstColumnDescriptionEither = ColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = ColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = ColumnDescription(thirdColumnDescriptionElem.attributes)
+    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
     (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
       case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
@@ -248,9 +248,9 @@ class OrderedRowDescriptionTest extends FlatSpec with Matchers with GeneratorDri
       useDuringValidation="true"
       />
 
-    val firstColumnDescriptionEither = ColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = ColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = ColumnDescription(thirdColumnDescriptionElem.attributes)
+    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
     (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
       case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
@@ -285,9 +285,9 @@ class OrderedRowDescriptionTest extends FlatSpec with Matchers with GeneratorDri
       useDuringValidation="true"
       />
 
-    val firstColumnDescriptionEither = ColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = ColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = ColumnDescription(thirdColumnDescriptionElem.attributes)
+    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
     (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
       case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
@@ -325,9 +325,9 @@ class OrderedRowDescriptionTest extends FlatSpec with Matchers with GeneratorDri
       useDuringMatching="true"
       />
 
-    val firstColumnDescriptionEither = ColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = ColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = ColumnDescription(thirdColumnDescriptionElem.attributes)
+    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
     (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
       case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
@@ -363,9 +363,9 @@ class OrderedRowDescriptionTest extends FlatSpec with Matchers with GeneratorDri
       useDuringMatching="true"
       />
 
-    val firstColumnDescriptionEither = ColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = ColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = ColumnDescription(thirdColumnDescriptionElem.attributes)
+    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
     (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
       case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
@@ -400,9 +400,9 @@ class OrderedRowDescriptionTest extends FlatSpec with Matchers with GeneratorDri
       useDuringMatching="true"
       />
 
-    val firstColumnDescriptionEither = ColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = ColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = ColumnDescription(thirdColumnDescriptionElem.attributes)
+    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
     (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
       case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
@@ -448,10 +448,10 @@ class OrderedRowDescriptionTest extends FlatSpec with Matchers with GeneratorDri
       useDuringValidation="true"
       useDuringReporting="false"
       />
-    val validColumnsDescriptionEither = ColumnDescription(validColumnsDescriptionElem.attributes)
-    val irrelevantColumnsDescriptionEither = ColumnDescription(irrelevantColumnsDescriptionElem.attributes)
-    val reportingColumnsDescriptionEither = ColumnDescription(reportingColumnsDescriptionElem.attributes)
-    val invalidColumnsDescriptionEither = ColumnDescription(invalidColumnsDescriptionElem.attributes)
+    val validColumnsDescriptionEither = FixedColumnDescription(validColumnsDescriptionElem.attributes)
+    val irrelevantColumnsDescriptionEither = FixedColumnDescription(irrelevantColumnsDescriptionElem.attributes)
+    val reportingColumnsDescriptionEither = FixedColumnDescription(reportingColumnsDescriptionElem.attributes)
+    val invalidColumnsDescriptionEither = FixedColumnDescription(invalidColumnsDescriptionElem.attributes)
     (
       validColumnsDescriptionEither,
       irrelevantColumnsDescriptionEither,

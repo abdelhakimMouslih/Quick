@@ -57,7 +57,7 @@ class RowIdentifierTest extends FlatSpec with Matchers {
     rowIdentifierEither shouldBe a [Left[_,_]]
   }
 
-  it should "return Left[ErrorMessage] when it fails to create a ColumnDescription" in {
+  it should "return Left[ErrorMessage] when it fails to create a FixedColumnDescription" in {
     val rowDescriptionElem =
       <RowDescrtiption label="Track2 data" >
         <ColumnDescription startsAt="1" length="1" />
