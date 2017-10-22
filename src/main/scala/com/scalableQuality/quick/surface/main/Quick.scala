@@ -1,6 +1,6 @@
 package com.scalableQuality.quick.surface.main
 
-import com.scalableQuality.quick.mantle.parsing.{RawRow, RowToRowDescriptionMatcher}
+import com.scalableQuality.quick.mantle.parsing.{RawRow, GroupRowsByRowDescription}
 import com.scalableQuality.quick.mantle.reportInterptations.textReport.ValidationAndMatchingTextReport
 import com.scalableQuality.quick.surface.commandLineOptions.{CommandLineInput, CommandLineParser}
 import com.scalableQuality.quick.surface.input.{ReadRowsFromFile, ReadXmlFile}
@@ -26,7 +26,7 @@ object Quick extends App{
       (leftFilePathEither, rightFilePathEither, fileDescriptionPathEither) match {
         case (Right(leftFileRows), Right(rightFileRows),Right(fileDescriptionRootElem)) =>
 
-          val rowToRowDescriptionMatcherEither = RowToRowDescriptionMatcher(
+          val rowToRowDescriptionMatcherEither = GroupRowsByRowDescription(
             fileDescriptionRootElem,
             fileDescriptionId,
             leftFileLabel,

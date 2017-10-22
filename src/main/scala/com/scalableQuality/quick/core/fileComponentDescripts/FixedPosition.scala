@@ -1,6 +1,6 @@
 package com.scalableQuality.quick.core.fileComponentDescripts
 
-import com.scalableQuality.quick.mantle.buildFromXml.{ParameterValueError, _}
+import com.scalableQuality.quick.mantle.buildFromXml._
 import com.scalableQuality.quick.mantle.log.{ErrorMessage, UnrecoverableError}
 import com.scalableQuality.quick.mantle.parsing.RawRow
 
@@ -10,9 +10,8 @@ class FixedPosition(
                             startsAt: Int,
                             endsAt: Int,
                             override val toString: String
-                          ) extends  ColumnPosition {
-
-  override def extractColumnValue(row: RawRow): Option[String] = try {
+                          ) {
+  def extractColumnValue(row: RawRow): Option[String] = try {
     Some(row.value.substring(startsAt.toInt, endsAt))
   } catch {
     case e:Exception => None
@@ -60,7 +59,7 @@ object FixedPosition {
 
   private def apply(startsAt: Int, endsAt: Int, length: Int): FixedPosition = {
     val actualStartsAt = startsAt - 1
-    val toString = "%4d-%-4d".format(startsAt, endsAt, length)
+    val toString = "%4d-%-4d".format(startsAt, endsAt)
     new FixedPosition(actualStartsAt, endsAt, toString)
   }
 

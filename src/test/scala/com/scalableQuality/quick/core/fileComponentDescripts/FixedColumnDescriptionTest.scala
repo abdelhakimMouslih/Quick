@@ -114,8 +114,6 @@ class FixedColumnDescriptionTest extends FlatSpec with Matchers with TableDriven
     columnDescription shouldBe a [Left[_,_]]
   }
 
-
-
   it should "return Left(errorMessage) if endsAt and length attribute are missing" in {
     val columnDescriptionElem = <ColumnDescription
       label="label"

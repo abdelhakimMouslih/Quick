@@ -1,6 +1,6 @@
 package com.scalableQuality.quick.core.fileProcessing
 
-import com.scalableQuality.quick.core.fileComponentDescripts.{FixedColumnDescription, OrderedRowDescription}
+import com.scalableQuality.quick.core.fileComponentDescripts.{FixedColumnDescription, FixedRowDivider, OrderedRowDescription}
 import com.scalableQuality.quick.mantle.parsing.RawRow
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -52,7 +52,8 @@ class MatchingProcessTest extends FlatSpec with Matchers {
         Right(thirdColumnDescription)
         ) =>
         val columnDescriptionList = List(rowNumberColumnDescription,firstColumnDescription,secondColumnDescription,thirdColumnDescription)
-        val orderedRowDescription = OrderedRowDescription(columnDescriptionList, "test row")
+        val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+        val orderedRowDescription = OrderedRowDescription(fixedRowDivider, "test row")
 
         val leftFile = List(firstRow, secondRow, thirdRow)
         val rightFile = List(firstRow, secondRow, thirdRow)
@@ -113,7 +114,8 @@ class MatchingProcessTest extends FlatSpec with Matchers {
         Right(thirdColumnDescription)
         ) =>
         val columnDescriptionList = List(rowNumberColumnDescription,firstColumnDescription,secondColumnDescription,thirdColumnDescription)
-        val orderedRowDescription = OrderedRowDescription(columnDescriptionList, "test row")
+        val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+        val orderedRowDescription = OrderedRowDescription(fixedRowDivider, "test row")
 
         val leftFile = List(firstRow, secondRow, thirdRow)
         val rightFile = Nil
@@ -174,7 +176,8 @@ class MatchingProcessTest extends FlatSpec with Matchers {
         Right(thirdColumnDescription)
         ) =>
         val columnDescriptionList = List(rowNumberColumnDescription,firstColumnDescription,secondColumnDescription,thirdColumnDescription)
-        val orderedRowDescription = OrderedRowDescription(columnDescriptionList, "test row")
+        val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+        val orderedRowDescription = OrderedRowDescription(fixedRowDivider, "test row")
 
         val leftFile = Nil
         val rightFile = List(firstRow, secondRow, thirdRow)
@@ -235,7 +238,8 @@ class MatchingProcessTest extends FlatSpec with Matchers {
         Right(thirdColumnDescription)
         ) =>
         val columnDescriptionList = List(rowNumberColumnDescription,firstColumnDescription,secondColumnDescription,thirdColumnDescription)
-        val orderedRowDescription = OrderedRowDescription(columnDescriptionList, "test row")
+        val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+        val orderedRowDescription = OrderedRowDescription(fixedRowDivider, "test row")
 
         val leftFile = List(firstRow, secondRow, thirdRow)
         val rightFile = List(firstRow, secondRow, thirdRow)
@@ -301,7 +305,8 @@ class MatchingProcessTest extends FlatSpec with Matchers {
         Right(thirdColumnDescription)
         ) =>
         val columnDescriptionList = List(rowNumberColumnDescription,firstColumnDescription,secondColumnDescription,thirdColumnDescription)
-        val orderedRowDescription = OrderedRowDescription(columnDescriptionList, "test row")
+        val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+        val orderedRowDescription = OrderedRowDescription(fixedRowDivider, "test row")
 
         val leftFile = List(firstRow, secondRow, thirdRow)
         val rightFile = List(firstRow, differentSecondRow, differentThirdRow)
@@ -364,7 +369,8 @@ class MatchingProcessTest extends FlatSpec with Matchers {
         Right(thirdColumnDescription)
         ) =>
         val columnDescriptionList = List(rowNumberColumnDescription,firstColumnDescription,secondColumnDescription,thirdColumnDescription)
-        val orderedRowDescription = OrderedRowDescription(columnDescriptionList, "test row")
+        val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+        val orderedRowDescription = OrderedRowDescription(fixedRowDivider, "test row")
 
         val leftFile = List(firstRow, secondRow, thirdRow)
         val rightFile = List(firstRow, secondRow, thirdRow)

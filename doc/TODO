@@ -1,0 +1,5 @@
+version 0.2
+    + add support for delimited rows
+    - add unit tests for delimited rows
+    - add examples for fixed length rows
+    - add examples for delimited rows

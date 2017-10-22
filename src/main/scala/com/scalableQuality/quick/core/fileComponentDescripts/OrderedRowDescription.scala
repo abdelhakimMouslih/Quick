@@ -9,27 +9,22 @@ import com.scalableQuality.quick.core.Reporting.ComparisonBetweenTwoColumns
 
 import scala.annotation.tailrec
 
-case class OrderedRowDescription(
-                                  val columnsDescriptions: List[FixedColumnDescription],
-                                  val label: String
+class OrderedRowDescription(
+                             private[OrderedRowDescription] val rowDivider: RowDivider,
+                             val label: String
                            ) {
 
   def keepOnlyColumnsDescriptionsUsedIn(
-              columnUsages: ColumnUsageStages*
-              ): OrderedRowDescription = {
-    val keptColumnDescriptions = for {
-      colDesc <- columnsDescriptions
-      if colDesc.metaData.shouldUseDuring(columnUsages:_*)
-    } yield colDesc
-    OrderedRowDescription(keptColumnDescriptions, this.label )
+                                         columnUsages: ColumnUsageStages*
+                                       ): OrderedRowDescription = {
+    val nextRowDivider = this.rowDivider.keepOnlyColumnsDescriptionsUsedIn(columnUsages:_*)
+    OrderedRowDescription(nextRowDivider, this.label)
   }
 
   def compare(
                leftFileRawRow: Option[RawRow],
                rightFileRawRow: Option[RawRow]
-             ): List[ComparisonBetweenTwoColumns] = for {
-    colDesc <- columnsDescriptions
-  } yield colDesc.compareTwoColumns(leftFileRawRow, rightFileRawRow)
+             ): List[ComparisonBetweenTwoColumns] = rowDivider.compare(leftFileRawRow, rightFileRawRow)
 
   // validationSignatureOf and matchingSignatureOf functions return
   // List[Byte] instead of List[Option[String]] to avoid huge ram usage
@@ -48,25 +43,19 @@ case class OrderedRowDescription(
   }
 
 
-  def isMatchable: Boolean = columnsDescriptions.collectFirst {
-    case col if col.metaData.shouldUseDuring(MatchingStage) => true
-  }.getOrElse(false)
+  def isMatchable: Boolean = rowDivider.isMatchable
 
   private def validationValuesOf(
-                               row: RawRow
-                               ): List[Option[String]]  = for (
-    colDesc <- this.columnsDescriptions
-      if colDesc.metaData.shouldUseDuring(ValidationStage)
-  ) yield colDesc.comparisonValue(row)
+                                  row: RawRow
+                                ): List[Option[String]]  =
+    rowDivider.columnsComparisonValuesFor(ValidationStage, row)
 
 
 
   private def matchingValuesOf(
-                           row: RawRow
-                           ): List[Option[String]] = for (
-      colDesc <- this.columnsDescriptions
-      if colDesc.metaData.shouldUseDuring(MatchingStage)
-    ) yield colDesc.comparisonValue(row)
+                                row: RawRow
+                              ): List[Option[String]] =
+    rowDivider.columnsComparisonValuesFor(MatchingStage, row)
 
 
   // to avoid considering a row with absent columns values equivalent
@@ -133,4 +122,20 @@ case class OrderedRowDescription(
     }
     loop(columns, None, Nil)
   }
+
+  override def equals(obj: scala.Any): Boolean =  obj match {
+    case rowDescription: OrderedRowDescription =>
+      rowDescription.rowDivider == this.rowDivider &&
+      rowDescription.label == this.label
+
+    case _ => false
+  }
 }
+
+object OrderedRowDescription {
+  def apply(
+             rowDivider: RowDivider,
+             label: String
+  ): OrderedRowDescription = new OrderedRowDescription(rowDivider,label)
+}
+

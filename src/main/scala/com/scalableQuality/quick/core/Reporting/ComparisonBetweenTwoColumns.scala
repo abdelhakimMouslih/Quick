@@ -1,6 +1,6 @@
 package com.scalableQuality.quick.core.Reporting
 
-import com.scalableQuality.quick.core.fileComponentDescripts.{ColumnDescriptionMetaData, ColumnPosition, FixedColumnDescription}
+import com.scalableQuality.quick.core.fileComponentDescripts.{ColumnDescriptionMetaData, FixedColumnDescription}
 import com.scalableQuality.quick.core.others.{ReportingStage, ValidationStage}
 import com.scalableQuality.quick.mantle.parsing.RawRow
 
@@ -73,6 +73,9 @@ class ReportingColumns(
       reportingColumn.columnLabel == this.columnLabel
     case _ => false
   }
+
+  override def toString: String = s" ${this.leftFileColumnValue} ${this.rightFileColumnValue} $columnPosition"
+
 }
 
 object ReportingColumns {
@@ -83,7 +86,7 @@ object ReportingColumns {
              columnLabel: String
            ): ReportingColumns = new ReportingColumns(leftColumnValue,rightColumnValue,columnPosition,columnLabel)
 
-  def apply(
+  /*def apply(
              columnDescription: FixedColumnDescription,
              leftFileRawRow : Option[RawRow],
              rightFileRawRow : Option[RawRow]
@@ -92,7 +95,7 @@ object ReportingColumns {
     rightFileRawRow.flatMap(columnDescription.columnValue),
     columnDescription.metaData.position,
     columnDescription.metaData.label
-  )
+  )*/
 }
 
 // represents the columns
@@ -107,12 +110,15 @@ class InvalidColumns(
   lazy val rightFileColumnValue = rightColumnValue
   override def equals(that: scala.Any): Boolean = that match {
     case invalidColumn: InvalidColumns =>
-      invalidColumn.leftFileColumnValue == this.leftFileColumnValue &&
+        invalidColumn.leftFileColumnValue == this.leftFileColumnValue &&
         invalidColumn.rightFileColumnValue == this.rightFileColumnValue &&
-        invalidColumn.columnPosition == this.columnPosition &&
+        invalidColumn.columnPosition == this.columnPosition //&&
         invalidColumn.columnLabel == this.columnLabel
     case _ => false
   }
+
+  override def toString: String = s" ${this.leftFileColumnValue} ${this.rightFileColumnValue} $columnPosition"
+
 }
 
 object InvalidColumns {
@@ -123,7 +129,7 @@ object InvalidColumns {
              columnLabel: String
            ): InvalidColumns = new InvalidColumns(leftColumnValue, rightColumnValue, columnPosition, columnLabel )
 
-  def apply(
+  /*def apply(
              columnDescription: FixedColumnDescription,
              leftFileRawRow : Option[RawRow],
              rightFileRawRow : Option[RawRow]
@@ -132,7 +138,7 @@ object InvalidColumns {
     rightFileRawRow.flatMap(columnDescription.columnValue),
     columnDescription.metaData.position,
     columnDescription.metaData.label
-  )
+  )*/
 }
 
 

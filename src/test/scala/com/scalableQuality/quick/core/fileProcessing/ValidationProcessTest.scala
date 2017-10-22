@@ -1,6 +1,6 @@
 package com.scalableQuality.quick.core.fileProcessing
 
-import com.scalableQuality.quick.core.fileComponentDescripts.{FixedColumnDescription, OrderedRowDescription}
+import com.scalableQuality.quick.core.fileComponentDescripts.{FixedColumnDescription, FixedRowDivider, OrderedRowDescription}
 import com.scalableQuality.quick.mantle.parsing.RawRow
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -51,7 +51,8 @@ class ValidationProcessTest extends FlatSpec with Matchers {
         Right(thirdColumnDescription)
         ) =>
         val columnDescriptionList = List(rowNumberColumnDescription,firstColumnDescription,secondColumnDescription,thirdColumnDescription)
-        val orderedRowDescription = OrderedRowDescription(columnDescriptionList, "test row")
+        val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+        val orderedRowDescription = OrderedRowDescription(fixedRowDivider, "test row")
         val leftFile = List(secondRow, firstRow, thirdRow)
         val rightFile = List(firstRow, thirdRow, secondRow)
         val expectedResult = (Nil, Nil)
@@ -107,7 +108,8 @@ class ValidationProcessTest extends FlatSpec with Matchers {
         Right(thirdColumnDescription)
         ) =>
         val columnDescriptionList = List(rowNumberColumnDescription,firstColumnDescription,secondColumnDescription,thirdColumnDescription)
-        val orderedRowDescription = OrderedRowDescription(columnDescriptionList, "test row")
+        val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+        val orderedRowDescription = OrderedRowDescription(fixedRowDivider, "test row")
         val leftFile = List(secondRow, firstRow, thirdRow)
         val rightFile = List(firstRow)
         val expectedResult = (List(thirdRow, secondRow), Nil)
@@ -161,7 +163,8 @@ class ValidationProcessTest extends FlatSpec with Matchers {
         Right(thirdColumnDescription)
         ) =>
         val columnDescriptionList = List(rowNumberColumnDescription,firstColumnDescription,secondColumnDescription,thirdColumnDescription)
-        val orderedRowDescription = OrderedRowDescription(columnDescriptionList, "test row")
+        val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+        val orderedRowDescription = OrderedRowDescription(fixedRowDivider, "test row")
         val leftFile = List(firstRow)
         val rightFile = List(secondRow, firstRow, thirdRow)
         val expectedResult = (Nil,List(thirdRow, secondRow))
@@ -215,7 +218,8 @@ class ValidationProcessTest extends FlatSpec with Matchers {
         Right(thirdColumnDescription)
         ) =>
         val columnDescriptionList = List(rowNumberColumnDescription,firstColumnDescription,secondColumnDescription,thirdColumnDescription)
-        val orderedRowDescription = OrderedRowDescription(columnDescriptionList, "test row")
+        val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+        val orderedRowDescription = OrderedRowDescription(fixedRowDivider, "test row")
         val leftFile = List(secondRow, firstRow, thirdRow)
         val rightFile = Nil
         val expectedResult = (List(thirdRow, secondRow, firstRow), Nil)
@@ -269,7 +273,8 @@ class ValidationProcessTest extends FlatSpec with Matchers {
         Right(thirdColumnDescription)
         ) =>
         val columnDescriptionList = List(rowNumberColumnDescription,firstColumnDescription,secondColumnDescription,thirdColumnDescription)
-        val orderedRowDescription = OrderedRowDescription(columnDescriptionList, "test row")
+        val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+        val orderedRowDescription = OrderedRowDescription(fixedRowDivider, "test row")
         val leftFile = Nil
         val rightFile = List(secondRow, firstRow, thirdRow)
         val expectedResult = (Nil, List(secondRow, firstRow, thirdRow))
@@ -323,7 +328,8 @@ class ValidationProcessTest extends FlatSpec with Matchers {
         Right(thirdColumnDescription)
         ) =>
         val columnDescriptionList = List(rowNumberColumnDescription,firstColumnDescription,secondColumnDescription,thirdColumnDescription)
-        val orderedRowDescription = OrderedRowDescription(columnDescriptionList, "test row")
+        val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+        val orderedRowDescription = OrderedRowDescription(fixedRowDivider, "test row")
         val leftFile = List(secondRow, firstRow, thirdRow)
         val rightFile = List(firstRow, thirdRow, secondRow)
         val expectedResult = (Nil, Nil)
@@ -380,7 +386,8 @@ class ValidationProcessTest extends FlatSpec with Matchers {
         Right(thirdColumnDescription)
         ) =>
         val columnDescriptionList = List(rowNumberColumnDescription,firstColumnDescription,secondColumnDescription,thirdColumnDescription)
-        val orderedRowDescription = OrderedRowDescription(columnDescriptionList, "test row")
+        val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+        val orderedRowDescription = OrderedRowDescription(fixedRowDivider, "test row")
         val leftFile = List(secondRow, firstRow, thirdRow)
         val rightFile = List(differentSecondRow, thirdRow, differentFirstRow)
         val expectedResult = (List(secondRow,firstRow), List(differentFirstRow,differentSecondRow))
@@ -435,7 +442,8 @@ class ValidationProcessTest extends FlatSpec with Matchers {
         Right(thirdColumnDescription)
         ) =>
         val columnDescriptionList = List(rowNumberColumnDescription,firstColumnDescription,secondColumnDescription,thirdColumnDescription)
-        val orderedRowDescription = OrderedRowDescription(columnDescriptionList, "test row")
+        val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+        val orderedRowDescription = OrderedRowDescription(fixedRowDivider, "test row")
         val leftFile = List(secondRow, firstRow, thirdRow)
         val rightFile = List(firstRow, firstRow, firstRow)
         val expectedResult = (List(thirdRow,secondRow), List(firstRow,firstRow))

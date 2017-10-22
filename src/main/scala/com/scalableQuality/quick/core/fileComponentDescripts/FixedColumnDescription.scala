@@ -1,7 +1,7 @@
 package com.scalableQuality.quick.core.fileComponentDescripts
 
 import com.scalableQuality.quick.core.Reporting.ComparisonBetweenTwoColumns
-import com.scalableQuality.quick.core.others.{ShouldUseDuring, ValueMapper}
+import com.scalableQuality.quick.core.others.{ColumnUsageStages, ShouldUseDuring, ValueMapper}
 import com.scalableQuality.quick.mantle.buildFromXml._
 import com.scalableQuality.quick.mantle.log.{ErrorMessage, UnrecoverableError}
 import com.scalableQuality.quick.mantle.parsing.RawRow
@@ -11,9 +11,10 @@ import scala.xml.MetaData
 
 case class FixedColumnDescription(
                                    val metaData: ColumnDescriptionMetaData,
-                                   val position: ColumnPosition,
+                                   val position: FixedPosition,
                                    comparisonMapper: ValueMapper
                                ) {
+  def shouldUseDuring(stages: ColumnUsageStages*): Boolean = metaData.shouldUseDuring(stages:_*)
   def columnValue(row: RawRow): Option[String] = position.extractColumnValue(row)
   def comparisonValue(row: RawRow): Option[String] = comparisonMapper(columnValue(row))
   def compareTwoColumns(leftRow: Option[RawRow], rightRow: Option[RawRow]): ComparisonBetweenTwoColumns =
@@ -41,12 +42,14 @@ object FixedColumnDescription {
 */
 
   def apply(metaData: MetaData): Either[ErrorMessage, FixedColumnDescription] = {
-    val classParameters = XMLAttributesToClassParameters(metaData,ColumnDescriptionAttributeKeys)
+    val classParameters = XMLAttributesToClassParameters(metaData,labelKey)
     val labelAttribute = classParameters.get(labelKey)
-    val positionAttribute = ColumnPosition(metaData)
+
+    val fixedPositionEither = FixedPosition(metaData)
     val shouldUseDuringAttribute = ShouldUseDuring(metaData)
     val comparisonMapperAttribute = ValueMapper(metaData)
-    (labelAttribute, positionAttribute, shouldUseDuringAttribute, comparisonMapperAttribute) match {
+
+    (labelAttribute, fixedPositionEither, shouldUseDuringAttribute, comparisonMapperAttribute) match {
       case (paramError: ParameterValueError[_],_,_,_) =>
         connotMake(paramError.errorMessage)
       case (_,Left(errorMessage),_,_) =>
@@ -69,5 +72,4 @@ object FixedColumnDescription {
     )
   )
   private val labelKey = ParameterAttribute("label", AttributeConversionFunctions.extractValue)
-  private val ColumnDescriptionAttributeKeys = List(labelKey)
 }

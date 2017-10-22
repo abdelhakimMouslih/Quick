@@ -1,0 +1,488 @@
+package com.scalableQuality.quick.core.fileComponentDescripts
+
+import com.scalableQuality.quick.core.Reporting.{InvalidColumns, IrrelevantColumns, ReportingColumns, ValidColumns}
+import com.scalableQuality.quick.core.others.{MatchingStage, ReportingStage, ValidationStage}
+import com.scalableQuality.quick.mantle.parsing.RawRow
+import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.prop.GeneratorDrivenPropertyChecks
+
+class FixedRowDividerTest  extends FlatSpec with Matchers with GeneratorDrivenPropertyChecks {
+
+  "FixedRowDivider.isMatchable" should
+    "return true if at least one could should be used in matching and false otherwise" in forAll {
+    (firstColumnMatching: Boolean, secondColumnMatching: Boolean, thirdColumnMatching: Boolean) =>
+      val firstColumnDescriptionElem = <ColumnDescription
+        label="firstColumn"
+        startsAt="1"
+        endsAt="3"
+        useDuringMatching={firstColumnMatching.toString}/>
+      val secondColumnDescriptionElem = <ColumnDescription
+        label="secondColumn"
+        startsAt="4"
+        endsAt="7"
+        useDuringMatching={secondColumnMatching.toString}/>
+
+      val thirdColumnDescriptionElem = <ColumnDescription
+        label="thirdColumn"
+        startsAt="8"
+        endsAt="12"
+        useDuringMatching={thirdColumnMatching.toString}/>
+      val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+      val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+      val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
+
+      (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
+        case (Right(firstColumnDescription), Right(secondColumnDescription), Right(thirdColumnDescription)) =>
+          val columnDescriptionList = List(firstColumnDescription, secondColumnDescription, thirdColumnDescription)
+          val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+          fixedRowDivider.isMatchable shouldBe (firstColumnMatching || secondColumnMatching || thirdColumnMatching)
+        case _ => fail
+      }
+  }
+
+
+  "FixedRowDivider.keepOnlyColumnsDescriptionsUsedIn" should
+    "return an FixedRowDivider containing all columns used during validation " in {
+    val firstColumnDescriptionElem = <ColumnDescription
+      label="firstColumn"
+      startsAt="1"
+      endsAt="3"
+      useDuringValidation="true"
+      />
+    val secondColumnDescriptionElem = <ColumnDescription
+      label="secondColumn"
+      startsAt="4"
+      endsAt="7"
+      useDuringValidation="true"
+      />
+
+    val thirdColumnDescriptionElem = <ColumnDescription
+      label="thirdColumn"
+      startsAt="8"
+      endsAt="12"
+      />
+    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
+
+    (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
+      case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
+        val columnDescriptionList = List(firstColumnDescription, secondColumnDescription, thirdColumnDescription)
+        val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+
+        val expectedColumnDescriptionList = List(firstColumnDescription, secondColumnDescription)
+        val expectedFixedRowDivider = FixedRowDivider(expectedColumnDescriptionList)
+        fixedRowDivider.keepOnlyColumnsDescriptionsUsedIn(ValidationStage) shouldBe expectedFixedRowDivider
+      case _ => fail
+    }
+  }
+
+
+  it should
+    "return an FixedRowDivider containing all columns used during Matching " in {
+    val firstColumnDescriptionElem = <ColumnDescription
+      label="firstColumn"
+      startsAt="1"
+      endsAt="3"
+      useDuringMatching="true"
+      />
+    val secondColumnDescriptionElem = <ColumnDescription
+      label="secondColumn"
+      startsAt="4"
+      endsAt="7"
+      />
+
+    val thirdColumnDescriptionElem = <ColumnDescription
+      label="thirdColumn"
+      startsAt="8"
+      endsAt="12"
+      useDuringMatching="true"
+      />
+    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
+
+    (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
+      case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
+        val columnDescriptionList = List(firstColumnDescription, secondColumnDescription, thirdColumnDescription)
+        val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+
+        val expectedColumnDescriptionList = List(firstColumnDescription, thirdColumnDescription)
+        val expectedFixedRowDivider = FixedRowDivider(expectedColumnDescriptionList)
+
+        fixedRowDivider.keepOnlyColumnsDescriptionsUsedIn(MatchingStage) shouldBe expectedFixedRowDivider
+      case _ => fail
+    }
+  }
+
+
+  it should
+    "return an FixedRowDivider containing all columns used during Reporting " in {
+    val firstColumnDescriptionElem = <ColumnDescription
+      label="firstColumn"
+      startsAt="1"
+      endsAt="3"
+      />
+    val secondColumnDescriptionElem = <ColumnDescription
+      label="secondColumn"
+      startsAt="4"
+      endsAt="7"
+      useDuringReporting="true"
+      />
+
+    val thirdColumnDescriptionElem = <ColumnDescription
+      label="thirdColumn"
+      startsAt="8"
+      endsAt="12"
+      useDuringReporting="true"
+      />
+    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
+
+    (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
+      case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
+        val columnDescriptionList = List(firstColumnDescription, secondColumnDescription, thirdColumnDescription)
+        val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+
+
+        val expectedColumnDescriptionList = List(secondColumnDescription, thirdColumnDescription)
+        val expectedFixedRowDivider = FixedRowDivider(expectedColumnDescriptionList)
+
+        fixedRowDivider.keepOnlyColumnsDescriptionsUsedIn(ReportingStage) shouldBe expectedFixedRowDivider
+      case _ => fail
+    }
+  }
+
+  it should
+    "return an FixedRowDivider containing all columns used during from different stages " in {
+    val firstColumnDescriptionElem = <ColumnDescription
+      label="firstColumn"
+      startsAt="1"
+      endsAt="3"
+      useDuringValidation="true"
+      />
+    val secondColumnDescriptionElem = <ColumnDescription
+      label="secondColumn"
+      startsAt="4"
+      endsAt="7"
+      useDuringMatching="true"
+      />
+
+    val thirdColumnDescriptionElem = <ColumnDescription
+      label="thirdColumn"
+      startsAt="8"
+      endsAt="12"
+      useDuringReporting="true"
+      />
+    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
+
+    (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
+      case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
+        val columnDescriptionList = List(firstColumnDescription, secondColumnDescription, thirdColumnDescription)
+        val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+
+        val expectedColumnDescriptionList = List(firstColumnDescription, secondColumnDescription, thirdColumnDescription)
+        val expectedFixedRowDivider = FixedRowDivider(expectedColumnDescriptionList)
+
+        fixedRowDivider.keepOnlyColumnsDescriptionsUsedIn(ValidationStage, MatchingStage, ReportingStage) shouldBe expectedFixedRowDivider
+      case _ => fail
+    }
+  }
+
+  "FixedRowDivider.columnsComparisonValuesFor" should "extract column values of all 3 validation columns" in {
+    val rawRow = RawRow("FirstColumnSecondColumnThirdColumn",1)
+    val firstColumnDescriptionElem = <ColumnDescription
+      label="FirstColumn"
+      startsAt="1"
+      endsAt="11"
+      useDuringValidation="true"
+      />
+    val secondColumnDescriptionElem = <ColumnDescription
+      label="SecondColumn"
+      startsAt="12"
+      endsAt="23"
+      useDuringValidation="true"
+      />
+
+    val thirdColumnDescriptionElem = <ColumnDescription
+      label="ThirdColumn"
+      startsAt="24"
+      endsAt="34"
+      useDuringValidation="true"
+      />
+
+    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
+
+    (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
+      case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
+        val columnDescriptionList = List(firstColumnDescription, secondColumnDescription, thirdColumnDescription)
+        val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+        val expectedColumnValues = List(Some("FirstColumn"), Some("SecondColumn"), Some("ThirdColumn"))
+        fixedRowDivider.columnsComparisonValuesFor(ValidationStage, rawRow) shouldBe expectedColumnValues
+      case _ => fail
+    }
+  }
+
+  it should "extract column values of only validation columns" in {
+    val rawRow = RawRow("FirstColumnSecondColumnThirdColumn",1)
+    val firstColumnDescriptionElem = <ColumnDescription
+      label="FirstColumn"
+      startsAt="1"
+      endsAt="11"
+      useDuringValidation="true"
+      />
+    val secondColumnDescriptionElem = <ColumnDescription
+      label="SecondColumn"
+      startsAt="12"
+      endsAt="23"
+      useDuringValidation="false"
+      />
+
+    val thirdColumnDescriptionElem = <ColumnDescription
+      label="ThirdColumn"
+      startsAt="24"
+      endsAt="34"
+      useDuringValidation="true"
+      />
+
+    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
+
+    (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
+      case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
+        val columnDescriptionList = List(firstColumnDescription, secondColumnDescription, thirdColumnDescription)
+        val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+
+        val expectedColumnValues = List(Some("FirstColumn"), Some("ThirdColumn"))
+        fixedRowDivider.columnsComparisonValuesFor(ValidationStage, rawRow) shouldBe expectedColumnValues
+      case _ => fail
+    }
+  }
+
+  it should "the extracted column values should include None for every validation column that does not exist" in {
+    val rawRow = RawRow("FirstColumn",1)
+    val firstColumnDescriptionElem = <ColumnDescription
+      label="FirstColumn"
+      startsAt="1"
+      endsAt="11"
+      useDuringValidation="true"
+      />
+    val secondColumnDescriptionElem = <ColumnDescription
+      label="SecondColumn"
+      startsAt="12"
+      endsAt="23"
+      useDuringValidation="true"
+      />
+
+    val thirdColumnDescriptionElem = <ColumnDescription
+      label="ThirdColumn"
+      startsAt="24"
+      endsAt="34"
+      useDuringValidation="true"
+      />
+
+    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
+
+    (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
+      case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
+        val columnDescriptionList = List(firstColumnDescription, secondColumnDescription, thirdColumnDescription)
+        val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+        val expectedColumnValues = List(Some("FirstColumn"), None, None)
+
+        fixedRowDivider.columnsComparisonValuesFor(ValidationStage, rawRow) shouldBe expectedColumnValues
+      case _ => fail
+    }
+  }
+
+  it should "extract column values of all 3 matching columns" in {
+    val rawRow = RawRow("FirstColumnSecondColumnThirdColumn",1)
+    val firstColumnDescriptionElem = <ColumnDescription
+      label="FirstColumn"
+      startsAt="1"
+      endsAt="11"
+      useDuringMatching="true"
+      />
+    val secondColumnDescriptionElem = <ColumnDescription
+      label="SecondColumn"
+      startsAt="12"
+      endsAt="23"
+      useDuringMatching="true"
+      />
+
+    val thirdColumnDescriptionElem = <ColumnDescription
+      label="ThirdColumn"
+      startsAt="24"
+      endsAt="34"
+      useDuringMatching="true"
+      />
+
+    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
+
+    (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
+      case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
+        val columnDescriptionList = List(firstColumnDescription, secondColumnDescription, thirdColumnDescription)
+        val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+        val expectedColumnValues = List(Some("FirstColumn"), Some("SecondColumn"), Some("ThirdColumn"))
+        fixedRowDivider.columnsComparisonValuesFor(MatchingStage, rawRow) shouldBe expectedColumnValues
+      case _ => fail
+    }
+  }
+
+  it should "extract column values of only matching columns" in {
+    val rawRow = RawRow("FirstColumnSecondColumnThirdColumn",1)
+    val firstColumnDescriptionElem = <ColumnDescription
+      label="FirstColumn"
+      startsAt="1"
+      endsAt="11"
+      useDuringMatching="true"
+      />
+    val secondColumnDescriptionElem = <ColumnDescription
+      label="SecondColumn"
+      startsAt="12"
+      endsAt="23"
+      useDuringMatching="false"
+      />
+
+    val thirdColumnDescriptionElem = <ColumnDescription
+      label="ThirdColumn"
+      startsAt="24"
+      endsAt="34"
+      useDuringMatching="true"
+      />
+
+    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
+
+    (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
+      case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
+        val columnDescriptionList = List(firstColumnDescription, secondColumnDescription, thirdColumnDescription)
+        val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+
+        val expectedColumnValues = List(Some("FirstColumn"), Some("ThirdColumn"))
+        fixedRowDivider.columnsComparisonValuesFor(MatchingStage, rawRow) shouldBe expectedColumnValues
+      case _ => fail
+    }
+  }
+
+  it should "the extracted column values should include None for every matching column that does not exist" in {
+    val rawRow = RawRow("FirstColumn",1)
+    val firstColumnDescriptionElem = <ColumnDescription
+      label="FirstColumn"
+      startsAt="1"
+      endsAt="11"
+      useDuringMatching="true"
+      />
+    val secondColumnDescriptionElem = <ColumnDescription
+      label="SecondColumn"
+      startsAt="12"
+      endsAt="23"
+      useDuringMatching="true"
+      />
+
+    val thirdColumnDescriptionElem = <ColumnDescription
+      label="ThirdColumn"
+      startsAt="24"
+      endsAt="34"
+      useDuringMatching="true"
+      />
+
+    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
+
+    (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
+      case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
+        val columnDescriptionList = List(firstColumnDescription, secondColumnDescription, thirdColumnDescription)
+        val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+        val expectedColumnValues = List(Some("FirstColumn"), None, None)
+
+        fixedRowDivider.columnsComparisonValuesFor(MatchingStage, rawRow) shouldBe expectedColumnValues
+      case _ => fail
+    }
+  }
+
+  "FixedRowDivider.compare" should "return ValidColumns, IrrelevantColumns, ReportingColumns and InvalidColumns" in {
+    val leftRawRow = Some(RawRow("OneTwoThreeFour",1))
+    val rightRawRow = Some(RawRow("OneBwoRRreeSour",2))
+    val validColumnsDescriptionElem = <ColumnDescription
+      label="valid column"
+      startsAt="1"
+      endsAt="3"
+      useDuringValidation="true"
+      useDuringReporting="false"
+      />
+    val irrelevantColumnsDescriptionElem = <ColumnDescription
+      label="valid column"
+      startsAt="4"
+      endsAt="6"
+      useDuringValidation="false"
+      useDuringReporting="false"
+      />
+    val reportingColumnsDescriptionElem = <ColumnDescription
+      label="reporting column"
+      startsAt="7"
+      endsAt="11"
+      useDuringValidation="false"
+      useDuringReporting="true"
+      />
+    val invalidColumnsDescriptionElem = <ColumnDescription
+      label="invalid column"
+      startsAt="12"
+      endsAt="15"
+      useDuringValidation="true"
+      useDuringReporting="false"
+      />
+    val validColumnsDescriptionEither = FixedColumnDescription(validColumnsDescriptionElem.attributes)
+    val irrelevantColumnsDescriptionEither = FixedColumnDescription(irrelevantColumnsDescriptionElem.attributes)
+    val reportingColumnsDescriptionEither = FixedColumnDescription(reportingColumnsDescriptionElem.attributes)
+    val invalidColumnsDescriptionEither = FixedColumnDescription(invalidColumnsDescriptionElem.attributes)
+    (
+      validColumnsDescriptionEither,
+      irrelevantColumnsDescriptionEither,
+      reportingColumnsDescriptionEither,
+      invalidColumnsDescriptionEither
+    ) match {
+      case (
+        Right(validColumnsDescription),
+        Right(irrelevantColumnsDescription),
+        Right(reportingColumnsDescription),
+        Right(invalidColumnsDescription)
+        ) =>
+
+        val columnDescriptionList = List(validColumnsDescription,irrelevantColumnsDescription,reportingColumnsDescription,invalidColumnsDescription)
+        val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+
+        val expectedReportingColumns = ReportingColumns(
+          Some("Three"),
+          Some("RRree"),
+          "   7-11  ",
+          "reporting column"
+        )
+
+        val expectedInvalidColumns = InvalidColumns(
+          Some("Four"),
+          Some("Sour"),
+          "  12-15  ",
+          "invalid column"
+        )
+
+        val expectedComparison = List(ValidColumns,IrrelevantColumns,expectedReportingColumns,expectedInvalidColumns)
+
+        fixedRowDivider.compare(leftRawRow, rightRawRow) shouldBe expectedComparison
+      case _ =>
+        fail
+    }
+  }
+
+}

@@ -1,0 +1,35 @@
+<FileDescriptionsList>
+    <UnorderedFileDescription id="dSmokeTest" >
+        <DelimitedOrderedRowDescription label="age and salary" literalDelimiter=";" >
+            <ColumnIdentifier
+                    matchAgainst=".*"
+                    label="First Name"
+                    position="1"
+                    useDuringValidation="true"
+                    useDuringMatching="true"
+                    useDuringReporting="true"
+            />
+            <ColumnDescription
+                    label="Last Name"
+                    position="2"
+                    useDuringValidation="true"
+                    useDuringMatching="true"
+                    useDuringReporting="true"
+            />
+            <ColumnDescription
+                    label="Age"
+                    position="3"
+                    useDuringValidation="true"
+                    useDuringMatching="false"
+                    useDuringReporting="true"
+            />
+            <ColumnDescription
+                    label="salary"
+                    position="4"
+                    useDuringValidation="true"
+                    useDuringMatching="false"
+                    useDuringReporting="true"
+            />
+        </DelimitedOrderedRowDescription>
+    </UnorderedFileDescription>
+</FileDescriptionsList>

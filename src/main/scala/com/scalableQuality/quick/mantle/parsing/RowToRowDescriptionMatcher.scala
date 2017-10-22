@@ -1,328 +1,277 @@
 package com.scalableQuality.quick.mantle.parsing
 
-import com.scalableQuality.quick.core.Reporting.ValidationAndMatchingReport
-import com.scalableQuality.quick.core.fileComponentDescripts.OrderedRowDescription
-import com.scalableQuality.quick.core.fileProcessing.{ValidateAndMatchRows, ValidateAndMatchTwoFiles}
+import com.scalableQuality.quick.core.fileComponentDescripts._
 import com.scalableQuality.quick.mantle.buildFromXml._
 import com.scalableQuality.quick.mantle.log.{ErrorMessage, UnrecoverableError}
 
 import scala.annotation.tailrec
-import scala.xml.{Elem, MetaData, Node}
-import scala.collection.mutable
+import scala.xml.{Elem, Node}
 
 class RowToRowDescriptionMatcher(
-                                  val listOfRowIdentifier : List[RowIdentifier],
-                                  leftFileLabel: Option[String],
-                                  rightFileLabel: Option[String]
-                                ) {
-  def validateAndMatchTheseTwoFiles(
-                                     leftFileRows : => List[RawRow],
-                                     rightFileRows: => List[RawRow]
-                                   ): ValidateAndMatchTwoFiles = {
-    val groupLeftFileRowsByRowDescription = groupRowsByRowDescription(leftFileRows, listOfRowIdentifier)
-    val groupRightFileRowsByRowDescription = groupRowsByRowDescription(rightFileRows, listOfRowIdentifier)
-    val matchedGroups = matchGroupsRowsByRowDescription(groupLeftFileRowsByRowDescription, groupRightFileRowsByRowDescription)
-    val validationAndMatchingProcesses: List[() => ValidationAndMatchingReport] = matchedGroups.map {
-      validationAndMatchingParameters =>
-        lazyValidationAndMatchingProcesses(
-          validationAndMatchingParameters._1,
-          validationAndMatchingParameters._2,
-          validationAndMatchingParameters._3
-        )
-    }
-    ValidateAndMatchTwoFiles(validationAndMatchingProcesses)
-  }
-
-  private def lazyValidationAndMatchingProcesses(
-                                                  orderedRowDescription: OrderedRowDescription,
-                                                  leftFileRows: List[RawRow],
-                                                  rightFileRows: List[RawRow],
-                                                  leftFileLabel: Option[String] = this.leftFileLabel,
-                                                  rightFileLabel: Option[String] = this.rightFileLabel
-                                                ): () => ValidationAndMatchingReport =
-    () => ValidateAndMatchRows(
-      orderedRowDescription,
-      leftFileRows,
-      rightFileRows,
-      leftFileLabel,
-      rightFileLabel
-    )
-
-  private def matchGroupsRowsByRowDescription(
-                                       leftFileRowGroups : List[(OrderedRowDescription, List[RawRow])],
-                                       rightFileRowGroups: List[(OrderedRowDescription, List[RawRow])]
-                                     ): List[(OrderedRowDescription, List[RawRow], List[RawRow])] = {
-    @tailrec def loop(
-                       leftFileRowGroups : List[(OrderedRowDescription, List[RawRow])],
-                       rightFileRowGroups: List[(OrderedRowDescription, List[RawRow])],
-                       accumulator : List[(OrderedRowDescription, List[RawRow], List[RawRow])]
-                     ): List[(OrderedRowDescription, List[RawRow], List[RawRow])] = leftFileRowGroups match {
-      case Nil =>
-        val remainingRightFileRowGroups = rightFileRowGroups.map(rowGroup => (rowGroup._1, Nil, rowGroup._2))
-        remainingRightFileRowGroups ::: accumulator
-
-      case (orderedRowDescription, leftFileRows)::restOfLeftFileRowGroups =>
-        val (matchingRightGroups, restOfRightFileRowGroups) = rightFileRowGroups.partition(_._1 == orderedRowDescription)
-        val groupedByRowDescription = matchingRightGroups match {
-          case Nil =>
-            (orderedRowDescription,leftFileRows, Nil)
-
-          case (_, rightFileRows)::_ =>
-            (orderedRowDescription,leftFileRows, rightFileRows)
-        }
-        loop(
-          restOfLeftFileRowGroups,
-          restOfRightFileRowGroups,
-          groupedByRowDescription :: accumulator
-        )
-    }
-
-    loop(leftFileRowGroups, rightFileRowGroups, Nil)
-  }
-
-
-  def groupRowsByRowDescription(
-                                 rows: List[RawRow],
-                                 rowIdentifiers: List[RowIdentifier]
-                               ): List[(OrderedRowDescription, List[RawRow])] = {
-
-    type RowDescriptionToRowsHashMap = mutable.HashMap[OrderedRowDescription, mutable.Set[RawRow]] with mutable.MultiMap[OrderedRowDescription, RawRow]
-
-    @tailrec def loop(
-                       rows: List[RawRow],
-                       rowIdentifiers: List[RowIdentifier],
-                       rowDescriptionToRowsHashMap: RowDescriptionToRowsHashMap
-                     ) : List[(OrderedRowDescription, List[RawRow])] = rows match {
-      case Nil =>
-        val rowDescriptionAndRows = for {
-          orderedRowAndItsRows <- rowDescriptionToRowsHashMap
-        } yield (orderedRowAndItsRows._1, orderedRowAndItsRows._2.toList)
-        rowDescriptionAndRows.toList
-
-      case row::restOfRows =>
-        val orderedRowDescriptionOpt = rowIdentifiers.collectFirst{
-          case rowIdentifier if rowIdentifier.canIdentify(row) => rowIdentifier.orderedRowDescription
-        }
-        orderedRowDescriptionOpt match {
-          case None =>
-            loop(
-              restOfRows,
-              rowIdentifiers,
-              rowDescriptionToRowsHashMap
-            )
-
-          case Some(orderedRowDescription) =>
-            loop(
-              restOfRows,
-              rowIdentifiers,
-              rowDescriptionToRowsHashMap.addBinding(orderedRowDescription, row)
-            )
-        }
-    }
-
-
-    val rowDescriptionToRowsHashMap =
-      new mutable.HashMap[OrderedRowDescription, mutable.Set[RawRow]] with mutable.MultiMap[OrderedRowDescription, RawRow]
-    loop(rows, rowIdentifiers, rowDescriptionToRowsHashMap)
-  }
+                     rowIdentifier: RowIdentifier,
+                     val orderedRowDescription: OrderedRowDescription
+                   ) {
+  def canIdentify(row: RawRow): Boolean = rowIdentifier.canIdentify(row)
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
 object RowToRowDescriptionMatcher {
 
-  private def apply(
-             listOfRowIdentifier: List[RowIdentifier],
-             leftFileLabel: Option[String],
-             rightFileLabel: Option[String]
-           ): RowToRowDescriptionMatcher = new RowToRowDescriptionMatcher(listOfRowIdentifier, leftFileLabel, rightFileLabel)
-
-  private def apply(
-             fileDescriptionElem: Elem,
-             leftFileLabel: Option[String],
-             rightFileLabel: Option[String]
-           ): Either[ErrorMessage, RowToRowDescriptionMatcher] = {
-
-    @tailrec def loop(
-                       rowDescriptionsElems: List[Elem],
-                       rowIdentifierAccumulator: List[RowIdentifier]
-                     ): Either[ErrorMessage, List[RowIdentifier]] = rowDescriptionsElems match {
-      case Nil =>
-        Right(rowIdentifierAccumulator)
-
-      case rowDesc::restOfRowDescriptions if hasLabel(rowDesc, rowDescriptionElemLabel) =>
-        val rowIdentifier = RowIdentifier(rowDesc)
-        rowIdentifier match {
-          case Left(errorMessage) =>
-            Left(errorMessage)
-          case Right(validRowIdentifier) =>
-            loop(restOfRowDescriptions, validRowIdentifier::rowIdentifierAccumulator)
-        }
-
-      case (rowDesc: Elem)::_ =>
-        val errorMessage = UnrecoverableError(
-          "creating file description",
-          s"did not recognize ${rowDesc.label}",
-          "put in a valid elem"
-        )
-        Left(errorMessage)
-    }
-
-
-    val listOfRowIdentifier = loop(collectAllChildElems(fileDescriptionElem), Nil)
-    listOfRowIdentifier match {
-      case Right(list) =>
-        val rowToRowDescriptionMatcher = RowToRowDescriptionMatcher(list, leftFileLabel, rightFileLabel)
-        Right(rowToRowDescriptionMatcher)
-      case Left(errorMessage) =>
-        cannotMake(errorMessage)
-    }
-
-  }
-
   def apply(
-             fileDescriptionRootElem: Elem,
-             parserId: Option[String],
-             leftFileLabel : Option[String],
-             RightFileLabel : Option[String]
-           ): Either[ErrorMessage, RowToRowDescriptionMatcher] = {
-    val fileDescriptionElem = getFileDescriptionElem(fileDescriptionRootElem, parserId)
-    fileDescriptionElem match {
-      case Right(fileDescElem) =>
-        RowToRowDescriptionMatcher(fileDescElem,leftFileLabel,RightFileLabel)
-      case Left(errorMessage) =>
-        cannotMake(errorMessage)
-    }
-  }
+             rowIdentifier: RowIdentifier,
+             orderedRowDescription: OrderedRowDescription
+           ): RowToRowDescriptionMatcher =
+    new RowToRowDescriptionMatcher(rowIdentifier, orderedRowDescription)
 
-  private def getFileDescriptionElem(
-                                      fileDescriptionRootElem: Elem,
-                                      parserIdOption: Option[String]
-                                    ): Either[ErrorMessage, Elem] = {
-    val fileDescriptionsList = getFileDescriptionsList(fileDescriptionRootElem)
-    fileDescriptionsList match {
-      case Left(errorMessage) =>
-        Left(errorMessage)
-      case Right(listOfElems) =>
-        val fileDescriptionElem = getFileDescriptionWithId(listOfElems, parserIdOption)
-        fileDescriptionElem
-    }
-  }
-
-  private def getFileDescriptionWithId(
-                                        listOfFileDescriptions: List[Elem],
-                                        providedIdOption: Option[String]
-                                      ): Either[ErrorMessage, Elem] = {
-    @tailrec def loop(
-                       listOfFileDescriptions: List[Elem],
-                       providedId: String
-                     ): Either[ErrorMessage, Elem] = listOfFileDescriptions match {
-      case Nil =>
-        val errorMessage = UnrecoverableError(
-          "looking for a file description xml element",
-          "no file description found",
-          "provide at least one file description to be used"
-        )
-        Left(errorMessage)
-      case fileDescElem::restOfElems if hasLabel(fileDescElem, fileDescriptionElemLabel) =>
-        val fileDescIdOpt = getId(fileDescElem.attributes)
-        fileDescIdOpt match {
-          case Some(fileDescId) if fileDescId == providedId =>
-            Right(fileDescElem)
-          case _ =>
-            loop(restOfElems, providedId)
-        }
-      case elem::_ =>
-        val errorMessage = UnrecoverableError(
-          "creating file description",
-          s"did not recognize ${elem.label}",
-          "put in a valid elem"
-        )
-        Left(errorMessage)
-    }
-
-
-    (listOfFileDescriptions, providedIdOption)  match {
-      case (Nil, _) =>
-        val errorMessage = UnrecoverableError(
-          "looking for a file description xml element",
-          "no file description found",
-          "provide at least one file description to be used"
-        )
-        Left(errorMessage)
-      case ( (fileDescElem:Elem)::Nil, None) =>
-        Right(fileDescElem)
-      case (_, None) =>
-        val errorMessage = UnrecoverableError(
-          "looking for a file description xml element",
-          "xml file contains multiple file description, and no id was specified",
-          "specify the id of the file description you wish to use"
-        )
-        Left(errorMessage)
-      case (_, Some(providedId)) =>
-        loop(listOfFileDescriptions, providedId)
-    }
-  }
-
-
-
-  private def getId(fileDescMetaData: MetaData): Option[String] = {
-    val classParameters = XMLAttributesToClassParameters(fileDescMetaData, fileDescriptionAttributeKeysList)
-    val idParameter = classParameters.get(fileDescriptionIdAttributeKey)
-    idParameter match {
-      case parameterValueError : ParameterValueError[_] =>
-        None
-      case ValidParameterValueFound(id) =>
-        Some(id)
-    }
-  }
-
-
-  private def collectAllChildElems(node: Node): List[Elem] = node.child.toList.collect{
-    case elem: Elem => elem
-  }
-
-  private def getFileDescriptionsList(
-                                       fileDescRootElem: Elem
-                                     ): Either[ErrorMessage, List[Elem]] =
-    if(hasLabel(fileDescRootElem, fileDescriptionElemLabel)) {
-      Right(List(fileDescRootElem))
-    } else if(hasLabel(fileDescRootElem, fileDescriptionsListElemLabel)) {
-      Right(collectAllChildElems(fileDescRootElem))
+  def apply(rowDescriptionXmlElem : Elem): Either[ErrorMessage, RowToRowDescriptionMatcher] =
+    if (compareXmlElemLabelsWith(rowDescriptionXmlElem, fixedOrderedRowDescriptionElemLabel)) {
+      makeFixedRowToRowDescriptionMatcher(rowDescriptionXmlElem)
+    } else if(compareXmlElemLabelsWith(rowDescriptionXmlElem, delimitedOrderedRowDescriptionElemLabel)){
+      makeDelimitedRowToRowDescriptionMatcher(rowDescriptionXmlElem)
     } else {
       val errorMessage = UnrecoverableError(
-        "looking for a file description xml element",
-        "connot find a file description elem nor a files descriptions list elem",
-        "provide a fileDescription elem"
+        "making RowToRowDescriptionMatcher",
+        s"${rowDescriptionXmlElem.label} is not supported",
+        "use either OrderedRowDescription"
       )
       Left(errorMessage)
     }
 
 
-  private def hasLabel(elem: Elem, label: String) : Boolean = elem.label.toLowerCase == label.toLowerCase()
-  private def cannotMake(errorMessage: ErrorMessage): Either[ErrorMessage, RowToRowDescriptionMatcher] = {
-    val cannotMakeErrorMessage = UnrecoverableError(
-      "creating a file desceription",
-      "encountered a problem",
-      "please resolve the problems mentioned below",
-      List(errorMessage)
+  def makeDelimitedRowToRowDescriptionMatcher(rowDescriptionXmlElem : Elem):Either[ErrorMessage, RowToRowDescriptionMatcher] = {
+
+    @tailrec def makeDelimitedColumnIdentifiersAndDelimitedColumnDescriptions(
+                                                                       xmlNodes: List[Elem],
+                                                                       columnDescriptionList: List[DelimitedColumnDescription],
+                                                                       columnIdentifierList: List[DelimitedColumnIdentifier]
+                                                                     ):
+    Either[ErrorMessage, (List[DelimitedColumnDescription],List[DelimitedColumnIdentifier])] = xmlNodes match {
+      case elem :: _
+        if ! compareXmlElemLabelsWith(
+          elem, RowToRowDescriptionMatcher.columnDescriptionElemLabel,
+          RowToRowDescriptionMatcher.columnIdentifierElemLabel
+        ) =>
+        val errorMessage = UnrecoverableError (
+          "creating a column description",
+          s"${elem.label} is not supported",
+          "use a BOBO elem"
+        )
+        createErrorMessage(errorMessage)
+
+      case Nil =>
+        Right((columnDescriptionList, columnIdentifierList))
+
+      case elem::restOfNodes if compareXmlElemLabelsWith(elem,RowToRowDescriptionMatcher.columnDescriptionElemLabel) =>
+        val columnDescriptionEither = DelimitedColumnDescription(elem.attributes)
+        columnDescriptionEither match {
+          case Left(errorMessage) =>
+            createErrorMessage(errorMessage)
+
+          case Right(columnDescription) =>
+            makeDelimitedColumnIdentifiersAndDelimitedColumnDescriptions(restOfNodes, columnDescription :: columnDescriptionList, columnIdentifierList)
+        }
+
+      case elem::restOfNodes if compareXmlElemLabelsWith(elem,RowToRowDescriptionMatcher.columnIdentifierElemLabel) =>
+        val columnIdentifierEither = DelimitedColumnIdentifier(elem.attributes)
+        columnIdentifierEither match {
+          case Left(errorMessage) =>
+            createErrorMessage(errorMessage)
+
+          case Right((columnDescription, columnIdentifier)) =>
+            makeDelimitedColumnIdentifiersAndDelimitedColumnDescriptions(restOfNodes, columnDescription :: columnDescriptionList, columnIdentifier :: columnIdentifierList)
+        }
+
+    }
+
+
+    val classParametersFromXmlAttributes  = XMLAttributesToClassParameters(
+      rowDescriptionXmlElem.attributes,
+      orderedRowDescriptionLabelAttributeKey,
+      orderedRowDescriptionDelimiterAttributeKey)
+    val labelClassParameter = classParametersFromXmlAttributes.get(orderedRowDescriptionLabelAttributeKey)
+
+    val delimiterClassParameter: Either[ErrorMessage, LiteralDelimiter] = classParametersFromXmlAttributes.get(orderedRowDescriptionDelimiterAttributeKey) match {
+      case parameterValueError : ParameterValueError[_] =>
+        val errorMessage = UnrecoverableError(
+          "making stuff",
+          "stuff cannot be make",
+          s"fee me, ${parameterValueError.errorMessage}"
+        )
+        Left(errorMessage)
+      case ValidParameterValueFound(delimiterValue) =>
+        LiteralDelimiter(delimiterValue)
+    }
+
+    val rowDescriptionElemChildren = collectAllChildElems(rowDescriptionXmlElem)
+    val delimitedColumnDescriptionsAndIdentifiers = makeDelimitedColumnIdentifiersAndDelimitedColumnDescriptions(
+      rowDescriptionElemChildren,
+      Nil,
+      Nil
     )
-    Left(cannotMakeErrorMessage)
+    (labelClassParameter, delimiterClassParameter, delimitedColumnDescriptionsAndIdentifiers ) match {
+      case (parameterValueError : ParameterValueError[_] ,_,_) =>
+        val errorMessage = UnrecoverableError(
+          "making stuff",
+          "stuff cannot be make",
+          s"fee me, ${parameterValueError.errorMessage}"
+        )
+        Left(errorMessage)
+      case (_,Left(errorMessage),_) =>
+        Left(errorMessage)
+      case (_,_,Left(errorMessage)) =>
+        Left(errorMessage)
+      case (ValidParameterValueFound(label),Right(delimiter),Right((delimitedColumnsDescriptionsList,delimitedColumnsIdentifiersList))) =>
+        val delimitedRowIdentifierEither = DelimitedRowIdentifier(delimitedColumnsIdentifiersList, delimiter)
+        delimitedRowIdentifierEither match {
+          case Left(errorMessage) =>
+            Left(errorMessage)
+          case Right(delimitedRowIdentifier) =>
+            val delimitedRowDivider = DelimitedRowDivider(delimitedColumnsDescriptionsList, delimiter)
+            val delimitedRowDescriptions = OrderedRowDescription(delimitedRowDivider, label)
+            val rowToRowDescriptionMatcher = RowToRowDescriptionMatcher(delimitedRowIdentifier, delimitedRowDescriptions)
+            Right(rowToRowDescriptionMatcher)
+        }
+    }
+
+
   }
-  private val fileDescriptionsListElemLabel = "FileDescriptionsList"
-  private val fileDescriptionElemLabel = "UnorderedFileDescription"
-  private val rowDescriptionElemLabel = "OrderedRowDescription"
-  private val fileDescriptionIdAttributeKey = ParameterAttribute("Id", AttributeConversionFunctions.extractValue)
-  private val fileDescriptionAttributeKeysList = List(fileDescriptionIdAttributeKey)
+
+
+    def makeFixedRowToRowDescriptionMatcher(rowDescriptionXmlElem : Elem): Either[ErrorMessage, RowToRowDescriptionMatcher] = {
+
+    @tailrec def makeFixedColumnIdentifiersAndFixedColumnDescriptions(
+                                                              xmlNodes: List[Elem],
+                                                              columnDescriptionList: List[FixedColumnDescription],
+                                                              columnIdentifierList: List[FixedColumnIdentifier]
+                                                           ):
+    Either[ErrorMessage, (List[FixedColumnDescription],List[FixedColumnIdentifier])] = xmlNodes match {
+      case elem :: _
+        if ! compareXmlElemLabelsWith(
+          elem, RowToRowDescriptionMatcher.columnDescriptionElemLabel,
+          RowToRowDescriptionMatcher.columnIdentifierElemLabel
+        ) =>
+        val errorMessage = UnrecoverableError (
+          "creating a column description",
+          s"${elem.label} is not supported",
+          "use a BOBO elem"
+        )
+        createErrorMessage(errorMessage)
+
+      case Nil =>
+        Right((columnDescriptionList, columnIdentifierList))
+
+      case elem::restOfNodes if compareXmlElemLabelsWith(elem,RowToRowDescriptionMatcher.columnDescriptionElemLabel) =>
+        val columnDescriptionEither = FixedColumnDescription(elem.attributes)
+        columnDescriptionEither match {
+          case Left(errorMessage) =>
+            createErrorMessage(errorMessage)
+
+          case Right(columnDescription) =>
+            makeFixedColumnIdentifiersAndFixedColumnDescriptions(restOfNodes, columnDescription :: columnDescriptionList, columnIdentifierList)
+        }
+
+      case elem::restOfNodes if compareXmlElemLabelsWith(elem,RowToRowDescriptionMatcher.columnIdentifierElemLabel) =>
+        val columnIdentifierEither = FixedColumnIdentifier(elem.attributes)
+        columnIdentifierEither match {
+          case Left(errorMessage) =>
+            createErrorMessage(errorMessage)
+
+          case Right((columnDescription, columnIdentifier)) =>
+            makeFixedColumnIdentifiersAndFixedColumnDescriptions(restOfNodes, columnDescription :: columnDescriptionList, columnIdentifier :: columnIdentifierList)
+        }
+
+    }
+
+
+    val rowDescriptionXmlElemChildrenList = collectAllChildElems(rowDescriptionXmlElem)
+    val columnIdentifiersAndColumnDescriptions = makeFixedColumnIdentifiersAndFixedColumnDescriptions(rowDescriptionXmlElemChildrenList, Nil, Nil)
+
+    val classParametersFromXmlAttributes = XMLAttributesToClassParameters(rowDescriptionXmlElem.attributes,RowToRowDescriptionMatcher.orderedRowDescriptionLabelAttributeKey)
+    val rowDescriptionLabelParameterValue = classParametersFromXmlAttributes.get(RowToRowDescriptionMatcher.orderedRowDescriptionLabelAttributeKey)
+
+    (rowDescriptionLabelParameterValue, columnIdentifiersAndColumnDescriptions) match {
+      case (parameterValueError : ParameterValueError[_], _) =>
+        createErrorMessage(parameterValueError.errorMessage)
+      case (_, Left(errorMessage)) =>
+        createErrorMessage(errorMessage)
+      case (ValidParameterValueFound(label), Right((columnDescriptionList, columnIdentifierList))) =>
+        val rowIdentifierEither = FixedRowIdentifier(columnIdentifierList)
+        rowIdentifierEither match {
+          case Left(error) =>
+            Left(error)
+          case Right(rowIdentifier) =>
+            val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+            val orderedRowDescription = OrderedRowDescription(fixedRowDivider, label)
+            val rowToRowDescriptionMatcher = RowToRowDescriptionMatcher(rowIdentifier, orderedRowDescription )
+            Right(rowToRowDescriptionMatcher)
+        }
+    }
+  }
+
+  val defaultIdentificationResult = false
+
+  private def collectAllChildElems(node: Node): List[Elem] = node.child.toList.collect{
+    case elem: Elem => elem
+  }
+
+
+  private val delimitedOrderedRowDescriptionElemLabel = "DelimitedOrderedRowDescription"
+  private val fixedOrderedRowDescriptionElemLabel = "FixedOrderedRowDescription"
+  private val columnIdentifierElemLabel = "columnIdentifier"
+  private val columnDescriptionElemLabel = "columnDescription"
+
+  private val orderedRowDescriptionLabelAttributeKey = ParameterAttribute("label", AttributeConversionFunctions.extractValue)
+  private val orderedRowDescriptionDelimiterAttributeKey = ParameterAttribute("literalDelimiter", AttributeConversionFunctions.extractValue)
+
+  private def compareXmlElemLabelsWith(elem: Elem, firstLabel: String, restOfLabels: String*):Boolean = {
+    val ElemLabel = elem.label.toLowerCase
+    val firstResult = ElemLabel == firstLabel.toLowerCase
+    restOfLabels.foldLeft(firstResult){
+      (previousResult, label) => previousResult || ElemLabel == label.toLowerCase
+    }
+  }
+
+  private def createErrorMessage[T](childErrorMessage: ErrorMessage* ) : Either[ErrorMessage, T] = {
+    val errorMessage = UnrecoverableError(
+      "creating a column description",
+      "encountered a problem",
+      "solve the problem below",
+      childErrorMessage.toList
+    )
+    Left(errorMessage)
+  }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
