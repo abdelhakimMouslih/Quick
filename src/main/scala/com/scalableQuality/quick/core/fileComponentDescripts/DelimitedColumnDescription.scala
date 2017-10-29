@@ -1,9 +1,10 @@
 package com.scalableQuality.quick.core.fileComponentDescripts
 
 import com.scalableQuality.quick.core.Reporting.ComparisonBetweenTwoColumns
+import com.scalableQuality.quick.core.fileComponentDescripts.errorMessages.DelimitedColumnDescriptionErrorMessages
 import com.scalableQuality.quick.core.others.{ColumnUsageStages, ShouldUseDuring, ValueMapper}
-import com.scalableQuality.quick.mantle.buildFromXml._
-import com.scalableQuality.quick.mantle.log.{ErrorMessage, UnrecoverableError}
+import com.scalableQuality.quick.mantle.constructFromXml._
+import com.scalableQuality.quick.mantle.error.UnrecoverableError
 
 import scala.xml.MetaData
 
@@ -37,35 +38,45 @@ object DelimitedColumnDescription {
              comparisonMapper: ValueMapper
            ): DelimitedColumnDescription = new DelimitedColumnDescription(metaData, position, comparisonMapper)
 
-  def apply(metaData: MetaData): Either[ErrorMessage, DelimitedColumnDescription] = {
-    val classParameters = XMLAttributesToClassParameters(metaData,labelKey)
-    val labelAttribute = classParameters.get(labelKey)
+  def apply(metaData: MetaData): Either[UnrecoverableError, DelimitedColumnDescription] = {
+    val attributesValues = AttributesValuesExtractor(metaData,labelKey)
+    val labelAttributeValue = attributesValues.get(labelKey)
 
     val delimitedPositionEither = DelimitedPosition(metaData)
     val shouldUseDuringAttribute = ShouldUseDuring(metaData)
     val comparisonMapperAttribute = ValueMapper(metaData)
 
-    (labelAttribute, delimitedPositionEither, shouldUseDuringAttribute, comparisonMapperAttribute) match {
-      case (paramError: ParameterValueError[_],_,_,_) =>
-        connotMake(paramError.errorMessage)
-      case (_,Left(errorMessage),_,_) =>
-        connotMake(errorMessage)
-      case (_,_,Left(errorMessage),_) =>
-        connotMake(errorMessage)
-      case (_,_,_,Left(errorMessage)) =>
-        connotMake(errorMessage)
-      case (ValidParameterValueFound(label),Right(position),Right(shouldUseDuring),Right(comparisonMapper)) =>
-        val metaData = ColumnDescriptionMetaData(position.toString, label, shouldUseDuring)
-        Right(DelimitedColumnDescription(metaData, position, comparisonMapper))
+    validateAttributeValues(labelAttributeValue, delimitedPositionEither, shouldUseDuringAttribute, comparisonMapperAttribute) match {
+      case Right((label, delimitedPosition, shouldUseDuring, comparisonMapper )) =>
+        val metaData = ColumnDescriptionMetaData(delimitedPosition.toString, label, shouldUseDuring)
+        Right(DelimitedColumnDescription(metaData, delimitedPosition, comparisonMapper))
+      case Left(errorMessage) =>
+        Left(errorMessage)
     }
   }
-  private def connotMake(errorMessage: ErrorMessage): Either[ErrorMessage, DelimitedColumnDescription] = Left(
-    UnrecoverableError(
-      "creating a column description",
-      "cannot create a column with invalid parameters",
-      "fix the problems mentioned below",
-      List(errorMessage)
-    )
-  )
-  private val labelKey = ParameterAttribute("label", AttributeConversionFunctions.extractValue)
+
+  private def validateAttributeValues(
+                                     labelAttributeValue: Either[UnrecoverableError, String],
+                                     positionComponent: Either[UnrecoverableError, DelimitedPosition],
+                                     shouldUseDuringComponent: Either[UnrecoverableError, ShouldUseDuring],
+                                     valueMapperComponent: Either[UnrecoverableError, ValueMapper]
+                                     ) : Either[UnrecoverableError, (String, DelimitedPosition, ShouldUseDuring, ValueMapper)] =
+    labelAttributeValue match {
+
+      case Right(labelAttributeValue) =>
+        (positionComponent, shouldUseDuringComponent, valueMapperComponent) match {
+          case (Right(position),Right(shouldUseDuring),Right(valueMapper)) =>
+            val classParameters = (labelAttributeValue, position, shouldUseDuring, valueMapper)
+            Right(classParameters)
+          case _ =>
+            val errorMessages = UnrecoverableError.collectAllErrorsToList(positionComponent, shouldUseDuringComponent, valueMapperComponent)
+            DelimitedColumnDescriptionErrorMessages.invalidAttributes(labelAttributeValue, errorMessages)
+        }
+
+      case Left(labelAttributeErrorMessage) =>
+        val otherErrors = UnrecoverableError.collectAllErrorsToList(positionComponent, shouldUseDuringComponent, valueMapperComponent)
+        DelimitedColumnDescriptionErrorMessages.invalidAttributes(labelAttributeErrorMessage :: otherErrors)
+    }
+
+  private val labelKey = AttributeValueExtractor("label", AttributeValueConversion.extractValue)
 }

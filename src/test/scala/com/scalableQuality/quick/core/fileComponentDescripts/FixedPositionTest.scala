@@ -85,10 +85,10 @@ class FixedPositionTest extends FlatSpec with Matchers with GeneratorDrivenPrope
 
 
   "FixedPosition.extractColumnValue" should "return Some(subString) where the first char is at (startsAt - 1) and the last at (endsAt - 1)" in {
-    val fixedLengthPositionTestEither: Either[ErrorMessage, FixedPosition] = FixedPosition (
-      ValidParameterValueFound(7),
-      ValidParameterValueFound(12),
-      ParameterValueNotFound(ErrorMessagePlaceHolder)
+    val fixedLengthPositionTestEither = FixedPosition (
+      7,
+      Some(12),
+      None
     )
     val row = RawRow("PraiseTheSun",1)
     val expectedColumnValue = Some("TheSun")
@@ -101,10 +101,10 @@ class FixedPositionTest extends FlatSpec with Matchers with GeneratorDrivenPrope
   }
 
   it should "return Some(subString) where the first char is at (startsAt - 1) and have a length of length" in {
-    val fixedLengthPositionTestEither: Either[ErrorMessage, FixedPosition] = FixedPosition (
-      ValidParameterValueFound(1),
-      ParameterValueNotFound(ErrorMessagePlaceHolder),
-      ValidParameterValueFound(12)
+    val fixedLengthPositionTestEither = FixedPosition (
+      1,
+      None,
+      Some(12)
     )
     val row = RawRow("PraiseTheSun",1)
     val expectedColumnValue = Some("PraiseTheSun")
@@ -117,10 +117,10 @@ class FixedPositionTest extends FlatSpec with Matchers with GeneratorDrivenPrope
   }
 
   it should "return Some(subString) one char when length is 1" in {
-    val fixedLengthPositionTestEither: Either[ErrorMessage, FixedPosition] = FixedPosition (
-      ValidParameterValueFound(1),
-      ParameterValueNotFound(ErrorMessagePlaceHolder),
-      ValidParameterValueFound(1)
+    val fixedLengthPositionTestEither = FixedPosition (
+      1,
+      None,
+      Some(1)
     )
     val row = RawRow("PraiseTheSun",1)
     val expectedColumnValue = Some("P")
@@ -133,10 +133,10 @@ class FixedPositionTest extends FlatSpec with Matchers with GeneratorDrivenPrope
   }
 
   it should "return None if the string ends before (startsAt-1)" in {
-    val fixedLengthPositionTestEither: Either[ErrorMessage, FixedPosition] = FixedPosition (
-      ValidParameterValueFound(13),
-      ValidParameterValueFound(13),
-      ParameterValueNotFound(ErrorMessagePlaceHolder)
+    val fixedLengthPositionTestEither = FixedPosition (
+      13,
+      Some(13),
+      None
     )
     val row = RawRow("PraiseTheSun",1)
     val expectedColumnValue = None
@@ -149,10 +149,10 @@ class FixedPositionTest extends FlatSpec with Matchers with GeneratorDrivenPrope
   }
 
   it should "return None if the string ends before (endsAt - 1)" in {
-    val fixedLengthPositionTestEither: Either[ErrorMessage, FixedPosition] = FixedPosition (
-      ValidParameterValueFound(1),
-      ValidParameterValueFound(13),
-      ParameterValueNotFound(ErrorMessagePlaceHolder)
+    val fixedLengthPositionTestEither = FixedPosition (
+      1,
+      Some(13),
+      None
     )
     val row = RawRow("PraiseTheSun",1)
     val expectedColumnValue = None
@@ -165,10 +165,10 @@ class FixedPositionTest extends FlatSpec with Matchers with GeneratorDrivenPrope
   }
 
   it should "return None if the string's length is less than length" in {
-    val fixedLengthPositionTestEither: Either[ErrorMessage, FixedPosition] = FixedPosition (
-      ValidParameterValueFound(1),
-      ParameterValueNotFound(ErrorMessagePlaceHolder),
-      ValidParameterValueFound(13)
+    val fixedLengthPositionTestEither = FixedPosition (
+      1,
+      None,
+      Some(13)
     )
     val row = RawRow("PraiseTheSun",1)
     val expectedColumnValue = None

@@ -1,6 +1,7 @@
 package com.scalableQuality.quick.mantle.parsing
 
-import com.scalableQuality.quick.mantle.log.{ErrorMessage, UnrecoverableError}
+import com.scalableQuality.quick.mantle.error.UnrecoverableError
+import com.scalableQuality.quick.mantle.parsing.errorMessages.FixedRowIdentifierErrorMessages
 
 class FixedRowIdentifier(
                           columnsIdentifiers: List[FixedColumnIdentifier]
@@ -16,14 +17,9 @@ class FixedRowIdentifier(
 object FixedRowIdentifier {
   def apply(
              columnIdentifiers: List[FixedColumnIdentifier]
-           ): Either[ErrorMessage,FixedRowIdentifier] = columnIdentifiers match {
+           ): Either[UnrecoverableError,FixedRowIdentifier] = columnIdentifiers match {
     case Nil =>
-      val errorMessage = UnrecoverableError(
-        "making fixedRowIdentifier",
-        "no columnIdentifiers",
-        "provide a column identifiers"
-      )
-      Left(errorMessage)
+      FixedRowIdentifierErrorMessages.noColumnIdentifierIsProvided
     case _ =>
       Right(new FixedRowIdentifier(columnIdentifiers))
   }

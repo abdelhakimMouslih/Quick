@@ -1,9 +1,9 @@
 package com.scalableQuality.quick.core.others
 
-import com.scalableQuality.quick.mantle.buildFromXml.{ParameterAttributeWithDefaultValue, _}
-import com.scalableQuality.quick.mantle.log.{ErrorMessage, UnrecoverableError}
+import com.scalableQuality.quick.core.others.errorMessages.ValueMapperErrorMessages
+import com.scalableQuality.quick.mantle.constructFromXml._
+import com.scalableQuality.quick.mantle.error.UnrecoverableError
 
-import scala.collection.mutable
 import scala.xml.MetaData
 
 class ValueMapper private[core] (
@@ -28,40 +28,44 @@ object ValueMapper {
   }
 
   // TODO : improve attribute extraction
-  def apply(elemMetaData: MetaData): Either[ErrorMessage, ValueMapper] = {
+  def apply(elemMetaData: MetaData): Either[UnrecoverableError, ValueMapper] = {
 
-    val classParameters:XMLAttributesToClassParameters =
-      XMLAttributesToClassParameters(elemMetaData, valueMapperAttributeKeys)
-    val trimParameter = classParameters.safeGet(trimKey)
-    val ignoreCaseParameter = classParameters.safeGet(ignoreCaseKey)
-    (trimParameter, ignoreCaseParameter) match {
-      case (InvalidParameterValueFound(errorMessage), _) =>
-        unrecoverableErrorFor(trimKey,errorMessage)
-      case (_, InvalidParameterValueFound(errorMessage)) =>
-        unrecoverableErrorFor(trimKey,errorMessage)
-      case (ValidParameterValueFound(shouldTrim), ValidParameterValueFound(shouldIgnoreCase)) =>
-        val trim = if(shouldTrim) List(Trim) else Nil
-        val ignoreCase = if(shouldIgnoreCase) List(ToUpperCase) else Nil
-        Right(ValueMapper(trim ::: ignoreCase))
+    val attributeValues = AttributesValuesExtractor(elemMetaData, valueMapperAttributeKeys)
+
+    val trimValueAttribute = attributeValues.get(trimKey)
+    val ignoreCaseValueAttribute = attributeValues.get(ignoreCaseKey)
+
+    val classParameters = validateAttributeValues(trimValueAttribute, ignoreCaseValueAttribute)
+
+    classParameters match {
+      case Right((shouldTrim, shouldIgnoreCase)) =>
+        val valueMappersFunctions : List[ValueMapperFunction] = Trim(shouldTrim) ::: ToUpperCase(shouldIgnoreCase)
+        val valueMapper = ValueMapper(valueMappersFunctions)
+        Right(valueMapper)
+
+      case Left(errorMessages) =>
+        ValueMapperErrorMessages.invalidAttributes(errorMessages)
     }
   }
 
+  private def validateAttributeValues(
+                                     trimValueAttribute: Either[UnrecoverableError, Boolean],
+                                     ignoreCaseValueAttribute: Either[UnrecoverableError, Boolean]
+                                     ): Either[List[UnrecoverableError], (Boolean, Boolean)] = {
+    (trimValueAttribute, ignoreCaseValueAttribute) match {
+      case (Right(trim), Right(ignoreCase)) =>
+        val classParameters = (trim, ignoreCase)
+        Right(classParameters)
 
-  private val defaultValueMapperInclusion = false
-  private val trimKey = ParameterAttributeWithDefaultValue("trimValue",AttributeConversionFunctions.toBoolean, defaultValueMapperInclusion)
-  private val ignoreCaseKey = ParameterAttributeWithDefaultValue("ignoreValueCase",AttributeConversionFunctions.toBoolean, defaultValueMapperInclusion)
+      case _ =>
+        UnrecoverableError.collectAllErrors(trimValueAttribute,ignoreCaseValueAttribute)
+    }
+  }
+
+  private val defaultValueMapperInclusion = Right(false)
+  private val trimKey = AttributeValueExtractor("trimValue",AttributeValueConversion.toBoolean, defaultValueMapperInclusion)
+  private val ignoreCaseKey = AttributeValueExtractor("ignoreValueCase",AttributeValueConversion.toBoolean, defaultValueMapperInclusion)
   private val valueMapperAttributeKeys = List(trimKey, ignoreCaseKey)
 
-  private val whileDoing = "creating comparison value transformation"
-  private def message(key: String) = s"invalid value in attribute $key"
-  private def preventativeAction(key: String) = s"provide a valid value for attribute $key"
 
-  private def unrecoverableErrorFor[T](parameterAttribute: ParameterAttribute[T], errorMessage: ErrorMessage): Either[ErrorMessage, ValueMapper] =
-  Left(
-    UnrecoverableError(
-      whileDoing,
-      message(parameterAttribute.key),
-      preventativeAction(parameterAttribute.key),
-      List(errorMessage)
-    ))
 }

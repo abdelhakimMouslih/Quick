@@ -1,6 +1,5 @@
 package com.scalableQuality.quick.core.fileComponentDescripts
 
-import java.util.regex.Pattern
 
 import com.scalableQuality.quick.core.Reporting.ComparisonBetweenTwoColumns
 import com.scalableQuality.quick.core.others.{ColumnUsageStages, MatchingStage}

@@ -87,11 +87,11 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
     "return Left if any of the child elements of FileDescriptionsList is not UnorderedFileDescription" in {
     val unorderedFileDescription =
       <FileDescriptionsList>
-        <missSpelledUnorderedFileDescription id="firstDesc" >
+        <MisspelledUnorderedFileDescription id="firstDesc" >
           <FixedOrderedRowDescription label="first label" >
-            <ColumnIdentifier label="labeling" startsAt="300" length="48"/>
+            <ColumnIdentifier matchAgainst="99" label="labeling" startsAt="300" length="48"/>
           </FixedOrderedRowDescription>
-        </missSpelledUnorderedFileDescription>
+        </MisspelledUnorderedFileDescription>
       </FileDescriptionsList>
     val RowToRowDescriptionMatcherEither = GroupRowsByRowDescription(unorderedFileDescription, None, None, None)
     RowToRowDescriptionMatcherEither shouldBe a [Left[_,_]]
@@ -100,16 +100,64 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
   it should
   "return Left if any of the the UnorderedFileDescription contains a mistake" in {
     val unorderedFileDescription =
-      <UnorderedFileDescription>
         <UnorderedFileDescription label="Track2 data" >
           <ColumnDescription label="seperator" startsAt="1" length="1" />
           <ColumnIdentifier matchAgainst="^4[0-9]{15}"  label="Visa Card Number" startsAt="2" length="16"></ColumnIdentifier>
           <MisspelledColumnDiscription />
         </UnorderedFileDescription>
-      </UnorderedFileDescription>
     val RowToRowDescriptionMatcherEither = GroupRowsByRowDescription(unorderedFileDescription, None, None, None)
     RowToRowDescriptionMatcherEither shouldBe a [Left[_,_]]
+  }
 
+  it should "return Left if no UnorderedFileDescription is provided inFileDescriptionsList" in {
+    val unorderedFileDescription =
+      <FileDescriptionsList>
+      </FileDescriptionsList>
+    val RowToRowDescriptionMatcherEither = GroupRowsByRowDescription(unorderedFileDescription, None, None, None)
+    RowToRowDescriptionMatcherEither shouldBe a [Left[_,_]]
+  }
+
+  it should "return Left if UnorderedFileDescription has no rows" in {
+    val unorderedFileDescription =
+      <FileDescriptionsList>
+        <UnorderedFileDescription>
+        </UnorderedFileDescription>
+      </FileDescriptionsList>
+    val RowToRowDescriptionMatcherEither = GroupRowsByRowDescription(unorderedFileDescription, None, None, None)
+    RowToRowDescriptionMatcherEither shouldBe a [Left[_,_]]
+  }
+
+  it should
+    "return Left when FileDescriptionsList contains multiple UnorderedFileDescription and a file no description id is passed" in {
+    val unorderedFileDescription =
+      <FileDescriptionsList>
+        <UnorderedFileDescription id="firstDesc" >
+          <FixedOrderedRowDescription label="first label" >
+            <ColumnIdentifier matchAgainst="99" label="labeling" startsAt="300" length="48"/>
+          </FixedOrderedRowDescription>
+        </UnorderedFileDescription>
+        <UnorderedFileDescription>
+          <FixedOrderedRowDescription label="second label" >
+            <ColumnIdentifier matchAgainst="99" label="labeling" startsAt="300" length="48"/>
+          </FixedOrderedRowDescription>
+        </UnorderedFileDescription>
+      </FileDescriptionsList>
+    val RowToRowDescriptionMatcherEither = GroupRowsByRowDescription(unorderedFileDescription, None, None, None)
+    RowToRowDescriptionMatcherEither shouldBe a [Left[_,_]]
+  }
+
+  it should
+    "return Left when FileDescriptionsList contains one UnorderedFileDescription and the provided id is wrong" in {
+    val unorderedFileDescription =
+      <FileDescriptionsList>
+        <UnorderedFileDescription id="firstDesc" >
+          <FixedOrderedRowDescription label="first label" >
+            <ColumnIdentifier matchAgainst="99" label="labeling" startsAt="300" length="48"/>
+          </FixedOrderedRowDescription>
+        </UnorderedFileDescription>
+      </FileDescriptionsList>
+    val RowToRowDescriptionMatcherEither = GroupRowsByRowDescription(unorderedFileDescription, Some("wrong"), None, None)
+    RowToRowDescriptionMatcherEither shouldBe a [Left[_,_]]
   }
 
 }

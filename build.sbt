@@ -1,6 +1,6 @@
 // project specifications
 name := "Quick"
-version := "0.2"
+version := "0.3"
 
 // fat JAR specifications
 mainClass in assembly := Some("com.scalableQuality.quick.surface.main.Quick")
@@ -24,6 +24,8 @@ scalacOptions ++= Seq(
   "-optimise",
   "-feature"
 )
+//enabling code coverage through scoverage
+coverageEnabled := false
 
 // import libraries
 // adding scopt, a CLI options parsing library

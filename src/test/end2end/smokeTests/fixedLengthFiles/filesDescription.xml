@@ -20,7 +20,6 @@
             />
             <ColumnDescription
                     label="Age"
-                    startsAt="31"
                     endsAt="33"
                     useDuringValidation="true"
                     useDuringMatching="false"

@@ -2,7 +2,8 @@ package com.scalableQuality.quick.mantle.parsing
 
 import java.util.regex.Pattern
 
-import com.scalableQuality.quick.mantle.log.{ErrorMessage, UnrecoverableError}
+import com.scalableQuality.quick.mantle.error.UnrecoverableError
+import com.scalableQuality.quick.mantle.parsing.errorMessages.LiteralDelimiterErrorMessages
 
 class LiteralDelimiter(
                         value: String
@@ -14,15 +15,10 @@ class LiteralDelimiter(
 
 object LiteralDelimiter {
   //Pattern.quote(value) to quote regex expressions
-  def apply(value: String ): Either[ErrorMessage,LiteralDelimiter] = if(value.length > 0){
+  def apply(value: String ): Either[UnrecoverableError,LiteralDelimiter] = if(value.length > 0){
     val delimiter = new LiteralDelimiter(Pattern.quote(value))
     Right(delimiter)
   } else {
-    val errorMessage = UnrecoverableError(
-      "creating a delimiter",
-      "delimiter is empty",
-      "provide a non empty delimiter"
-    )
-    Left(errorMessage)
+    LiteralDelimiterErrorMessages.invalidLiteralDelimiter
   }
 }

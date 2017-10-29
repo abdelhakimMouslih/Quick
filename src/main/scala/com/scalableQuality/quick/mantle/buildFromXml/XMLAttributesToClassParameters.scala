@@ -8,14 +8,14 @@ import scala.collection.mutable
 class XMLAttributesToClassParameters(
                                       parametersMap: Map[String, Attribute]
                                     ) {
-  def get[ValueType](parameterAttribute: ParameterAttribute[ValueType]): ParameterValue[ValueType] = parametersMap.get(parameterAttribute.key) match {
+  def get[ValueType](parameterAttribute: AttributeValueExtractor[ValueType]): ParameterValue[ValueType] = parametersMap.get(parameterAttribute.key) match {
     case Some(attribute) => parameterAttribute.valueFrom(attribute)
     case None =>
       parameterAttribute.notFound
   }
 
   def safeGet[ValueType](
-                          parameterAttributeWithDefaultValue: ParameterAttributeWithDefaultValue[ValueType]
+                          parameterAttributeWithDefaultValue: AttributeValueExtractorWithDefaultValue[ValueType]
                         ): ParameterValueFound[ValueType] = parametersMap.get(parameterAttributeWithDefaultValue.key) match {
     case Some(attribute) => parameterAttributeWithDefaultValue.valueFrom(attribute)
     case None => parameterAttributeWithDefaultValue.notFound
@@ -27,11 +27,11 @@ class XMLAttributesToClassParameters(
 object XMLAttributesToClassParameters {
   def apply(
              xmlMetaData: MetaData,
-             attributeKeys: List[ParameterAttribute[_]]
+             attributeKeys: List[AttributeValueExtractor[_]]
            ): XMLAttributesToClassParameters = {
     @tailrec def loop(
                        metaDataList: MetaData,
-                       attributeKeys: List[ParameterAttribute[_]],
+                       attributeKeys: List[AttributeValueExtractor[_]],
                        parametersMap: mutable.HashMap[String, Attribute]
                      ): Map[String, Attribute] = metaDataList match {
       case Null =>
@@ -64,8 +64,8 @@ object XMLAttributesToClassParameters {
   }
   def apply(
              xmlMetaData: MetaData,
-             firstAttributeKey: ParameterAttribute[_],
-             restOfAttributeKeys: ParameterAttribute[_]*
+             firstAttributeKey: AttributeValueExtractor[_],
+             restOfAttributeKeys: AttributeValueExtractor[_]*
            ): XMLAttributesToClassParameters = XMLAttributesToClassParameters(
     xmlMetaData,
     firstAttributeKey :: restOfAttributeKeys.toList

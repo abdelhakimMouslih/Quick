@@ -2,8 +2,9 @@ package com.scalableQuality.quick.core.others
 
 import java.util.regex.Pattern
 
-import com.scalableQuality.quick.mantle.buildFromXml._
-import com.scalableQuality.quick.mantle.log.{ErrorMessage, UnrecoverableError}
+import com.scalableQuality.quick.core.others.errorMessages.MatchAgainstErrorMessages
+import com.scalableQuality.quick.mantle.constructFromXml._
+import com.scalableQuality.quick.mantle.error.UnrecoverableError
 
 import scala.xml.MetaData
 
@@ -19,24 +20,17 @@ object MatchAgainst {
            ): MatchAgainst = new MatchAgainst(pattern)
 
 
-  def apply(elemMetaData: MetaData): Either[ErrorMessage, MatchAgainst] = {
-    val classParameterFromAttributes = XMLAttributesToClassParameters(elemMetaData, matchAgainstAttributeKey)
-    val matchAgainstClassParameter = classParameterFromAttributes.get(matchAgainstAttributeKey)
-    matchAgainstClassParameter match {
-      case parameterValueError : ParameterValueError[_] =>
-        errorMessage(parameterValueError.errorMessage)
-      case ValidParameterValueFound(pattern) =>
-        Right(MatchAgainst(pattern))
+  def apply(elemMetaData: MetaData): Either[UnrecoverableError, MatchAgainst] = {
+    val classParameterFromAttributes = AttributesValuesExtractor(elemMetaData, matchAgainstAttributeKey)
+    val patternValue = classParameterFromAttributes.get(matchAgainstAttributeKey)
+    patternValue match {
+      case Right(pattern) =>
+        val matchAgainst = MatchAgainst(pattern)
+        Right(matchAgainst)
+      case Left(errorMessage) =>
+        MatchAgainstErrorMessages.invalidAttributes(errorMessage)
     }
   }
-  private val matchAgainstAttributeKey = ParameterAttribute("matchAgainst", AttributeConversionFunctions.toPattern)
-  def errorMessage(childErrorMessage: ErrorMessage): Left[ErrorMessage, MatchAgainst] = {
-    val errorMessage = UnrecoverableError(
-      "Creating matchAgainst object",
-      "encountered a problem",
-      "solve the problem described below",
-      List(childErrorMessage)
-    )
-    Left(errorMessage)
-  }
+  private val matchAgainstAttributeKey = AttributeValueExtractor("matchAgainst", AttributeValueConversion.toPattern)
+
 }

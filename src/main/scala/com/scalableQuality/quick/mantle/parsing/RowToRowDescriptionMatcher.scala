@@ -1,11 +1,12 @@
 package com.scalableQuality.quick.mantle.parsing
 
 import com.scalableQuality.quick.core.fileComponentDescripts._
-import com.scalableQuality.quick.mantle.buildFromXml._
-import com.scalableQuality.quick.mantle.log.{ErrorMessage, UnrecoverableError}
+import com.scalableQuality.quick.mantle.constructFromXml._
+import com.scalableQuality.quick.mantle.error.UnrecoverableError
+import com.scalableQuality.quick.mantle.parsing.errorMessages.RowToRowDescriptionMatcherErrorMessages
 
 import scala.annotation.tailrec
-import scala.xml.{Elem, Node}
+import scala.xml.{Attribute, Elem}
 
 class RowToRowDescriptionMatcher(
                      rowIdentifier: RowIdentifier,
@@ -24,59 +25,49 @@ object RowToRowDescriptionMatcher {
            ): RowToRowDescriptionMatcher =
     new RowToRowDescriptionMatcher(rowIdentifier, orderedRowDescription)
 
-  def apply(rowDescriptionXmlElem : Elem): Either[ErrorMessage, RowToRowDescriptionMatcher] =
-    if (compareXmlElemLabelsWith(rowDescriptionXmlElem, fixedOrderedRowDescriptionElemLabel)) {
+  def apply(rowDescriptionXmlElem : Elem): Either[UnrecoverableError, RowToRowDescriptionMatcher] =
+    if (XMLHelperFunctions.haveLabel(rowDescriptionXmlElem, fixedOrderedRowDescriptionElemLabel)) {
       makeFixedRowToRowDescriptionMatcher(rowDescriptionXmlElem)
-    } else if(compareXmlElemLabelsWith(rowDescriptionXmlElem, delimitedOrderedRowDescriptionElemLabel)){
+    } else if(XMLHelperFunctions.haveLabel(rowDescriptionXmlElem, delimitedOrderedRowDescriptionElemLabel)){
       makeDelimitedRowToRowDescriptionMatcher(rowDescriptionXmlElem)
     } else {
-      val errorMessage = UnrecoverableError(
-        "making RowToRowDescriptionMatcher",
-        s"${rowDescriptionXmlElem.label} is not supported",
-        "use either OrderedRowDescription"
-      )
-      Left(errorMessage)
+      RowToRowDescriptionMatcherErrorMessages.unknownRowDescriptionElem(rowDescriptionXmlElem)
     }
 
 
-  def makeDelimitedRowToRowDescriptionMatcher(rowDescriptionXmlElem : Elem):Either[ErrorMessage, RowToRowDescriptionMatcher] = {
+  def makeDelimitedRowToRowDescriptionMatcher(rowDescriptionXmlElem : Elem):Either[UnrecoverableError, RowToRowDescriptionMatcher] = {
 
     @tailrec def makeDelimitedColumnIdentifiersAndDelimitedColumnDescriptions(
                                                                        xmlNodes: List[Elem],
                                                                        columnDescriptionList: List[DelimitedColumnDescription],
                                                                        columnIdentifierList: List[DelimitedColumnIdentifier]
                                                                      ):
-    Either[ErrorMessage, (List[DelimitedColumnDescription],List[DelimitedColumnIdentifier])] = xmlNodes match {
+    Either[UnrecoverableError, (List[DelimitedColumnDescription],List[DelimitedColumnIdentifier])] = xmlNodes match {
       case elem :: _
-        if ! compareXmlElemLabelsWith(
+        if ! XMLHelperFunctions.elemLabelIsIn(
           elem, RowToRowDescriptionMatcher.columnDescriptionElemLabel,
           RowToRowDescriptionMatcher.columnIdentifierElemLabel
         ) =>
-        val errorMessage = UnrecoverableError (
-          "creating a column description",
-          s"${elem.label} is not supported",
-          "use a BOBO elem"
-        )
-        createErrorMessage(errorMessage)
+        RowToRowDescriptionMatcherErrorMessages.unknownDelimitedRowDescriptionChildElem(elem)
 
       case Nil =>
         Right((columnDescriptionList, columnIdentifierList))
 
-      case elem::restOfNodes if compareXmlElemLabelsWith(elem,RowToRowDescriptionMatcher.columnDescriptionElemLabel) =>
+      case elem::restOfNodes if XMLHelperFunctions.haveLabel(elem,RowToRowDescriptionMatcher.columnDescriptionElemLabel) =>
         val columnDescriptionEither = DelimitedColumnDescription(elem.attributes)
         columnDescriptionEither match {
           case Left(errorMessage) =>
-            createErrorMessage(errorMessage)
+            Left(errorMessage)
 
           case Right(columnDescription) =>
             makeDelimitedColumnIdentifiersAndDelimitedColumnDescriptions(restOfNodes, columnDescription :: columnDescriptionList, columnIdentifierList)
         }
 
-      case elem::restOfNodes if compareXmlElemLabelsWith(elem,RowToRowDescriptionMatcher.columnIdentifierElemLabel) =>
+      case elem::restOfNodes if XMLHelperFunctions.haveLabel(elem,RowToRowDescriptionMatcher.columnIdentifierElemLabel) =>
         val columnIdentifierEither = DelimitedColumnIdentifier(elem.attributes)
         columnIdentifierEither match {
           case Left(errorMessage) =>
-            createErrorMessage(errorMessage)
+            Left(errorMessage)
 
           case Right((columnDescription, columnIdentifier)) =>
             makeDelimitedColumnIdentifiersAndDelimitedColumnDescriptions(restOfNodes, columnDescription :: columnDescriptionList, columnIdentifier :: columnIdentifierList)
@@ -85,97 +76,76 @@ object RowToRowDescriptionMatcher {
     }
 
 
-    val classParametersFromXmlAttributes  = XMLAttributesToClassParameters(
+    val attributeValues  = AttributesValuesExtractor(
       rowDescriptionXmlElem.attributes,
       orderedRowDescriptionLabelAttributeKey,
       orderedRowDescriptionDelimiterAttributeKey)
-    val labelClassParameter = classParametersFromXmlAttributes.get(orderedRowDescriptionLabelAttributeKey)
+    val labelAttributeValue = attributeValues.get(orderedRowDescriptionLabelAttributeKey)
 
-    val delimiterClassParameter: Either[ErrorMessage, LiteralDelimiter] = classParametersFromXmlAttributes.get(orderedRowDescriptionDelimiterAttributeKey) match {
-      case parameterValueError : ParameterValueError[_] =>
-        val errorMessage = UnrecoverableError(
-          "making stuff",
-          "stuff cannot be make",
-          s"fee me, ${parameterValueError.errorMessage}"
-        )
-        Left(errorMessage)
-      case ValidParameterValueFound(delimiterValue) =>
-        LiteralDelimiter(delimiterValue)
-    }
+    val delimiterAttributeValue = attributeValues.get(orderedRowDescriptionDelimiterAttributeKey)
 
-    val rowDescriptionElemChildren = collectAllChildElems(rowDescriptionXmlElem)
+    val rowDescriptionElemChildren = XMLHelperFunctions.collectElemChildren(rowDescriptionXmlElem)
     val delimitedColumnDescriptionsAndIdentifiers = makeDelimitedColumnIdentifiersAndDelimitedColumnDescriptions(
       rowDescriptionElemChildren,
       Nil,
       Nil
     )
-    (labelClassParameter, delimiterClassParameter, delimitedColumnDescriptionsAndIdentifiers ) match {
-      case (parameterValueError : ParameterValueError[_] ,_,_) =>
-        val errorMessage = UnrecoverableError(
-          "making stuff",
-          "stuff cannot be make",
-          s"fee me, ${parameterValueError.errorMessage}"
-        )
-        Left(errorMessage)
-      case (_,Left(errorMessage),_) =>
-        Left(errorMessage)
-      case (_,_,Left(errorMessage)) =>
-        Left(errorMessage)
-      case (ValidParameterValueFound(label),Right(delimiter),Right((delimitedColumnsDescriptionsList,delimitedColumnsIdentifiersList))) =>
+
+    (labelAttributeValue, delimiterAttributeValue, delimitedColumnDescriptionsAndIdentifiers ) match {
+      case (Right(label),Right(delimiter),Right((delimitedColumnsDescriptionsList,delimitedColumnsIdentifiersList))) =>
         val delimitedRowIdentifierEither = DelimitedRowIdentifier(delimitedColumnsIdentifiersList, delimiter)
         delimitedRowIdentifierEither match {
           case Left(errorMessage) =>
-            Left(errorMessage)
+            RowToRowDescriptionMatcherErrorMessages.invalidDelimitedRowDescriptionChildElemOrAttribute(errorMessage)
           case Right(delimitedRowIdentifier) =>
             val delimitedRowDivider = DelimitedRowDivider(delimitedColumnsDescriptionsList, delimiter)
             val delimitedRowDescriptions = OrderedRowDescription(delimitedRowDivider, label)
             val rowToRowDescriptionMatcher = RowToRowDescriptionMatcher(delimitedRowIdentifier, delimitedRowDescriptions)
             Right(rowToRowDescriptionMatcher)
         }
+      case _ =>
+        val errorMessages = UnrecoverableError.collectAllErrorsToList(labelAttributeValue, delimiterAttributeValue, delimitedColumnDescriptionsAndIdentifiers)
+        RowToRowDescriptionMatcherErrorMessages.invalidDelimitedRowDescriptionChildElemOrAttribute(errorMessages:_*)
     }
 
 
   }
 
 
-    def makeFixedRowToRowDescriptionMatcher(rowDescriptionXmlElem : Elem): Either[ErrorMessage, RowToRowDescriptionMatcher] = {
+    def makeFixedRowToRowDescriptionMatcher(rowDescriptionXmlElem : Elem): Either[UnrecoverableError, RowToRowDescriptionMatcher] = {
 
     @tailrec def makeFixedColumnIdentifiersAndFixedColumnDescriptions(
                                                               xmlNodes: List[Elem],
                                                               columnDescriptionList: List[FixedColumnDescription],
                                                               columnIdentifierList: List[FixedColumnIdentifier]
                                                            ):
-    Either[ErrorMessage, (List[FixedColumnDescription],List[FixedColumnIdentifier])] = xmlNodes match {
+    Either[UnrecoverableError, (List[FixedColumnDescription],List[FixedColumnIdentifier])] = xmlNodes match {
       case elem :: _
-        if ! compareXmlElemLabelsWith(
+        if ! XMLHelperFunctions.elemLabelIsIn(
           elem, RowToRowDescriptionMatcher.columnDescriptionElemLabel,
           RowToRowDescriptionMatcher.columnIdentifierElemLabel
         ) =>
-        val errorMessage = UnrecoverableError (
-          "creating a column description",
-          s"${elem.label} is not supported",
-          "use a BOBO elem"
-        )
-        createErrorMessage(errorMessage)
+
+        RowToRowDescriptionMatcherErrorMessages.unknownFixedRowDescriptionChildElem(elem)
 
       case Nil =>
         Right((columnDescriptionList, columnIdentifierList))
 
-      case elem::restOfNodes if compareXmlElemLabelsWith(elem,RowToRowDescriptionMatcher.columnDescriptionElemLabel) =>
+      case elem::restOfNodes if XMLHelperFunctions.haveLabel(elem,RowToRowDescriptionMatcher.columnDescriptionElemLabel) =>
         val columnDescriptionEither = FixedColumnDescription(elem.attributes)
         columnDescriptionEither match {
           case Left(errorMessage) =>
-            createErrorMessage(errorMessage)
+            Left(errorMessage)
 
           case Right(columnDescription) =>
             makeFixedColumnIdentifiersAndFixedColumnDescriptions(restOfNodes, columnDescription :: columnDescriptionList, columnIdentifierList)
         }
 
-      case elem::restOfNodes if compareXmlElemLabelsWith(elem,RowToRowDescriptionMatcher.columnIdentifierElemLabel) =>
+      case elem::restOfNodes if XMLHelperFunctions.haveLabel(elem,RowToRowDescriptionMatcher.columnIdentifierElemLabel) =>
         val columnIdentifierEither = FixedColumnIdentifier(elem.attributes)
         columnIdentifierEither match {
           case Left(errorMessage) =>
-            createErrorMessage(errorMessage)
+            Left(errorMessage)
 
           case Right((columnDescription, columnIdentifier)) =>
             makeFixedColumnIdentifiersAndFixedColumnDescriptions(restOfNodes, columnDescription :: columnDescriptionList, columnIdentifier :: columnIdentifierList)
@@ -184,63 +154,44 @@ object RowToRowDescriptionMatcher {
     }
 
 
-    val rowDescriptionXmlElemChildrenList = collectAllChildElems(rowDescriptionXmlElem)
+    val rowDescriptionXmlElemChildrenList = XMLHelperFunctions.collectElemChildren(rowDescriptionXmlElem)
     val columnIdentifiersAndColumnDescriptions = makeFixedColumnIdentifiersAndFixedColumnDescriptions(rowDescriptionXmlElemChildrenList, Nil, Nil)
 
-    val classParametersFromXmlAttributes = XMLAttributesToClassParameters(rowDescriptionXmlElem.attributes,RowToRowDescriptionMatcher.orderedRowDescriptionLabelAttributeKey)
-    val rowDescriptionLabelParameterValue = classParametersFromXmlAttributes.get(RowToRowDescriptionMatcher.orderedRowDescriptionLabelAttributeKey)
+    val AttributeValues = AttributesValuesExtractor(rowDescriptionXmlElem.attributes,RowToRowDescriptionMatcher.orderedRowDescriptionLabelAttributeKey)
+    val rowDescriptionLabelAttributeValue = AttributeValues.get(RowToRowDescriptionMatcher.orderedRowDescriptionLabelAttributeKey)
 
-    (rowDescriptionLabelParameterValue, columnIdentifiersAndColumnDescriptions) match {
-      case (parameterValueError : ParameterValueError[_], _) =>
-        createErrorMessage(parameterValueError.errorMessage)
-      case (_, Left(errorMessage)) =>
-        createErrorMessage(errorMessage)
-      case (ValidParameterValueFound(label), Right((columnDescriptionList, columnIdentifierList))) =>
+    (rowDescriptionLabelAttributeValue, columnIdentifiersAndColumnDescriptions) match {
+      case (Right(label), Right((columnDescriptionList, columnIdentifierList))) =>
         val rowIdentifierEither = FixedRowIdentifier(columnIdentifierList)
         rowIdentifierEither match {
-          case Left(error) =>
-            Left(error)
+          case Left(errorMessage) =>
+            RowToRowDescriptionMatcherErrorMessages.invalidFixedRowDescriptionChildElemOrAttribute(errorMessage)
           case Right(rowIdentifier) =>
             val fixedRowDivider = FixedRowDivider(columnDescriptionList)
             val orderedRowDescription = OrderedRowDescription(fixedRowDivider, label)
             val rowToRowDescriptionMatcher = RowToRowDescriptionMatcher(rowIdentifier, orderedRowDescription )
             Right(rowToRowDescriptionMatcher)
         }
+
+      case _ =>
+        val errorMessages = UnrecoverableError.collectAllErrorsToList(rowDescriptionLabelAttributeValue, columnIdentifiersAndColumnDescriptions)
+        RowToRowDescriptionMatcherErrorMessages.invalidFixedRowDescriptionChildElemOrAttribute(errorMessages:_*)
     }
   }
 
   val defaultIdentificationResult = false
-
-  private def collectAllChildElems(node: Node): List[Elem] = node.child.toList.collect{
-    case elem: Elem => elem
-  }
-
 
   private val delimitedOrderedRowDescriptionElemLabel = "DelimitedOrderedRowDescription"
   private val fixedOrderedRowDescriptionElemLabel = "FixedOrderedRowDescription"
   private val columnIdentifierElemLabel = "columnIdentifier"
   private val columnDescriptionElemLabel = "columnDescription"
 
-  private val orderedRowDescriptionLabelAttributeKey = ParameterAttribute("label", AttributeConversionFunctions.extractValue)
-  private val orderedRowDescriptionDelimiterAttributeKey = ParameterAttribute("literalDelimiter", AttributeConversionFunctions.extractValue)
+  private val orderedRowDescriptionLabelAttributeKey = AttributeValueExtractor("label", AttributeValueConversion.extractValue)
 
-  private def compareXmlElemLabelsWith(elem: Elem, firstLabel: String, restOfLabels: String*):Boolean = {
-    val ElemLabel = elem.label.toLowerCase
-    val firstResult = ElemLabel == firstLabel.toLowerCase
-    restOfLabels.foldLeft(firstResult){
-      (previousResult, label) => previousResult || ElemLabel == label.toLowerCase
-    }
-  }
+  private def delimiterAttributeValueConverter(attribute: Attribute ) = AttributeValueConversion.extractValueAndConvertTo(LiteralDelimiter(_))(attribute)
 
-  private def createErrorMessage[T](childErrorMessage: ErrorMessage* ) : Either[ErrorMessage, T] = {
-    val errorMessage = UnrecoverableError(
-      "creating a column description",
-      "encountered a problem",
-      "solve the problem below",
-      childErrorMessage.toList
-    )
-    Left(errorMessage)
-  }
+  private val orderedRowDescriptionDelimiterAttributeKey = AttributeValueExtractor("literalDelimiter", RowToRowDescriptionMatcher.delimiterAttributeValueConverter(_))
+
 
 }
 

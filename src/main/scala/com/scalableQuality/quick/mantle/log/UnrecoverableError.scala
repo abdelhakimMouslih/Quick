@@ -28,6 +28,7 @@ object UnrecoverableError {
     s"""${formatLabel("error trace")}
        |${eachRowStarsWith(formatErrorTrace(errorTrace), identation)}
      """.stripMargin
+
     val toString: String =
     s"""${header}
        |${eachRowStarsWith(body, identation)}

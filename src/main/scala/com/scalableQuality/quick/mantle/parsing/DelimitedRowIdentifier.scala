@@ -1,6 +1,7 @@
 package com.scalableQuality.quick.mantle.parsing
 
-import com.scalableQuality.quick.mantle.log.{ErrorMessage, UnrecoverableError}
+import com.scalableQuality.quick.mantle.error._
+import com.scalableQuality.quick.mantle.parsing.errorMessages.DelimitedRowIdentifierErrorMessages
 
 class DelimitedRowIdentifier(
                               columnsIdentifiers: List[DelimitedColumnIdentifier],
@@ -22,14 +23,9 @@ object DelimitedRowIdentifier {
   def apply(
              columnsIdentifiers: List[DelimitedColumnIdentifier],
              delimiter: LiteralDelimiter
-           ): Either[ErrorMessage,DelimitedRowIdentifier] = columnsIdentifiers match {
+           ): Either[UnrecoverableError,DelimitedRowIdentifier] = columnsIdentifiers match {
     case Nil =>
-      val errorMessage = UnrecoverableError(
-        "making DelimitedRowIdentifier",
-        "no columnIdentifiers",
-        "provide a column identifiers"
-      )
-      Left(errorMessage)
+      DelimitedRowIdentifierErrorMessages.noColumnIdentifierIsProvided
     case _ => Right(new DelimitedRowIdentifier(columnsIdentifiers, delimiter))
   }
 }

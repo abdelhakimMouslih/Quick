@@ -3,8 +3,9 @@ package com.scalableQuality.quick.mantle.parsing
 import com.scalableQuality.quick.core.Reporting.ValidationAndMatchingReport
 import com.scalableQuality.quick.core.fileComponentDescripts.OrderedRowDescription
 import com.scalableQuality.quick.core.fileProcessing.{ValidateAndMatchRows, ValidateAndMatchTwoFiles}
-import com.scalableQuality.quick.mantle.buildFromXml._
-import com.scalableQuality.quick.mantle.log.{ErrorMessage, UnrecoverableError}
+import com.scalableQuality.quick.mantle.constructFromXml._
+import com.scalableQuality.quick.mantle.error.{BunchOfErrors, UnrecoverableError}
+import com.scalableQuality.quick.mantle.parsing.errorMessages.GroupRowsByRowDescriptionErrorMessages
 
 import scala.annotation.tailrec
 import scala.xml.{Elem, MetaData, Node}
@@ -146,18 +147,24 @@ object GroupRowsByRowDescription {
                      listOfRowIdentifier: List[RowToRowDescriptionMatcher],
                      leftFileLabel: Option[String],
                      rightFileLabel: Option[String]
-           ): GroupRowsByRowDescription = new GroupRowsByRowDescription(listOfRowIdentifier, leftFileLabel, rightFileLabel)
+           ): Either[UnrecoverableError, GroupRowsByRowDescription] = listOfRowIdentifier match {
+    case Nil =>
+      GroupRowsByRowDescriptionErrorMessages.noRowDescriptionIsProvided
+    case _ =>
+      val groupRowsByRowDescription = new GroupRowsByRowDescription(listOfRowIdentifier, leftFileLabel, rightFileLabel)
+      Right(groupRowsByRowDescription)
+  }
 
   private def apply(
              fileDescriptionElem: Elem,
              leftFileLabel: Option[String],
              rightFileLabel: Option[String]
-           ): Either[ErrorMessage, GroupRowsByRowDescription] = {
+           ): Either[UnrecoverableError, GroupRowsByRowDescription] = {
 
     @tailrec def loop(
                        rowDescriptionsElems: List[Elem],
                        rowIdentifierAccumulator: List[RowToRowDescriptionMatcher]
-                     ): Either[ErrorMessage, List[RowToRowDescriptionMatcher]] = rowDescriptionsElems match {
+                     ): Either[UnrecoverableError, List[RowToRowDescriptionMatcher]] = rowDescriptionsElems match {
       case Nil =>
         Right(rowIdentifierAccumulator)
 
@@ -172,13 +179,12 @@ object GroupRowsByRowDescription {
     }
 
 
-    val listOfRowIdentifier = loop(collectAllChildElems(fileDescriptionElem), Nil)
+    val listOfRowIdentifier = loop(XMLHelperFunctions.collectElemChildren(fileDescriptionElem), Nil)
     listOfRowIdentifier match {
       case Right(list) =>
-        val rowToRowDescriptionMatcher = GroupRowsByRowDescription(list, leftFileLabel, rightFileLabel)
-        Right(rowToRowDescriptionMatcher)
+        GroupRowsByRowDescription(list, leftFileLabel, rightFileLabel)
       case Left(errorMessage) =>
-        cannotMake(errorMessage)
+        GroupRowsByRowDescriptionErrorMessages.invalidFileDescriptionFile(errorMessage)
     }
 
   }
@@ -188,80 +194,59 @@ object GroupRowsByRowDescription {
              parserId: Option[String],
              leftFileLabel : Option[String],
              RightFileLabel : Option[String]
-           ): Either[ErrorMessage, GroupRowsByRowDescription] = {
+           ): Either[UnrecoverableError, GroupRowsByRowDescription] = {
     val fileDescriptionElem = getFileDescriptionElem(fileDescriptionRootElem, parserId)
     fileDescriptionElem match {
       case Right(fileDescElem) =>
         GroupRowsByRowDescription(fileDescElem,leftFileLabel,RightFileLabel)
       case Left(errorMessage) =>
-        cannotMake(errorMessage)
+        GroupRowsByRowDescriptionErrorMessages.invalidFileDescriptionFile(errorMessage)
     }
   }
 
   private def getFileDescriptionElem(
                                       fileDescriptionRootElem: Elem,
                                       parserIdOption: Option[String]
-                                    ): Either[ErrorMessage, Elem] = {
+                                    ): Either[UnrecoverableError, Elem] = {
     val fileDescriptionsList = getFileDescriptionsList(fileDescriptionRootElem)
     fileDescriptionsList match {
       case Left(errorMessage) =>
         Left(errorMessage)
       case Right(listOfElems) =>
-        val fileDescriptionElem = getFileDescriptionWithId(listOfElems, parserIdOption)
-        fileDescriptionElem
+         getFileDescriptionWithId(listOfElems, parserIdOption)
     }
   }
 
   private def getFileDescriptionWithId(
                                         listOfFileDescriptions: List[Elem],
                                         providedIdOption: Option[String]
-                                      ): Either[ErrorMessage, Elem] = {
+                                      ): Either[UnrecoverableError, Elem] = {
     @tailrec def loop(
                        listOfFileDescriptions: List[Elem],
                        providedId: String
-                     ): Either[ErrorMessage, Elem] = listOfFileDescriptions match {
+                     ): Either[UnrecoverableError, Elem] = listOfFileDescriptions match {
       case Nil =>
-        val errorMessage = UnrecoverableError(
-          "looking for a file description xml element",
-          "no file description found",
-          "provide at least one file description to be used"
-        )
-        Left(errorMessage)
-      case fileDescElem::restOfElems if hasLabel(fileDescElem, fileDescriptionElemLabel) =>
+        GroupRowsByRowDescriptionErrorMessages.noFileDescriptionElemsForId(providedId)
+      case fileDescElem::restOfElems if XMLHelperFunctions.haveLabel(fileDescElem, fileDescriptionElemLabel) =>
         val fileDescIdOpt = getId(fileDescElem.attributes)
         fileDescIdOpt match {
-          case Some(fileDescId) if fileDescId == providedId =>
+          case Right(fileDescId) if fileDescId == providedId =>
             Right(fileDescElem)
           case _ =>
             loop(restOfElems, providedId)
         }
       case elem::_ =>
-        val errorMessage = UnrecoverableError(
-          "creating file description",
-          s"did not recognize ${elem.label}",
-          "put in a valid elem"
-        )
-        Left(errorMessage)
+        GroupRowsByRowDescriptionErrorMessages.unknownFileDescriptionsListChildElem(elem)
     }
 
 
     (listOfFileDescriptions, providedIdOption)  match {
       case (Nil, _) =>
-        val errorMessage = UnrecoverableError(
-          "looking for a file description xml element",
-          "no file description found",
-          "provide at least one file description to be used"
-        )
-        Left(errorMessage)
-      case ( (fileDescElem:Elem)::Nil, None) =>
+        GroupRowsByRowDescriptionErrorMessages.noFileDescriptionElemIsFound
+      case ( fileDescElem::Nil, None) =>
         Right(fileDescElem)
       case (_, None) =>
-        val errorMessage = UnrecoverableError(
-          "looking for a file description xml element",
-          "xml file contains multiple file description, and no id was specified",
-          "specify the id of the file description you wish to use"
-        )
-        Left(errorMessage)
+        GroupRowsByRowDescriptionErrorMessages.noIdProvided
       case (_, Some(providedId)) =>
         loop(listOfFileDescriptions, providedId)
     }
@@ -269,51 +254,46 @@ object GroupRowsByRowDescription {
 
 
 
-  private def getId(fileDescMetaData: MetaData): Option[String] = {
-    val classParameters = XMLAttributesToClassParameters(fileDescMetaData, fileDescriptionAttributeKeysList)
-    val idParameter = classParameters.get(fileDescriptionIdAttributeKey)
-    idParameter match {
-      case parameterValueError : ParameterValueError[_] =>
-        None
-      case ValidParameterValueFound(id) =>
-        Some(id)
-    }
-  }
-
-
-  private def collectAllChildElems(node: Node): List[Elem] = node.child.toList.collect{
-    case elem: Elem => elem
+  private def getId(fileDescMetaData: MetaData): Either[UnrecoverableError,String] = {
+    val classParameters = AttributesValuesExtractor(fileDescMetaData, fileDescriptionAttributeKeysList)
+    classParameters.get(fileDescriptionIdAttributeKey)
   }
 
   private def getFileDescriptionsList(
                                        fileDescRootElem: Elem
-                                     ): Either[ErrorMessage, List[Elem]] =
-    if(hasLabel(fileDescRootElem, fileDescriptionElemLabel)) {
+                                     ): Either[UnrecoverableError, List[Elem]] =
+    if(XMLHelperFunctions.haveLabel(fileDescRootElem, fileDescriptionElemLabel)) {
       Right(List(fileDescRootElem))
-    } else if(hasLabel(fileDescRootElem, fileDescriptionsListElemLabel)) {
-      Right(collectAllChildElems(fileDescRootElem))
+    } else if(XMLHelperFunctions.haveLabel(fileDescRootElem, fileDescriptionsListElemLabel)) {
+      val descriptionListChildElem = XMLHelperFunctions.collectElemChildren(fileDescRootElem)
+      validateFileDescriptionChildElems(descriptionListChildElem)
     } else {
-      val errorMessage = UnrecoverableError(
-        "looking for a file description xml element",
-        "connot find a file description elem nor a files descriptions list elem",
-        "provide a fileDescription elem"
-      )
-      Left(errorMessage)
+      GroupRowsByRowDescriptionErrorMessages.unknownFileDescriptionRootElem(fileDescRootElem)
     }
 
+  private def validateFileDescriptionChildElems(
+                                                      childElems: List[Elem]
+                                                    ): Either[UnrecoverableError, List[Elem]] = {
+    def collectUnknownChildElems(childElems: List[Elem]): List[Elem] = childElems.filter{
+      ! XMLHelperFunctions.haveLabel(_, fileDescriptionElemLabel)
+    }
 
-  private def hasLabel(elem: Elem, label: String) : Boolean = elem.label.toLowerCase == label.toLowerCase()
-  private def cannotMake(errorMessage: ErrorMessage): Either[ErrorMessage, GroupRowsByRowDescription] = {
-    val cannotMakeErrorMessage = UnrecoverableError(
-      "creating a file desceription",
-      "encountered a problem",
-      "please resolve the problems mentioned below",
-      List(errorMessage)
-    )
-    Left(cannotMakeErrorMessage)
+    val unknownChildElems = collectUnknownChildElems(childElems)
+    unknownChildElems match {
+      case Nil =>
+        Right(childElems)
+      case _ =>
+        val unknownChildElemsErrorMessages  = unknownChildElems.map(
+          GroupRowsByRowDescriptionErrorMessages.unknownFileDescriptionsListChildElemError(_)
+        )
+        Left(BunchOfErrors(unknownChildElemsErrorMessages))
+    }
+
   }
+
+
   private val fileDescriptionsListElemLabel = "FileDescriptionsList"
   private val fileDescriptionElemLabel = "UnorderedFileDescription"
-  private val fileDescriptionIdAttributeKey = ParameterAttribute("Id", AttributeConversionFunctions.extractValue)
+  private val fileDescriptionIdAttributeKey = AttributeValueExtractor("Id", AttributeValueConversion.extractValue)
   private val fileDescriptionAttributeKeysList = List(fileDescriptionIdAttributeKey)
 }

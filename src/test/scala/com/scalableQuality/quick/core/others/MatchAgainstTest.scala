@@ -5,7 +5,7 @@ import org.scalatest.{FlatSpec, Matchers}
 
 class MatchAgainstTest extends FlatSpec with Matchers with GeneratorDrivenPropertyChecks with TableDrivenPropertyChecks {
   "MatchAgainst.apply(MetaData)" should " return Right(MatchAgainst) with the the specified pattern" in {
-    val columnIdentifierElem = <ColumnIdentifier matchAgainst="" />
+    val columnIdentifierElem = <ColumnIdentifier matchAgainst=".*" />
     val matchAgainstEither = MatchAgainst(columnIdentifierElem.attributes)
     matchAgainstEither shouldBe a [Right[_,_]]
   }
