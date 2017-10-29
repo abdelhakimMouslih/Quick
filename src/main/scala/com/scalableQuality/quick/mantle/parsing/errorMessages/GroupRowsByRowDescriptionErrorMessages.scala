@@ -1,6 +1,7 @@
 package com.scalableQuality.quick.mantle.parsing.errorMessages
 
-import com.scalableQuality.quick.mantle.error.{DependencyError, EncounteredError, UnrecoverableError}
+import com.scalableQuality.quick.mantle.error.{BunchOfErrors, DependencyError, EncounteredError, UnrecoverableError}
+import com.sun.tracing.dtrace.DependencyClass
 
 import scala.xml.Elem
 
@@ -71,5 +72,21 @@ object GroupRowsByRowDescriptionErrorMessages {
       "please provide either a FixedOrderedRowDescription or DelimitedOrderedRowDescription"
     )
     invalidFileDescriptionFile(errorMessage)
+  }
+
+  def invalidUnorderedFileDescriptionAttributes(bunchOfErrors: BunchOfErrors) = {
+    val errorMessage = DependencyError(
+      "validating UnorderedFileDescription attributes",
+      bunchOfErrors
+    )
+    Left(errorMessage)
+  }
+
+  def invalidUnorderedFilesDescriptionsListAttributes(bunchOfErrors: BunchOfErrors) = {
+    val errorMessage = DependencyError(
+      "validating FileDescriptionsList attributes",
+      bunchOfErrors
+    )
+    Left(errorMessage)
   }
 }

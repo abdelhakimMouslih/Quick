@@ -75,4 +75,35 @@ class DelimitedColumnDescriptionTest extends FlatSpec with Matchers with Generat
     val columnDescription = DelimitedColumnDescription(columnDescriptionElem.attributes)
     columnDescription shouldBe a [Left[_,_]]
   }
+
+  it should
+    "return Left if a misspelled attribute is present" in {
+    val columnDescriptionElem = <ColumnDescription
+      label="this is a column in russian accent"
+      position="1"
+      useDuringValidation="true"
+      useDuringMatching="false"
+      useDuringReporting="true"
+      trimValue="true"
+      misspelled="false"
+      />
+    val columnDescription = DelimitedColumnDescription(columnDescriptionElem.attributes)
+    columnDescription shouldBe a [Left[_,_]]
+  }
+
+  it should
+    "return Left if an unknown attribute is present" in {
+    val columnDescriptionElem = <ColumnDescription
+      label="this is a column in russian accent"
+      position="1"
+      useDuringValidation="true"
+      useDuringMatching="false"
+      useDuringReporting="true"
+      trimValue="true"
+      ignoreValueCase="false"
+      unknown="present"
+      />
+    val columnDescription = DelimitedColumnDescription(columnDescriptionElem.attributes)
+    columnDescription shouldBe a [Left[_,_]]
+  }
 }

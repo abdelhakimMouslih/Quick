@@ -16,6 +16,22 @@ class DelimitedColumnIdentifierTest extends FlatSpec with Matchers with Generato
   }
 
   it should
+    "return accept DelimitedColumnDescription attributes + matchAgainst" in {
+    val columnIdentifierElem = <ColumnIdentifier
+      matchAgainst="matchAgainst"
+      label="columnIdentifier"
+      position="1"
+      useDuringValidation="true"
+      useDuringMatching="false"
+      useDuringReporting="true"
+      trimValue="true"
+      ignoreValueCase="false"
+      />
+    val columnIdentifier = DelimitedColumnIdentifier(columnIdentifierElem.attributes)
+    columnIdentifier shouldBe a [Right[_,_]]
+  }
+
+  it should
     "return Left(ErrorMessage) if matchAgainst attribute is missing" in {
     val columnIdentifierElem = <ColumnIdentifier
       label="columnIdentifier"
@@ -40,6 +56,39 @@ class DelimitedColumnIdentifierTest extends FlatSpec with Matchers with Generato
     val columnIdentifierElem = <ColumnIdentifier
       matchAgainst="matchAgainst"
       label="columnIdentifier"
+      />
+    val columnIdentifier = DelimitedColumnIdentifier(columnIdentifierElem.attributes)
+    columnIdentifier shouldBe a [Left[_,_]]
+  }
+
+  it should
+    "return Left if a misspelled attribute is present" in {
+    val columnIdentifierElem = <ColumnIdentifier
+      matchAgainst="matchAgainst"
+      label="columnIdentifier"
+      position="1"
+      useDuringValidation="true"
+      useDuringMatching="false"
+      useDuringReporting="true"
+      trimValue="true"
+      misspelled="false"
+      />
+    val columnIdentifier = DelimitedColumnIdentifier(columnIdentifierElem.attributes)
+    columnIdentifier shouldBe a [Left[_,_]]
+  }
+
+  it should
+    "return Left if an unknown attribute is present" in {
+    val columnIdentifierElem = <ColumnIdentifier
+      matchAgainst="matchAgainst"
+      label="columnIdentifier"
+      position="1"
+      useDuringValidation="true"
+      useDuringMatching="false"
+      useDuringReporting="true"
+      trimValue="true"
+      ignoreCase="false"
+      unknown="present"
       />
     val columnIdentifier = DelimitedColumnIdentifier(columnIdentifierElem.attributes)
     columnIdentifier shouldBe a [Left[_,_]]

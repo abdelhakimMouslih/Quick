@@ -54,12 +54,12 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
     "return Left() when FileDescriptionsList contains multiple UnorderedFileDescription and a wrong file description id is passed" in {
     val unorderedFileDescription =
       <FileDescriptionsList>
-        <UnorderedFileDescription id="firstDesc" >
+        <UnorderedFileDescription Id="firstDesc" >
           <FixedOrderedRowDescription label="first label" >
             <ColumnIdentifier matchAgainst="99" label="labeling" startsAt="300" length="48"/>
           </FixedOrderedRowDescription>
         </UnorderedFileDescription>
-        <UnorderedFileDescription>
+        <UnorderedFileDescription id="secondDesc" >
           <FixedOrderedRowDescription label="second label" >
             <ColumnIdentifier matchAgainst="99" label="labeling" startsAt="300" length="48"/>
           </FixedOrderedRowDescription>
@@ -157,6 +157,34 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
         </UnorderedFileDescription>
       </FileDescriptionsList>
     val RowToRowDescriptionMatcherEither = GroupRowsByRowDescription(unorderedFileDescription, Some("wrong"), None, None)
+    RowToRowDescriptionMatcherEither shouldBe a [Left[_,_]]
+  }
+
+  it should
+  "return Left if an unknown attribute is present in FileDescriptionsList" in {
+    val unorderedFileDescription =
+      <FileDescriptionsList unknown="attribute" >
+        <UnorderedFileDescription>
+          <FixedOrderedRowDescription label="first label" >
+            <ColumnIdentifier matchAgainst="99" label="labeling" startsAt="300" length="48"/>
+          </FixedOrderedRowDescription>
+        </UnorderedFileDescription>
+      </FileDescriptionsList>
+    val RowToRowDescriptionMatcherEither = GroupRowsByRowDescription(unorderedFileDescription, None, None, None)
+    RowToRowDescriptionMatcherEither shouldBe a [Left[_,_]]
+  }
+
+  it should
+    "return Left if an unknown attribute is present in UnorderedFileDescription" in {
+    val unorderedFileDescription =
+      <FileDescriptionsList>
+        <UnorderedFileDescription id="sup" unknown="attribute" >
+          <FixedOrderedRowDescription label="first label" >
+            <ColumnIdentifier matchAgainst="99" label="labeling" startsAt="300" length="48"/>
+          </FixedOrderedRowDescription>
+        </UnorderedFileDescription>
+      </FileDescriptionsList>
+    val RowToRowDescriptionMatcherEither = GroupRowsByRowDescription(unorderedFileDescription, Some("sup"), None, None)
     RowToRowDescriptionMatcherEither shouldBe a [Left[_,_]]
   }
 

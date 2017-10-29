@@ -30,7 +30,7 @@ object ValueMapper {
   // TODO : improve attribute extraction
   def apply(elemMetaData: MetaData): Either[UnrecoverableError, ValueMapper] = {
 
-    val attributeValues = AttributesValuesExtractor(elemMetaData, valueMapperAttributeKeys)
+    val attributeValues = AttributesValuesExtractor(elemMetaData, listOfAttributesKeys)
 
     val trimValueAttribute = attributeValues.get(trimKey)
     val ignoreCaseValueAttribute = attributeValues.get(ignoreCaseKey)
@@ -65,7 +65,7 @@ object ValueMapper {
   private val defaultValueMapperInclusion = Right(false)
   private val trimKey = AttributeValueExtractor("trimValue",AttributeValueConversion.toBoolean, defaultValueMapperInclusion)
   private val ignoreCaseKey = AttributeValueExtractor("ignoreValueCase",AttributeValueConversion.toBoolean, defaultValueMapperInclusion)
-  private val valueMapperAttributeKeys = List(trimKey, ignoreCaseKey)
+  val listOfAttributesKeys = List(trimKey, ignoreCaseKey)
 
 
 }

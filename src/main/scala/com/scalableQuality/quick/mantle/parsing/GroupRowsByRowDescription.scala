@@ -4,7 +4,7 @@ import com.scalableQuality.quick.core.Reporting.ValidationAndMatchingReport
 import com.scalableQuality.quick.core.fileComponentDescripts.OrderedRowDescription
 import com.scalableQuality.quick.core.fileProcessing.{ValidateAndMatchRows, ValidateAndMatchTwoFiles}
 import com.scalableQuality.quick.mantle.constructFromXml._
-import com.scalableQuality.quick.mantle.error.{BunchOfErrors, UnrecoverableError}
+import com.scalableQuality.quick.mantle.error.{AttributeNotFoundError, BunchOfErrors, UnrecoverableError}
 import com.scalableQuality.quick.mantle.parsing.errorMessages.GroupRowsByRowDescriptionErrorMessages
 
 import scala.annotation.tailrec
@@ -232,6 +232,8 @@ object GroupRowsByRowDescription {
         fileDescIdOpt match {
           case Right(fileDescId) if fileDescId == providedId =>
             Right(fileDescElem)
+          case Left(error: BunchOfErrors) =>
+            GroupRowsByRowDescriptionErrorMessages.invalidUnorderedFileDescriptionAttributes(error)
           case _ =>
             loop(restOfElems, providedId)
         }
@@ -255,8 +257,15 @@ object GroupRowsByRowDescription {
 
 
   private def getId(fileDescMetaData: MetaData): Either[UnrecoverableError,String] = {
-    val classParameters = AttributesValuesExtractor(fileDescMetaData, fileDescriptionAttributeKeysList)
-    classParameters.get(fileDescriptionIdAttributeKey)
+    val unknownAttributes = XMLHelperFunctions.collectUnknownAttributes(fileDescriptionAttributeKeysList,fileDescMetaData)
+    unknownAttributes match {
+      case Nil =>
+        val classParameters = AttributesValuesExtractor(fileDescMetaData, fileDescriptionAttributeKeysList)
+        classParameters.get(fileDescriptionIdAttributeKey)
+      case _ =>
+        val bunchOfErrors = BunchOfErrors(unknownAttributes)
+        Left(bunchOfErrors)
+    }
   }
 
   private def getFileDescriptionsList(
@@ -265,11 +274,26 @@ object GroupRowsByRowDescription {
     if(XMLHelperFunctions.haveLabel(fileDescRootElem, fileDescriptionElemLabel)) {
       Right(List(fileDescRootElem))
     } else if(XMLHelperFunctions.haveLabel(fileDescRootElem, fileDescriptionsListElemLabel)) {
-      val descriptionListChildElem = XMLHelperFunctions.collectElemChildren(fileDescRootElem)
-      validateFileDescriptionChildElems(descriptionListChildElem)
+      validateFileDescriptionsListAndGetChildElems(fileDescRootElem)
     } else {
       GroupRowsByRowDescriptionErrorMessages.unknownFileDescriptionRootElem(fileDescRootElem)
     }
+
+
+  private def validateFileDescriptionsListAndGetChildElems(
+                                            fileDescriptionsListElem: Elem
+                                          ): Either[UnrecoverableError, List[Elem]] = {
+    val unknownAttributes = XMLHelperFunctions.collectUnknownAttributes(fileDescriptionsListAttributeKeysList, fileDescriptionsListElem.attributes)
+    unknownAttributes match {
+      case Nil =>
+        val descriptionListChildElem = XMLHelperFunctions.collectElemChildren(fileDescriptionsListElem)
+        validateFileDescriptionChildElems(descriptionListChildElem)
+
+      case _ =>
+        val bunchOfErrors = BunchOfErrors(unknownAttributes)
+        GroupRowsByRowDescriptionErrorMessages.invalidUnorderedFilesDescriptionsListAttributes(bunchOfErrors)
+    }
+  }
 
   private def validateFileDescriptionChildElems(
                                                       childElems: List[Elem]
@@ -296,4 +320,5 @@ object GroupRowsByRowDescription {
   private val fileDescriptionElemLabel = "UnorderedFileDescription"
   private val fileDescriptionIdAttributeKey = AttributeValueExtractor("Id", AttributeValueConversion.extractValue)
   private val fileDescriptionAttributeKeysList = List(fileDescriptionIdAttributeKey)
+  private val fileDescriptionsListAttributeKeysList = Nil
 }

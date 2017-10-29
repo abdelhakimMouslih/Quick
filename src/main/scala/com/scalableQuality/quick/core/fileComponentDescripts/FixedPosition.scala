@@ -30,7 +30,7 @@ object FixedPosition {
 
   def apply(elemAttributes:MetaData): Either[UnrecoverableError, FixedPosition] = {
 
-    val attributeValues = AttributesValuesExtractor(elemAttributes, parametersAttributeKeys)
+    val attributeValues = AttributesValuesExtractor(elemAttributes, listOfAttributesKeys)
 
     val startsAtParameterValue = attributeValues.get(startsAtKey)
     val endsAtParameterValue = attributeValues.get(endsAtKey)
@@ -120,5 +120,5 @@ object FixedPosition {
   private val startsAtKey = AttributeValueExtractor("startsAt", AttributeValueConversion.toInt)
   private val endsAtKey = AttributeValueExtractor("endsAt", AttributeValueConversion.toInt)
   private val lengthKey = AttributeValueExtractor("length", AttributeValueConversion.toInt)
-  private val parametersAttributeKeys = List(startsAtKey, endsAtKey, lengthKey)
+  val listOfAttributesKeys = List(startsAtKey, endsAtKey, lengthKey)
 }

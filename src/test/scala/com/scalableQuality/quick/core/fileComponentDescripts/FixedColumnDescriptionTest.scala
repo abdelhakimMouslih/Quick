@@ -42,7 +42,23 @@ class FixedColumnDescriptionTest extends FlatSpec with Matchers with TableDriven
     columnDescription shouldBe a [Right[_,_]]
   }
 
-  /*it should "return Left[ErrorMessage, FixedColumnDescription] when it encounters an unknown attribute" in {
+  it should "return Left a misspelled attribute is present" in {
+    val columnDescriptionElem = <FixedColumnDescription
+      label="this is a column in russian accent"
+      startsAt="1"
+      endsAt="3"
+      length="3"
+      useDuringValidation="true"
+      useDuringMatching="false"
+      useDuringReporting="true"
+      trimValue="true"
+      misspelledAttribute="false"
+      />
+    val columnDescription = FixedColumnDescription(columnDescriptionElem.attributes)
+    columnDescription shouldBe a [Left[_,_]]
+  }
+
+  it should "return Left a unknown attribute is present" in {
     val columnDescriptionElem = <FixedColumnDescription
       label="this is a column in russian accent"
       startsAt="1"
@@ -53,10 +69,10 @@ class FixedColumnDescriptionTest extends FlatSpec with Matchers with TableDriven
       useDuringReporting="true"
       trimValue="true"
       ignoreValueCase="false"
-      misspelledAttribute="value" />
+      unknown="present" />
     val columnDescription = FixedColumnDescription(columnDescriptionElem.attributes)
     columnDescription shouldBe a [Left[_,_]]
-  }*/
+  }
 
   val invalidAttributeValue = Table(
     ("startsAt","endsAt","length","useDuringValidation","useDuringMatching","useDuringReporting","trimValue","ignoreValueCase"),

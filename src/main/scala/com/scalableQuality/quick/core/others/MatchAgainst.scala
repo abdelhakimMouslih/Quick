@@ -32,5 +32,5 @@ object MatchAgainst {
     }
   }
   private val matchAgainstAttributeKey = AttributeValueExtractor("matchAgainst", AttributeValueConversion.toPattern)
-
+  val listOfAttributesKeys = List(matchAgainstAttributeKey)
 }

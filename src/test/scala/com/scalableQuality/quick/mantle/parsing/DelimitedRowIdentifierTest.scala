@@ -19,7 +19,7 @@ class DelimitedRowIdentifierTest extends FlatSpec with Matchers {
     val track2dataRow = RawRow(";,1234567890123445,=,99011200XXXX00000000?*",1)
     val firstColumnIdentifierElem = <ColumnIdentifier matchAgainst=";" label="Start sentinel" position="1" />
     val secondColumnIdentifierElem  = <ColumnIdentifier matchAgainst="[0-9]{16}" label="Card Number" position="2"/>
-    val thirdColumnIdentifierElem  = <ColumnIdentifier matchAgainst="=" label="Field separator" startsAt="18" position="3"/>
+    val thirdColumnIdentifierElem  = <ColumnIdentifier matchAgainst="=" label="Field separator" position="3"/>
 
     val firstColumnIdentifierEither = DelimitedColumnIdentifier(firstColumnIdentifierElem.attributes)
     val secondColumnIdentifierEither  = DelimitedColumnIdentifier(secondColumnIdentifierElem.attributes)
@@ -43,7 +43,7 @@ class DelimitedRowIdentifierTest extends FlatSpec with Matchers {
     val track2dataRow = RawRow("not track 2",1)
     val firstColumnIdentifierElem = <ColumnIdentifier matchAgainst=";" label="Start sentinel" position="1" />
     val secondColumnIdentifierElem  = <ColumnIdentifier matchAgainst="[0-9]{16}" label="Card Number" position="2"/>
-    val thirdColumnIdentifierElem  = <ColumnIdentifier matchAgainst="=" label="Field separator" startsAt="18" position="3"/>
+    val thirdColumnIdentifierElem  = <ColumnIdentifier matchAgainst="=" label="Field separator" position="3"/>
 
     val firstColumnIdentifierEither = DelimitedColumnIdentifier(firstColumnIdentifierElem.attributes)
     val secondColumnIdentifierEither  = DelimitedColumnIdentifier(secondColumnIdentifierElem.attributes)

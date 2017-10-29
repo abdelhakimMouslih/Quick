@@ -2,8 +2,10 @@ package com.scalableQuality.quick.mantle.parsing
 
 import com.scalableQuality.quick.core.fileComponentDescripts.DelimitedColumnDescription
 import com.scalableQuality.quick.core.others.MatchAgainst
-import com.scalableQuality.quick.mantle.error.UnrecoverableError
+import com.scalableQuality.quick.mantle.constructFromXml.XMLHelperFunctions
+import com.scalableQuality.quick.mantle.error.{BunchOfErrors, UnrecoverableError}
 import com.scalableQuality.quick.mantle.parsing.errorMessages.DelimitedColumnIdentifierErrorMessages
+
 import scala.xml.MetaData
 
 class DelimitedColumnIdentifier(
@@ -23,19 +25,25 @@ object DelimitedColumnIdentifier {
            ): DelimitedColumnIdentifier = new DelimitedColumnIdentifier(matchAgainst, columnDescription)
 
   def apply(elemMetaData: MetaData): Either[UnrecoverableError,(DelimitedColumnDescription, DelimitedColumnIdentifier)] = {
+    val unknownAttributesErrors = XMLHelperFunctions.collectUnknownAttributes(listOfAttributesKeys, elemMetaData)
+    unknownAttributesErrors match {
+      case Nil =>
+        val matchAgainstEither = MatchAgainst(elemMetaData)
+        val metaDataWithoutMatchAgainst = XMLHelperFunctions.removeAttributes(elemMetaData,MatchAgainst.listOfAttributesKeys)
+        val columnDescriptionEither = DelimitedColumnDescription(metaDataWithoutMatchAgainst)
+        validateAttributeValues(columnDescriptionEither, matchAgainstEither) match {
+          case Right((columnDescription, matchAgainst)) =>
+            val columnIdentifier = DelimitedColumnIdentifier(matchAgainst, columnDescription)
+            val result = (columnDescription, columnIdentifier)
+            Right(result)
 
-    val columnDescriptionEither = DelimitedColumnDescription(elemMetaData)
+          case Left(errorMessages) =>
+            DelimitedColumnIdentifierErrorMessages.invalidAttributes(errorMessages)
+        }
 
-    val matchAgainstEither = MatchAgainst(elemMetaData)
-
-    validateAttributeValues(columnDescriptionEither, matchAgainstEither) match {
-      case Right((columnDescription, matchAgainst)) =>
-        val columnIdentifier = DelimitedColumnIdentifier(matchAgainst, columnDescription)
-        val result = (columnDescription, columnIdentifier)
-        Right(result)
-
-      case Left(errorMessages) =>
-        DelimitedColumnIdentifierErrorMessages.invalidAttributes(errorMessages)
+      case _ =>
+        val bunchOfErrors = BunchOfErrors(unknownAttributesErrors)
+        DelimitedColumnIdentifierErrorMessages.invalidAttributes(bunchOfErrors)
     }
   }
 
@@ -52,4 +60,5 @@ object DelimitedColumnIdentifier {
         UnrecoverableError.collectAllErrors(columnDescriptionEither, matchAgainstEither)
   }
 
+  val listOfAttributesKeys = DelimitedColumnDescription.listOfAttributesKeys ::: MatchAgainst.listOfAttributesKeys
 }

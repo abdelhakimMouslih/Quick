@@ -2,7 +2,8 @@ package com.scalableQuality.quick.mantle.parsing
 
 import com.scalableQuality.quick.core.fileComponentDescripts.FixedColumnDescription
 import com.scalableQuality.quick.core.others.MatchAgainst
-import com.scalableQuality.quick.mantle.error.UnrecoverableError
+import com.scalableQuality.quick.mantle.constructFromXml.XMLHelperFunctions
+import com.scalableQuality.quick.mantle.error.{BunchOfErrors, UnrecoverableError}
 import com.scalableQuality.quick.mantle.parsing.errorMessages.FixedColumnIdentifierErrorMessages
 
 import scala.xml.MetaData
@@ -25,21 +26,31 @@ object FixedColumnIdentifier {
            ): FixedColumnIdentifier = new FixedColumnIdentifier(matchAgainst, columnDescription)
 
 
-  def apply(elemMetaData: MetaData): Either[UnrecoverableError,(FixedColumnDescription, FixedColumnIdentifier)] = {
+  def apply(elemMetaData: MetaData): Either[UnrecoverableError,(FixedColumnDescription, FixedColumnIdentifier)] =  {
+    val unknownAttributesErrors = XMLHelperFunctions.collectUnknownAttributes(listOfAttributesKeys, elemMetaData)
+    unknownAttributesErrors match {
+      case Nil =>
 
-    val columnDescriptionEither = FixedColumnDescription(elemMetaData)
+        val matchAgainstEither = MatchAgainst(elemMetaData)
 
-    val matchAgainstEither = MatchAgainst(elemMetaData)
+        val metaDataWithoutMatchAgainst = XMLHelperFunctions.removeAttributes(elemMetaData,MatchAgainst.listOfAttributesKeys)
+        val columnDescriptionEither = FixedColumnDescription(metaDataWithoutMatchAgainst)
 
-    validateAttributeValues(columnDescriptionEither, matchAgainstEither) match {
-      case Right((columnDescription, matchAgainst)) =>
-        val columnIdentifier = FixedColumnIdentifier(matchAgainst, columnDescription)
-        val result = (columnDescription, columnIdentifier)
-        Right(result)
+        validateAttributeValues(columnDescriptionEither, matchAgainstEither) match {
+          case Right((columnDescription, matchAgainst)) =>
+            val columnIdentifier = FixedColumnIdentifier(matchAgainst, columnDescription)
+            val result = (columnDescription, columnIdentifier)
+            Right(result)
 
-      case Left(errorMessages) =>
-        FixedColumnIdentifierErrorMessages.invalidAttributes(errorMessages)
+          case Left(errorMessages) =>
+            FixedColumnIdentifierErrorMessages.invalidAttributes(errorMessages)
+        }
+      case _ =>
+        val bunchOfErrors = BunchOfErrors(unknownAttributesErrors)
+        FixedColumnIdentifierErrorMessages.invalidAttributes(bunchOfErrors)
     }
+
+
   }
 
   private def validateAttributeValues(
@@ -54,5 +65,5 @@ object FixedColumnIdentifier {
       case _ =>
         UnrecoverableError.collectAllErrors(columnDescriptionEither, matchAgainstEither)
     }
-
+  val listOfAttributesKeys = FixedColumnDescription.listOfAttributesKeys ::: MatchAgainst.listOfAttributesKeys
 }

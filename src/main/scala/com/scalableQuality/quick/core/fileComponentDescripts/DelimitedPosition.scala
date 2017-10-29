@@ -17,6 +17,8 @@ object DelimitedPosition {
 
   val positionAttribute = AttributeValueExtractor("position", AttributeValueConversion.toInt)
 
+  val listOfAttributesKeys = List(positionAttribute)
+
   def apply(
              metaData: MetaData
            ): Either[UnrecoverableError, DelimitedPosition] = {

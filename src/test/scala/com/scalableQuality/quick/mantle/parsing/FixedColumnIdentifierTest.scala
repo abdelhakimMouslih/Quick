@@ -18,6 +18,24 @@ class FixedColumnIdentifierTest extends FlatSpec with Matchers with GeneratorDri
   }
 
   it should
+    "accept all FixedColumnDescription attributes + matchAgainst" in {
+    val columnIdentifierElem = <ColumnIdentifier
+      matchAgainst="matchAgainst"
+      label="columnIdentifier"
+      startsAt="1"
+      endsAt="3"
+      length="3"
+      useDuringValidation="true"
+      useDuringMatching="false"
+      useDuringReporting="true"
+      trimValue="true"
+      ignoreValueCase="false"
+      />
+    val columnIdentifier = FixedColumnIdentifier(columnIdentifierElem.attributes)
+    columnIdentifier shouldBe a [Right[_,_]]
+  }
+
+  it should
     "return Right(FixedColumnIdentifier) even if only matchAgainst, label, startsAt and length are present" in {
     val columnIdentifierElem = <ColumnIdentifier
       matchAgainst="matchAgainst"
@@ -68,6 +86,43 @@ class FixedColumnIdentifierTest extends FlatSpec with Matchers with GeneratorDri
       matchAgainst="matchAgainst"
       label="columnIdentifier"
       startsAt="1"
+      />
+    val columnIdentifier = FixedColumnIdentifier(columnIdentifierElem.attributes)
+    columnIdentifier shouldBe a [Left[_,_]]
+  }
+
+  it should
+    "return Left(ErrorMessage) if a misspelled Attribute is present " in {
+    val columnIdentifierElem = <ColumnIdentifier
+      matchAgainst="matchAgainst"
+      label="columnIdentifier"
+      startsAt="1"
+      endsAt="3"
+      length="3"
+      useDuringValidation="true"
+      useDuringMatching="false"
+      useDuringReporting="true"
+      trimValue="true"
+      misspelled="false"
+      />
+    val columnIdentifier = FixedColumnIdentifier(columnIdentifierElem.attributes)
+    columnIdentifier shouldBe a [Left[_,_]]
+  }
+
+  it should
+    "return Left(ErrorMessage) if an unknown Attribute is present " in {
+    val columnIdentifierElem = <ColumnIdentifier
+      matchAgainst="matchAgainst"
+      label="columnIdentifier"
+      startsAt="1"
+      endsAt="3"
+      length="3"
+      useDuringValidation="true"
+      useDuringMatching="false"
+      useDuringReporting="true"
+      trimValue="true"
+      ignoreCase="false"
+      unknownAttribute="present"
       />
     val columnIdentifier = FixedColumnIdentifier(columnIdentifierElem.attributes)
     columnIdentifier shouldBe a [Left[_,_]]

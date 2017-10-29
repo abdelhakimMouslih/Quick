@@ -1,6 +1,6 @@
 <FileDescriptionsList>
     <UnorderedFileDescription id="batting" >
-        <OrderedRowDescription label="">
+        <FixedOrderedRowDescription label="">
             <ColumnIdentifier
                     matchAgainst=".*"
                 label="playerId" 
@@ -10,7 +10,7 @@
                 useDuringReporting="true"
                 useDuringMatching="true" 
                 trimValue="true" 
-                ignoreCaseValue="false"
+                ignoreValueCase="false"
                 />
             <ColumnIdentifier
                     matchAgainst=".*"
@@ -21,7 +21,7 @@
                 useDuringReporting="true"
                 useDuringMatching="false" 
                 trimValue="true" 
-                ignoreCaseValue="false"
+                ignoreValueCase="false"
                 />
             <ColumnIdentifier
                     matchAgainst=".*"
@@ -32,7 +32,7 @@
                 useDuringReporting="true"
                 useDuringMatching="false" 
                 trimValue="true" 
-                ignoreCaseValue="false"
+                ignoreValueCase="false"
                 />
             <ColumnDescription 
                 label="team" 
@@ -42,7 +42,7 @@
                 useDuringMatching="false" 
                 useDuringReporting="false" 
                 trimValue="true" 
-                ignoreCaseValue="false"
+                ignoreValueCase="false"
                 />
             <ColumnDescription 
                 label="LgId" 
@@ -52,7 +52,7 @@
                 useDuringMatching="false" 
                 useDuringReporting="false" 
                 trimValue="true" 
-                ignoreCaseValue="false"
+                ignoreValueCase="false"
                 />
 
             <ColumnDescription 
@@ -63,7 +63,7 @@
                 useDuringMatching="false" 
                 useDuringReporting="false" 
                 trimValue="true" 
-                ignoreCaseValue="false"
+                ignoreValueCase="false"
                 />
 
             <ColumnDescription 
@@ -74,7 +74,7 @@
                 useDuringMatching="false" 
                 useDuringReporting="false" 
                 trimValue="true" 
-                ignoreCaseValue="false"
+                ignoreValueCase="false"
                 />
 
             <ColumnDescription 
@@ -85,7 +85,7 @@
                 useDuringMatching="false" 
                 useDuringReporting="false" 
                 trimValue="true" 
-                ignoreCaseValue="false"
+                ignoreValueCase="false"
                 />
 
             <ColumnDescription 
@@ -96,7 +96,7 @@
                 useDuringMatching="false" 
                 useDuringReporting="false" 
                 trimValue="true" 
-                ignoreCaseValue="false"
+                ignoreValueCase="false"
                 />
             <ColumnDescription 
                 label="2B" 
@@ -106,7 +106,7 @@
                 useDuringMatching="false" 
                 useDuringReporting="false" 
                 trimValue="true" 
-                ignoreCaseValue="false"
+                ignoreValueCase="false"
                 />
             <ColumnDescription 
                 label="3B" 
@@ -116,7 +116,7 @@
                 useDuringMatching="false" 
                 useDuringReporting="false" 
                 trimValue="true" 
-                ignoreCaseValue="false"
+                ignoreValueCase="false"
                 />
 
             <ColumnDescription 
@@ -127,7 +127,7 @@
                 useDuringMatching="false" 
                 useDuringReporting="false" 
                 trimValue="true" 
-                ignoreCaseValue="false"
+                ignoreValueCase="false"
                 />
 
             <ColumnDescription 
@@ -138,7 +138,7 @@
                 useDuringMatching="false" 
                 useDuringReporting="false" 
                 trimValue="true" 
-                ignoreCaseValue="false"
+                ignoreValueCase="false"
                 />
 
             <ColumnDescription 
@@ -149,7 +149,7 @@
                 useDuringMatching="false" 
                 useDuringReporting="false" 
                 trimValue="true" 
-                ignoreCaseValue="false"
+                ignoreValueCase="false"
                 />
 
             <ColumnDescription 
@@ -160,7 +160,7 @@
                 useDuringMatching="false" 
                 useDuringReporting="false" 
                 trimValue="true" 
-                ignoreCaseValue="false"
+                ignoreValueCase="false"
                 />
 
             <ColumnDescription 
@@ -171,7 +171,7 @@
                 useDuringMatching="false" 
                 useDuringReporting="false" 
                 trimValue="true" 
-                ignoreCaseValue="false"
+                ignoreValueCase="false"
                 />
 
             <ColumnDescription 
@@ -182,7 +182,7 @@
                 useDuringMatching="false" 
                 useDuringReporting="false" 
                 trimValue="true" 
-                ignoreCaseValue="false"
+                ignoreValueCase="false"
                 />
 
             <ColumnDescription 
@@ -193,7 +193,7 @@
                 useDuringMatching="false" 
                 useDuringReporting="false" 
                 trimValue="true" 
-                ignoreCaseValue="false"
+                ignoreValueCase="false"
                 />
 
             <ColumnDescription 
@@ -204,7 +204,7 @@
                 useDuringMatching="false" 
                 useDuringReporting="false" 
                 trimValue="true" 
-                ignoreCaseValue="false"
+                ignoreValueCase="false"
                 />
 
             <ColumnDescription 
@@ -215,7 +215,7 @@
                 useDuringMatching="false" 
                 useDuringReporting="false" 
                 trimValue="true" 
-                ignoreCaseValue="false"
+                ignoreValueCase="false"
                 />
 
             <ColumnDescription 
@@ -226,8 +226,8 @@
                 useDuringMatching="false" 
                 useDuringReporting="false" 
                 trimValue="true" 
-                ignoreCaseValue="false"
+                ignoreValueCase="false"
                 />
-        </OrderedRowDescription>
+        </FixedOrderedRowDescription>
     </UnorderedFileDescription>
 </FileDescriptionsList>

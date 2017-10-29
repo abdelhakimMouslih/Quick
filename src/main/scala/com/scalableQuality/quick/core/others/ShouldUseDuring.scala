@@ -33,7 +33,7 @@ class ShouldUseDuring (
 object ShouldUseDuring {
 
   def apply(elemMetaData: MetaData): Either[UnrecoverableError, ShouldUseDuring] = {
-    val attributeValues = AttributesValuesExtractor(elemMetaData, shouldUseDuringKeys)
+    val attributeValues = AttributesValuesExtractor(elemMetaData, listOfAttributesKeys)
 
     val useDuringValidationParameterValue = attributeValues.get(useDuringValidationKey)
     val useDuringMatchingParameterValue = attributeValues.get(useDuringMatchingKey)
@@ -80,10 +80,9 @@ object ShouldUseDuring {
         )
   }
 
-
   private val defaultUsage = Right(false)
   private val useDuringValidationKey = AttributeValueExtractor("useDuringValidation", AttributeValueConversion.toBoolean, defaultUsage)
   private val useDuringMatchingKey = AttributeValueExtractor("useDuringMatching", AttributeValueConversion.toBoolean, defaultUsage)
   private val useDuringReportingKey = AttributeValueExtractor("useDuringReporting", AttributeValueConversion.toBoolean, defaultUsage)
-  private val shouldUseDuringKeys = List(useDuringValidationKey, useDuringMatchingKey, useDuringReportingKey )
+  val listOfAttributesKeys = List(useDuringValidationKey, useDuringMatchingKey, useDuringReportingKey )
 }

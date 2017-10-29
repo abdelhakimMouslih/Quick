@@ -37,6 +37,26 @@ class RowToRowDescriptionMatcherTest extends FlatSpec with Matchers {
     rowIdentifierEither shouldBe a [Left[_,_]]
   }
 
+  it should "return Left[ErrorMessage] if a misspelled attribute is present in FixedOrderedRowDescription" in {
+    val rowDescriptionElem =
+      <FixedOrderedRowDescription label="Track2 data" misspelledAttribute="value" >
+        <ColumnDescription label="seperator" startsAt="1" length="1" />
+        <ColumnIdentifier matchAgainst="^4[0-9]{15}"  label="Visa Card Number" startsAt="2" length="16"></ColumnIdentifier>
+      </FixedOrderedRowDescription>
+    val rowIdentifierEither = RowToRowDescriptionMatcher(rowDescriptionElem)
+    rowIdentifierEither shouldBe a [Left[_,_]]
+  }
+
+  it should "return Left[ErrorMessage] if an unknown attribute is present in FixedOrderedRowDescription" in {
+    val rowDescriptionElem =
+      <FixedOrderedRowDescription label="Track2 data" unknown="value" >
+        <ColumnDescription label="seperator" startsAt="1" length="1" />
+        <ColumnIdentifier matchAgainst="^4[0-9]{15}"  label="Visa Card Number" startsAt="2" length="16"></ColumnIdentifier>
+      </FixedOrderedRowDescription>
+    val rowIdentifierEither = RowToRowDescriptionMatcher(rowDescriptionElem)
+    rowIdentifierEither shouldBe a [Left[_,_]]
+  }
+
   it should "return Left[ErrorMessage] when no Column Identifiers are present in FixedOrderedRowDescription " in {
     val rowDescriptionElem =
       <FixedOrderedRowDescription label="Track2 data" >
@@ -102,6 +122,26 @@ class RowToRowDescriptionMatcherTest extends FlatSpec with Matchers {
   it should "return Left[ErrorMessage] when label attribute is absent from DelimitedOrderedRowDescription" in {
     val rowDescriptionElem =
       <DelimitedOrderedRowDescription  literalDelimiter=";" >
+        <ColumnDescription label="seperator" position="1" />
+        <ColumnIdentifier matchAgainst="^4[0-9]{15}"  label="Visa Card Number" position="2"></ColumnIdentifier>
+      </DelimitedOrderedRowDescription>
+    val rowIdentifierEither = RowToRowDescriptionMatcher(rowDescriptionElem)
+    rowIdentifierEither shouldBe a [Left[_,_]]
+  }
+
+  it should "return Left[ErrorMessage] is a misspelled attribute is present in DelimitedOrderedRowDescription" in {
+    val rowDescriptionElem =
+      <DelimitedOrderedRowDescription label="Track2 data" literalDelimiter=";" misspelled="attribute" >
+        <ColumnDescription label="seperator" position="1" />
+        <ColumnIdentifier matchAgainst="^4[0-9]{15}"  label="Visa Card Number" position="2"></ColumnIdentifier>
+      </DelimitedOrderedRowDescription>
+    val rowIdentifierEither = RowToRowDescriptionMatcher(rowDescriptionElem)
+    rowIdentifierEither shouldBe a [Left[_,_]]
+  }
+
+  it should "return Left[ErrorMessage] is an unknown attribute is present in DelimitedOrderedRowDescription" in {
+    val rowDescriptionElem =
+      <DelimitedOrderedRowDescription label="Track2 data" literalDelimiter=";" unknown="attribute" >
         <ColumnDescription label="seperator" position="1" />
         <ColumnIdentifier matchAgainst="^4[0-9]{15}"  label="Visa Card Number" position="2"></ColumnIdentifier>
       </DelimitedOrderedRowDescription>

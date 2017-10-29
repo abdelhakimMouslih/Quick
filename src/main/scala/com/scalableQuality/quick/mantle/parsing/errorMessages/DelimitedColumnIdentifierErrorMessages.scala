@@ -12,4 +12,12 @@ object DelimitedColumnIdentifierErrorMessages {
     )
     Left(errorMessage)
   }
+
+  def invalidAttributes(encounteredErrors: BunchOfErrors) = {
+    val errorMessage = DependencyError(
+      actionDescriptionWithoutLabel,
+      encounteredErrors
+    )
+    Left(errorMessage)
+  }
 }

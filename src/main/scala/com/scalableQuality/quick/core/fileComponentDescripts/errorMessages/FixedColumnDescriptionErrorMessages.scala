@@ -1,6 +1,6 @@
 package com.scalableQuality.quick.core.fileComponentDescripts.errorMessages
 
-import com.scalableQuality.quick.mantle.error.{DependencyError, UnrecoverableError}
+import com.scalableQuality.quick.mantle.error.{BunchOfErrors, DependencyError, UnrecoverableError}
 
 object FixedColumnDescriptionErrorMessages {
 
@@ -16,6 +16,14 @@ object FixedColumnDescriptionErrorMessages {
   }
 
   def invalidAttributes(encounteredErrors: List[UnrecoverableError]) = {
+    val errorMessages = DependencyError(
+      invalidColumnDescriptionWithoutLabel,
+      encounteredErrors
+    )
+    Left(errorMessages)
+  }
+
+  def invalidAttributes(encounteredErrors: BunchOfErrors) = {
     val errorMessages = DependencyError(
       invalidColumnDescriptionWithoutLabel,
       encounteredErrors
