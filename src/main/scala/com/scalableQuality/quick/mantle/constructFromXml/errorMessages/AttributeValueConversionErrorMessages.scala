@@ -1,11 +1,7 @@
 package com.scalableQuality.quick.mantle.constructFromXml.errorMessages
 
 import java.net.URL
-
 import com.scalableQuality.quick.mantle.error._
-import com.scalableQuality.quick.mantle.log.UnrecoverableError
-
-import scala.util.Either
 import scala.xml.Attribute
 
 object AttributeValueConversionErrorMessages {

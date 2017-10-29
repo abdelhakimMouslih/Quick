@@ -1,5 +1,5 @@
 <FileDescriptionsList>
-    <UnorderedFileDescription id="flSmokeTest" >
+    <UnorderedFileDefscription id="flSmokeTest" >
         <FixedOrderedRowDescription label="age and salary" >
             <ColumnIdentifier
                     matchAgainst=".*"
@@ -20,6 +20,7 @@
             />
             <ColumnDescription
                     label="Age"
+                    startsAt="17"
                     endsAt="33"
                     useDuringValidation="true"
                     useDuringMatching="false"
@@ -34,5 +35,5 @@
                     useDuringReporting="true"
             />
         </FixedOrderedRowDescription>
-    </UnorderedFileDescription>
+    </UnorderedFileDefscription>
 </FileDescriptionsList>

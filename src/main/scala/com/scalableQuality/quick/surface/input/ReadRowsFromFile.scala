@@ -1,23 +1,19 @@
 package com.scalableQuality.quick.surface.input
 
-import com.scalableQuality.quick.mantle.log.{ErrorMessage, UnrecoverableError}
+import com.scalableQuality.quick.mantle.error.UnrecoverableError
 import com.scalableQuality.quick.mantle.parsing.RawRow
+import com.scalableQuality.quick.surface.input.errorMessages.ReadFromFileErrorMessages
 
 import scala.io.Source
 import scala.util.{Failure, Success, Try}
 
 object ReadRowsFromFile {
 
-  def apply(filePath: String): Either[ErrorMessage, () => List[RawRow]] = Try(getIteratorOverRows(filePath)) match {
+  def apply(filePath: String): Either[UnrecoverableError, () => List[RawRow]] = Try(getIteratorOverRows(filePath)) match {
     case Success(iteratorOverRows) =>
       Right(reader(iteratorOverRows))
-    case Failure(error) =>
-      val unrecoverableError = UnrecoverableError (
-        s"reading file ${filePath}",
-        "cannot read the file",
-        error.toString
-      )
-      Left(unrecoverableError)
+    case Failure(throwable) =>
+      ReadFromFileErrorMessages.cannotReadFile(filePath, throwable)
   }
 
 

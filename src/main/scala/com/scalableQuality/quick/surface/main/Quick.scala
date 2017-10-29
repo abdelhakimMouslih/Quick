@@ -1,8 +1,9 @@
 package com.scalableQuality.quick.surface.main
 
-import com.scalableQuality.quick.mantle.parsing.{RawRow, GroupRowsByRowDescription}
+import com.scalableQuality.quick.mantle.error.UnrecoverableError
+import com.scalableQuality.quick.mantle.parsing.GroupRowsByRowDescription
 import com.scalableQuality.quick.mantle.reportInterptations.textReport.ValidationAndMatchingTextReport
-import com.scalableQuality.quick.surface.commandLineOptions.{CommandLineInput, CommandLineParser}
+import com.scalableQuality.quick.surface.commandLineOptions.CommandLineParser
 import com.scalableQuality.quick.surface.input.{ReadRowsFromFile, ReadXmlFile}
 import com.scalableQuality.quick.surface.output.{WriteTextReportToStdout, WriteToStderr}
 
@@ -47,12 +48,9 @@ object Quick extends App{
               WriteToStderr(errorMessage)
           }
 
-        case (Left(errorMessage),_,_) =>
-          WriteToStderr(errorMessage)
-        case (_,Left(errorMessage),_) =>
-          WriteToStderr(errorMessage)
-        case (_,_, Left(errorMessage)) =>
-          WriteToStderr(errorMessage)
+        case _ =>
+          val errorMessages = UnrecoverableError.collectAllErrorsToList(leftFilePathEither, rightFilePathEither, fileDescriptionPathEither)
+          errorMessages.foreach(WriteToStderr(_))
       }
     case None =>
       System.exit(1)

@@ -1,7 +1,5 @@
 package com.scalableQuality.quick.core.fileComponentDescripts
 
-import com.scalableQuality.quick.mantle.buildFromXml.{ParameterValueNotFound, ValidParameterValueFound}
-import com.scalableQuality.quick.mantle.log.{ErrorMessage, ErrorMessagePlaceHolder}
 import com.scalableQuality.quick.mantle.parsing.RawRow
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{FlatSpec, Matchers}

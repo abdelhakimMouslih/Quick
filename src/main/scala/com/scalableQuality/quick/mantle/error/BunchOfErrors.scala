@@ -13,5 +13,5 @@ case class BunchOfErrors(
 }
 
 object BunchOfErrors {
-  private[BunchOfErrors] val endOfLine = System.getProperty("line.separator") * 2
+  private[BunchOfErrors] val endOfLine = System.getProperty("line.separator")
 }
