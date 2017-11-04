@@ -14,7 +14,7 @@ class ValueMapper private[core] (
     (previousVal: Option[String], transformation: ValueMapperFunction) =>
       transformation(previousVal)
   }
-  def contains(valueMapperFunction: ValueMapperFunction): Boolean = transformations.contains(valueMapperFunction)
+  //def contains(valueMapperFunction: ValueMapperFunction): Boolean = transformations.contains(valueMapperFunction)
 }
 
 object ValueMapper {

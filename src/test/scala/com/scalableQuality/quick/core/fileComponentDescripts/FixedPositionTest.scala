@@ -51,6 +51,12 @@ class FixedPositionTest extends FlatSpec with Matchers with GeneratorDrivenPrope
     }
   }
 
+  it should "return Left[ErrorMessage,FixedPosition] when the given length and endsAt are incoherent" in {
+    val columnDescriptionXmlElem = <ColumnDescription startsAt="1" endsAt ="3" length="10" />
+    val fixedLengthPositionTest= FixedPosition(columnDescriptionXmlElem.attributes)
+    fixedLengthPositionTest shouldBe a [Left[_,_]]
+  }
+
   it should "return Left[ErrorMessage,FixedPosition] when startsAt is an invalid int" in {
       val columnDescriptionXmlElem = <ColumnDescription startsAt="bla" endsAt ="3" length="3" />
       val fixedLengthPositionTest= FixedPosition(columnDescriptionXmlElem.attributes)

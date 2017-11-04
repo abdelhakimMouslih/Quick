@@ -73,7 +73,7 @@ object FixedPosition {
   } else {
     (endsAtOpt, lengthOpt) match {
       case (None, None) =>
-        FixedLengthPositionErrorMessages.endsAtAndLengthAreMissing
+        FixedLengthPositionErrorMessages.endsAtAndLengthAreMissing // dead code
       case (Some(endsAt), None) =>
         FixedLengthPositionWithEndsAt(startsAt, endsAt)
 

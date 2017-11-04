@@ -9,16 +9,16 @@ import com.scalableQuality.quick.surface.output.{WriteTextReportToStdout, WriteT
 
 object Quick extends App{
 
-  val commandLineInputOpt = CommandLineParser(args)
-  commandLineInputOpt match {
-    case Some(commandLineInput) =>
-      val leftFilePath = commandLineInput.leftFile
-      val rightFilePath = commandLineInput.rightFile
-      val fileDescriptionPath = commandLineInput.descriptionFile
+  val quickStateOpt = CommandLineParser(args)
+  quickStateOpt match {
+    case Some(quickState) =>
+      val leftFilePath = quickState.leftFile
+      val rightFilePath = quickState.rightFile
+      val fileDescriptionPath = quickState.descriptionFile
 
-      val fileDescriptionId : Option[String] = commandLineInput.descriptionId
-      val leftFileLabel: Option[String] = commandLineInput.leftFileLabel
-      val rightFileLabel: Option[String] = commandLineInput.rightFileLabel
+      val fileDescriptionId : Option[String] = quickState.descriptionId
+      val leftFileLabel: Option[String] = quickState.leftFileLabel
+      val rightFileLabel: Option[String] = quickState.rightFileLabel
 
       val leftFilePathEither = ReadRowsFromFile(leftFilePath)
       val rightFilePathEither = ReadRowsFromFile(rightFilePath)

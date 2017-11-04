@@ -4,8 +4,8 @@ object CommandLineParser {
   private val quickName = "quick"
   private val quickVersion = "0.4"
 
-  def apply(args: Array[String]): Option[CommandLineInput] =
-    new scopt.OptionParser[CommandLineInput](quickName) {
+  def apply(args: Array[String]): Option[QuickState] =
+    new scopt.OptionParser[QuickState](quickName) {
       head(quickName, quickVersion)
 
       opt[String]('d', "description").action {
@@ -23,9 +23,14 @@ object CommandLineParser {
           config.addLabel(optionValue)
       }.optional().maxOccurs(2)
 
+      opt[Unit]('m', "multijob").action{
+        (_, config) =>
+          config.copy(multiJob = true)
+      }.optional()
+
       arg[String]("<leftFile> <rightFile>").action {
         (optionValue, config) =>
           config.addFile(optionValue)
       }.required().minOccurs(2).maxOccurs(2)
-    }.parse(args, CommandLineInput())
+    }.parse(args, QuickState())
 }
