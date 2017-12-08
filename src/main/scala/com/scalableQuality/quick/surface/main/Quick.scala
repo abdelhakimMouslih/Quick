@@ -5,7 +5,7 @@ import com.scalableQuality.quick.mantle.parsing.GroupRowsByRowDescription
 import com.scalableQuality.quick.mantle.reportInterptations.textReport.ValidationAndMatchingTextReport
 import com.scalableQuality.quick.surface.commandLineOptions.CommandLineParser
 import com.scalableQuality.quick.surface.input.{ReadRowsFromFile, ReadXmlFile}
-import com.scalableQuality.quick.surface.output.{WriteTextReportToStdout, WriteToStderr}
+import com.scalableQuality.quick.surface.output.{ExitWithStatus, WriteTextReportToStdout, WriteToStderr}
 
 object Quick extends App{
 
@@ -43,17 +43,19 @@ object Quick extends App{
               val validationAndMatchingTextReports = validationAndMatchingReports.map(ValidationAndMatchingTextReport(_))
 
               validationAndMatchingTextReports.foreach(WriteTextReportToStdout(_))
-
+              ExitWithStatus.exitWithReport(validationAndMatchingReports)
             case Left(errorMessage) =>
               WriteToStderr(errorMessage)
+              ExitWithStatus.interruptedByAnError
           }
 
         case _ =>
           val errorMessages = UnrecoverableError.collectAllErrorsToList(leftFilePathEither, rightFilePathEither, fileDescriptionPathEither)
           errorMessages.foreach(WriteToStderr(_))
+          ExitWithStatus.interruptedByAnError
       }
     case None =>
-      System.exit(1)
+      ExitWithStatus.interruptedByAnError
   }
 
 }
