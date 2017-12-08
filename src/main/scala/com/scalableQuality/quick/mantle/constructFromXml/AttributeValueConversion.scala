@@ -46,7 +46,7 @@ object AttributeValueConversion {
     extractAttributeValue(attribute) match {
       case Some(value) => convert(value)
       case None =>
-        AttributeValueConversionErrorMessages.failedToExtractAttributeValue(attribute)
+        AttributeValueConversionErrorMessages.failedToExtractAttributeValue(attribute) // dead code
     }
   }
 

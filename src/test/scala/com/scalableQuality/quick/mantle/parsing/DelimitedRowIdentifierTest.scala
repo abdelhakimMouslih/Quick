@@ -62,4 +62,28 @@ class DelimitedRowIdentifierTest extends FlatSpec with Matchers {
       case _ => fail
     }
   }
+
+  it should "not identify an empty row" in {
+    val track2dataRow = RawRow("",1)
+    val firstColumnIdentifierElem = <ColumnIdentifier matchAgainst=";" label="Start sentinel" position="1" />
+    val secondColumnIdentifierElem  = <ColumnIdentifier matchAgainst="[0-9]{16}" label="Card Number" position="2"/>
+    val thirdColumnIdentifierElem  = <ColumnIdentifier matchAgainst="=" label="Field separator" position="3"/>
+
+    val firstColumnIdentifierEither = DelimitedColumnIdentifier(firstColumnIdentifierElem.attributes)
+    val secondColumnIdentifierEither  = DelimitedColumnIdentifier(secondColumnIdentifierElem.attributes)
+    val thirdColumnIdentifierEither  = DelimitedColumnIdentifier(thirdColumnIdentifierElem.attributes)
+
+    val delimiterEither = LiteralDelimiter(",")
+    (firstColumnIdentifierEither, secondColumnIdentifierEither, thirdColumnIdentifierEither,delimiterEither) match {
+      case (Right((_,firstColumnIdentifier)),Right((_,secondColumnIdentifier)),Right((_,thirdColumnIdentifier)),Right(delimiter)) =>
+        val identifiersList = List(firstColumnIdentifier,secondColumnIdentifier,thirdColumnIdentifier)
+        val rowIdentifierEither = DelimitedRowIdentifier(identifiersList, delimiter)
+        rowIdentifierEither match {
+          case Right(rowIdentifier) =>
+            rowIdentifier.canIdentify(track2dataRow) shouldBe false
+          case _ => fail()
+        }
+      case _ => fail
+    }
+  }
 }

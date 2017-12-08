@@ -142,7 +142,6 @@ class GroupRowsByRowDescription(
 
 
 
-
 object GroupRowsByRowDescription {
 
   private def apply(
@@ -240,7 +239,7 @@ object GroupRowsByRowDescription {
             loop(restOfElems, providedId)
         }
       case elem::_ =>
-        GroupRowsByRowDescriptionErrorMessages.unknownFileDescriptionsListChildElem(elem)
+        GroupRowsByRowDescriptionErrorMessages.unknownFileDescriptionsListChildElem(elem) // dead code
     }
 
 
