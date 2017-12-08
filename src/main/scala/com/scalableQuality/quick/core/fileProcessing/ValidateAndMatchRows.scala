@@ -1,6 +1,6 @@
 package com.scalableQuality.quick.core.fileProcessing
 
-import com.scalableQuality.quick.core.Reporting.ValidationAndMatchingReport
+import com.scalableQuality.quick.core.Reporting.{FilledValidationAndMatchingReport, ValidationAndMatchingReport}
 import com.scalableQuality.quick.core.fileComponentDescripts.OrderedRowDescription
 import com.scalableQuality.quick.mantle.parsing.RawRow
 

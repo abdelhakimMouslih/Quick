@@ -1,6 +1,6 @@
 package com.scalableQuality.quick.mantle.parsing
 
-import com.scalableQuality.quick.core.Reporting.ValidationAndMatchingReport
+import com.scalableQuality.quick.core.Reporting.{FilledValidationAndMatchingReport, ValidationAndMatchingReport}
 import com.scalableQuality.quick.core.fileComponentDescripts.OrderedRowDescription
 import com.scalableQuality.quick.core.fileProcessing.{ValidateAndMatchRows, ValidateAndMatchTwoFiles}
 import com.scalableQuality.quick.mantle.constructFromXml._
@@ -40,14 +40,16 @@ class GroupRowsByRowDescription(
                                                   rightFileRows: List[RawRow],
                                                   leftFileLabel: Option[String] = this.leftFileLabel,
                                                   rightFileLabel: Option[String] = this.rightFileLabel
-                                                ): () => ValidationAndMatchingReport =
-    () => ValidateAndMatchRows(
+                                                ): () => ValidationAndMatchingReport = () => {
+     ValidateAndMatchRows(
       orderedRowDescription,
       leftFileRows,
       rightFileRows,
       leftFileLabel,
       rightFileLabel
     )
+  }
+
 
   private def matchGroupsRowsByRowDescription(
                                        leftFileRowGroups : List[(OrderedRowDescription, List[RawRow])],
