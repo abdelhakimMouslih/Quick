@@ -1,6 +1,7 @@
 package com.scalableQuality.quick.surface.main
 
 import com.scalableQuality.quick.mantle.error.UnrecoverableError
+import com.scalableQuality.quick.mantle.labels.FileLabelsFromPaths
 import com.scalableQuality.quick.mantle.parsing.GroupRowsByRowDescription
 import com.scalableQuality.quick.mantle.reportInterptations.textReport.ValidationAndMatchingTextReport
 import com.scalableQuality.quick.surface.commandLineOptions.CommandLineParser
@@ -17,8 +18,8 @@ object Quick extends App{
       val fileDescriptionPath = quickState.descriptionFile
 
       val fileDescriptionId : Option[String] = quickState.descriptionId
-      val leftFileLabel: Option[String] = quickState.leftFileLabel
-      val rightFileLabel: Option[String] = quickState.rightFileLabel
+
+      val (leftFileLabel, rightFileLabel) = FileLabelsFromPaths(quickState)
 
       val leftFilePathEither = ReadRowsFromFile(leftFilePath)
       val rightFilePathEither = ReadRowsFromFile(rightFilePath)
