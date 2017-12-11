@@ -1,20 +1,21 @@
 package com.scalableQuality.quick.mantle.parsing
 
-import com.scalableQuality.quick.core.Reporting.{FilledValidationAndMatchingReport, ValidationAndMatchingReport}
 import com.scalableQuality.quick.core.fileComponentDescripts.OrderedRowDescription
-import com.scalableQuality.quick.core.fileProcessing.{ValidateAndMatchRows, ValidateAndMatchTwoFiles}
+import com.scalableQuality.quick.core.fileProcessingPhase.{RowsProcessingPhase, ValidateAndMatchRows, ValidateAndMatchTwoFiles}
 import com.scalableQuality.quick.mantle.constructFromXml._
-import com.scalableQuality.quick.mantle.error.{AttributeNotFoundError, BunchOfErrors, UnrecoverableError}
+import com.scalableQuality.quick.mantle.error.{BunchOfErrors, UnrecoverableError}
 import com.scalableQuality.quick.mantle.parsing.errorMessages.GroupRowsByRowDescriptionErrorMessages
+import com.scalableQuality.quick.surface.commandLineOptions.QuickState
 
 import scala.annotation.tailrec
-import scala.xml.{Elem, MetaData, Node}
+import scala.xml.{Elem, MetaData}
 import scala.collection.mutable
 
 class GroupRowsByRowDescription(
                                 val listOfRowIdentifier : List[RowToRowDescriptionMatcher],
                                 leftFileLabel: Option[String],
-                                rightFileLabel: Option[String]
+                                rightFileLabel: Option[String],
+                                quickState: QuickState
                                 ) {
   def validateAndMatchTheseTwoFiles(
                                      leftFileRows : => List[RawRow],
@@ -23,33 +24,18 @@ class GroupRowsByRowDescription(
     val groupLeftFileRowsByRowDescription = groupRowsByRowDescription(leftFileRows, listOfRowIdentifier)
     val groupRightFileRowsByRowDescription = groupRowsByRowDescription(rightFileRows, listOfRowIdentifier)
     val matchedGroups = matchGroupsRowsByRowDescription(groupLeftFileRowsByRowDescription, groupRightFileRowsByRowDescription)
-    val validationAndMatchingProcesses: List[() => ValidationAndMatchingReport] = matchedGroups.map {
-      validationAndMatchingParameters =>
-        lazyValidationAndMatchingProcesses(
-          validationAndMatchingParameters._1,
-          validationAndMatchingParameters._2,
-          validationAndMatchingParameters._3
+    val validationAndMatchingProcesses: List[RowsProcessingPhase] = matchedGroups.map {
+      rowsProcessingPhaseParameters =>
+        quickState.rowsProcessingPhase(
+          rowsProcessingPhaseParameters._1,
+          rowsProcessingPhaseParameters._2,
+          rowsProcessingPhaseParameters._3,
+          this.leftFileLabel,
+          this.rightFileLabel
         )
     }
     ValidateAndMatchTwoFiles(validationAndMatchingProcesses)
   }
-
-  private def lazyValidationAndMatchingProcesses(
-                                                  orderedRowDescription: OrderedRowDescription,
-                                                  leftFileRows: List[RawRow],
-                                                  rightFileRows: List[RawRow],
-                                                  leftFileLabel: Option[String] = this.leftFileLabel,
-                                                  rightFileLabel: Option[String] = this.rightFileLabel
-                                                ): () => ValidationAndMatchingReport = () => {
-     ValidateAndMatchRows(
-      orderedRowDescription,
-      leftFileRows,
-      rightFileRows,
-      leftFileLabel,
-      rightFileLabel
-    )
-  }
-
 
   private def matchGroupsRowsByRowDescription(
                                        leftFileRowGroups : List[(OrderedRowDescription, List[RawRow])],
@@ -147,19 +133,21 @@ object GroupRowsByRowDescription {
   private def apply(
                      listOfRowIdentifier: List[RowToRowDescriptionMatcher],
                      leftFileLabel: Option[String],
-                     rightFileLabel: Option[String]
+                     rightFileLabel: Option[String],
+                     quickState: QuickState
            ): Either[UnrecoverableError, GroupRowsByRowDescription] = listOfRowIdentifier match {
     case Nil =>
       GroupRowsByRowDescriptionErrorMessages.noRowDescriptionIsProvided
     case _ =>
-      val groupRowsByRowDescription = new GroupRowsByRowDescription(listOfRowIdentifier, leftFileLabel, rightFileLabel)
+      val groupRowsByRowDescription = new GroupRowsByRowDescription(listOfRowIdentifier, leftFileLabel, rightFileLabel, quickState)
       Right(groupRowsByRowDescription)
   }
 
   private def apply(
              fileDescriptionElem: Elem,
              leftFileLabel: Option[String],
-             rightFileLabel: Option[String]
+             rightFileLabel: Option[String],
+             quickState: QuickState
            ): Either[UnrecoverableError, GroupRowsByRowDescription] = {
 
     @tailrec def loop(
@@ -183,7 +171,7 @@ object GroupRowsByRowDescription {
     val listOfRowIdentifier = loop(XMLHelperFunctions.collectElemChildren(fileDescriptionElem), Nil)
     listOfRowIdentifier match {
       case Right(list) =>
-        GroupRowsByRowDescription(list, leftFileLabel, rightFileLabel)
+        GroupRowsByRowDescription(list, leftFileLabel, rightFileLabel, quickState)
       case Left(errorMessage) =>
         GroupRowsByRowDescriptionErrorMessages.invalidFileDescriptionFile(errorMessage)
     }
@@ -194,12 +182,13 @@ object GroupRowsByRowDescription {
              fileDescriptionRootElem: Elem,
              parserId: Option[String],
              leftFileLabel : Option[String],
-             RightFileLabel : Option[String]
+             RightFileLabel : Option[String],
+             quickState: QuickState
            ): Either[UnrecoverableError, GroupRowsByRowDescription] = {
     val fileDescriptionElem = getFileDescriptionElem(fileDescriptionRootElem, parserId)
     fileDescriptionElem match {
       case Right(fileDescElem) =>
-        GroupRowsByRowDescription(fileDescElem,leftFileLabel,RightFileLabel)
+        GroupRowsByRowDescription(fileDescElem,leftFileLabel,RightFileLabel, quickState)
       case Left(errorMessage) =>
         GroupRowsByRowDescriptionErrorMessages.invalidFileDescriptionFile(errorMessage)
     }
