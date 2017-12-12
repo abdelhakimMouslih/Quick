@@ -24,8 +24,6 @@ scalacOptions ++= Seq(
   "-optimise",
   "-feature"
 )
-//enabling code coverage through scoverage
-coverageEnabled := true
 
 // import libraries
 // adding scopt, a CLI options parsing library
