@@ -1,4 +1,4 @@
-package com.scalableQuality.quick.core.fileProcessing
+package com.scalableQuality.quick.core.fileProcessingPhase
 
 import com.scalableQuality.quick.core.fileComponentDescripts.{FixedColumnDescription, FixedRowDivider, OrderedRowDescription}
 import com.scalableQuality.quick.mantle.parsing.RawRow
