@@ -4,8 +4,9 @@ import com.scalableQuality.quick.core.Reporting.FilledValidationAndMatchingRepor
 
 object ValidationAndMatchingTextReport {
   def apply(
-             validationAndMatchingTextReport: FilledValidationAndMatchingReport
-           ): List[ () => List[String] ] = {
-    validationAndMatchingTextReport.interpret(DifferenceBetweenMatchedRowsTextReport(_))
+      validationAndMatchingTextReport: FilledValidationAndMatchingReport
+  ): List[() => List[String]] = {
+    validationAndMatchingTextReport.interpret(
+      DifferenceBetweenMatchedRowsTextReport(_))
   }
 }

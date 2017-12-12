@@ -1,6 +1,11 @@
 package com.scalableQuality.quick.mantle.parsing.errorMessages
 
-import com.scalableQuality.quick.mantle.error.{BunchOfErrors, DependencyError, EncounteredError, UnrecoverableError}
+import com.scalableQuality.quick.mantle.error.{
+  BunchOfErrors,
+  DependencyError,
+  EncounteredError,
+  UnrecoverableError
+}
 import com.sun.tracing.dtrace.DependencyClass
 
 import scala.xml.Elem
@@ -9,7 +14,7 @@ object GroupRowsByRowDescriptionErrorMessages {
 
   private val actionDescription = "validating xml file description"
   private val headline = "invalid xml file description"
-  
+
   def unknownFileDescriptionRootElem(rootElem: Elem) = {
     val errorMessage = EncounteredError(
       actionDescription,
@@ -48,9 +53,9 @@ object GroupRowsByRowDescriptionErrorMessages {
 
   def unknownFileDescriptionsListChildElemError(elem: Elem) = EncounteredError(
     actionDescription,
-      s""""${elem.label}" is an unknown elem""",
-      "please provide only UnorderedFileDescription inside FileDescriptionsList"
-    )
+    s""""${elem.label}" is an unknown elem""",
+    "please provide only UnorderedFileDescription inside FileDescriptionsList"
+  )
 
   def unknownFileDescriptionsListChildElem(elem: Elem) = {
     val errorMessage = unknownFileDescriptionsListChildElemError(elem)
@@ -74,7 +79,8 @@ object GroupRowsByRowDescriptionErrorMessages {
     invalidFileDescriptionFile(errorMessage)
   }
 
-  def invalidUnorderedFileDescriptionAttributes(bunchOfErrors: BunchOfErrors) = {
+  def invalidUnorderedFileDescriptionAttributes(
+      bunchOfErrors: BunchOfErrors) = {
     val errorMessage = DependencyError(
       "validating UnorderedFileDescription attributes",
       bunchOfErrors
@@ -82,7 +88,8 @@ object GroupRowsByRowDescriptionErrorMessages {
     Left(errorMessage)
   }
 
-  def invalidUnorderedFilesDescriptionsListAttributes(bunchOfErrors: BunchOfErrors) = {
+  def invalidUnorderedFilesDescriptionsListAttributes(
+      bunchOfErrors: BunchOfErrors) = {
     val errorMessage = DependencyError(
       "validating FileDescriptionsList attributes",
       bunchOfErrors

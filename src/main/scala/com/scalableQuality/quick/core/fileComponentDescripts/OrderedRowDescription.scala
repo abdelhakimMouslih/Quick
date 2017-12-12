@@ -1,7 +1,10 @@
 package com.scalableQuality.quick.core.fileComponentDescripts
 
-
-import com.scalableQuality.quick.core.others.{ColumnUsageStages, MatchingStage, ValidationStage}
+import com.scalableQuality.quick.core.others.{
+  ColumnUsageStages,
+  MatchingStage,
+  ValidationStage
+}
 import com.scalableQuality.quick.mantle.parsing.RawRow
 import java.security.MessageDigest
 
@@ -10,53 +13,51 @@ import com.scalableQuality.quick.core.Reporting.ComparisonBetweenTwoColumns
 import scala.annotation.tailrec
 
 class OrderedRowDescription(
-                             private[OrderedRowDescription] val rowDivider: RowDivider,
-                             val label: String
-                           ) {
+    private[OrderedRowDescription] val rowDivider: RowDivider,
+    val label: String
+) {
 
   def keepOnlyColumnsDescriptionsUsedIn(
-                                         columnUsages: ColumnUsageStages*
-                                       ): OrderedRowDescription = {
-    val nextRowDivider = this.rowDivider.keepOnlyColumnsDescriptionsUsedIn(columnUsages:_*)
+      columnUsages: ColumnUsageStages*
+  ): OrderedRowDescription = {
+    val nextRowDivider =
+      this.rowDivider.keepOnlyColumnsDescriptionsUsedIn(columnUsages: _*)
     OrderedRowDescription(nextRowDivider, this.label)
   }
 
   def compare(
-               leftFileRawRow: Option[RawRow],
-               rightFileRawRow: Option[RawRow]
-             ): List[ComparisonBetweenTwoColumns] = rowDivider.compare(leftFileRawRow, rightFileRawRow)
+      leftFileRawRow: Option[RawRow],
+      rightFileRawRow: Option[RawRow]
+  ): List[ComparisonBetweenTwoColumns] =
+    rowDivider.compare(leftFileRawRow, rightFileRawRow)
 
   // validationSignatureOf and matchingSignatureOf functions return
   // List[Byte] instead of List[Option[String]] to avoid huge ram usage
   def validationSignatureOf(
-                             row: RawRow
-                           ): List[Option[List[Byte]]] = {
+      row: RawRow
+  ): List[Option[List[Byte]]] = {
     val validationValue = validationValuesOf(row)
     getSignature(validationValue)
   }
 
   def matchingSignatureOf(
-                           row: RawRow
-                         ): List[Option[List[Byte]]] = {
+      row: RawRow
+  ): List[Option[List[Byte]]] = {
     val matchingValue = matchingValuesOf(row)
     getSignature(matchingValue)
   }
 
-
   def isMatchable: Boolean = rowDivider.isMatchable
 
   private def validationValuesOf(
-                                  row: RawRow
-                                ): List[Option[String]]  =
+      row: RawRow
+  ): List[Option[String]] =
     rowDivider.columnsComparisonValuesFor(ValidationStage, row)
 
-
-
   private def matchingValuesOf(
-                                row: RawRow
-                              ): List[Option[String]] =
+      row: RawRow
+  ): List[Option[String]] =
     rowDivider.columnsComparisonValuesFor(MatchingStage, row)
-
 
   // to avoid considering a row with absent columns values equivalent
   // to a row with empty columns the getSignature function will
@@ -69,8 +70,8 @@ class OrderedRowDescription(
   // below List(Some("AAA"),Some("AA")) and List(Some("AA"),Some("AAA"))
 
   private[fileComponentDescripts] def getSignature(
-                                                    columns: List[Option[String]]
-                                                  ): List[Option[List[Byte]]] = {
+      columns: List[Option[String]]
+  ): List[Option[List[Byte]]] = {
     def sha1Sum(bytes: Array[Byte]): List[Byte] = {
       val sha1Digest = MessageDigest.getInstance("SHA1")
       sha1Digest.reset()
@@ -79,9 +80,9 @@ class OrderedRowDescription(
     }
 
     def appendColumnValue(
-                           stringBuilderOption: Option[StringBuilder],
-                           columnValue: String
-                         ): Option[StringBuilder] = stringBuilderOption match {
+        stringBuilderOption: Option[StringBuilder],
+        columnValue: String
+    ): Option[StringBuilder] = stringBuilderOption match {
       case None =>
         val newStringBuilder = new StringBuilder(columnValue)
         newStringBuilder append columnValue.length.toString
@@ -92,41 +93,45 @@ class OrderedRowDescription(
         Some(stringBuilder)
     }
     @tailrec def loop(
-                       columns: List[Option[String]],
-                       concatenatedPreviousColumnValuesOpt: Option[StringBuilder],
-                       digestedBytes: List[Option[List[Byte]]]
-                     ): List[Option[List[Byte]]] = columns match {
+        columns: List[Option[String]],
+        concatenatedPreviousColumnValuesOpt: Option[StringBuilder],
+        digestedBytes: List[Option[List[Byte]]]
+    ): List[Option[List[Byte]]] = columns match {
       case Nil =>
         concatenatedPreviousColumnValuesOpt match {
           case None =>
             digestedBytes.reverse
           case Some(columnValue) =>
-            val signatureOfPreviousColumnValues = sha1Sum(columnValue.toString.getBytes)
+            val signatureOfPreviousColumnValues = sha1Sum(
+              columnValue.toString.getBytes)
             val finalDigestedBytes = Some(signatureOfPreviousColumnValues)
             (finalDigestedBytes :: digestedBytes).reverse
         }
-      case Some(columnValue)::restOfColumnValues =>
-        val concatenatedStrings: Option[StringBuilder] = appendColumnValue(concatenatedPreviousColumnValuesOpt, columnValue)
+      case Some(columnValue) :: restOfColumnValues =>
+        val concatenatedStrings: Option[StringBuilder] =
+          appendColumnValue(concatenatedPreviousColumnValuesOpt, columnValue)
         loop(restOfColumnValues, concatenatedStrings, digestedBytes)
-      case None::restOfColumnValues =>
+      case None :: restOfColumnValues =>
         concatenatedPreviousColumnValuesOpt match {
           case None =>
-            loop(restOfColumnValues, concatenatedPreviousColumnValuesOpt, None::digestedBytes)
-          case Some(concatenatedPreviousColumnValues) =>
-            val signatureOfPreviousColumnValues = sha1Sum(concatenatedPreviousColumnValues.toString.getBytes)
             loop(restOfColumnValues,
-              None,
-              None :: Some(signatureOfPreviousColumnValues) :: digestedBytes
-            )
+                 concatenatedPreviousColumnValuesOpt,
+                 None :: digestedBytes)
+          case Some(concatenatedPreviousColumnValues) =>
+            val signatureOfPreviousColumnValues = sha1Sum(
+              concatenatedPreviousColumnValues.toString.getBytes)
+            loop(restOfColumnValues,
+                 None,
+                 None :: Some(signatureOfPreviousColumnValues) :: digestedBytes)
         }
     }
     loop(columns, None, Nil)
   }
 
-  override def equals(obj: scala.Any): Boolean =  obj match {
+  override def equals(obj: scala.Any): Boolean = obj match {
     case rowDescription: OrderedRowDescription =>
       rowDescription.rowDivider == this.rowDivider &&
-      rowDescription.label == this.label
+        rowDescription.label == this.label
 
     case _ => false
   }
@@ -134,8 +139,7 @@ class OrderedRowDescription(
 
 object OrderedRowDescription {
   def apply(
-             rowDivider: RowDivider,
-             label: String
-  ): OrderedRowDescription = new OrderedRowDescription(rowDivider,label)
+      rowDivider: RowDivider,
+      label: String
+  ): OrderedRowDescription = new OrderedRowDescription(rowDivider, label)
 }
-

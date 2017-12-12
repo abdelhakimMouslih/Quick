@@ -1,6 +1,10 @@
 package com.scalableQuality.quick.core.fileComponentDescripts.errorMessages
 
-import com.scalableQuality.quick.mantle.error.{DependencyError, EncounteredError, UnrecoverableError}
+import com.scalableQuality.quick.mantle.error.{
+  DependencyError,
+  EncounteredError,
+  UnrecoverableError
+}
 
 object FixedLengthPositionErrorMessages {
   val actionDescription = "validating column position attributes"
@@ -34,7 +38,7 @@ object FixedLengthPositionErrorMessages {
   }
 
   val incoherentEndsAtAndLengthValues = {
-    val errorMessage =  EncounteredError(
+    val errorMessage = EncounteredError(
       actionDescription,
       "the length specified by the attribute does not match the length calculated using (endsAt - startsAt + 1)",
       "please review the values of attributes startsAt, endsAt and length"

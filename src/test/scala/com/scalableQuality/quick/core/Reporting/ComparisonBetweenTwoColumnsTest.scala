@@ -5,7 +5,10 @@ import com.scalableQuality.quick.mantle.parsing.RawRow
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{FlatSpec, Matchers}
 
-class ComparisonBetweenTwoColumnsTest extends FlatSpec with Matchers with TableDrivenPropertyChecks {
+class ComparisonBetweenTwoColumnsTest
+    extends FlatSpec
+    with Matchers
+    with TableDrivenPropertyChecks {
   val validColumnsTable = Table(
     "useDuringMatching",
     "true",
@@ -13,10 +16,10 @@ class ComparisonBetweenTwoColumnsTest extends FlatSpec with Matchers with TableD
   )
   "ComparisonBetweenTwoColumns.apply" should
     "return ValidColumns when useDuringValidation = true  && useDuringReporting = false && leftColumn == rightColumn" in
-  forAll(validColumnsTable) { (useDuringMatching : String) =>
-    val leftRawRow = Some(RawRow("FirstColumn",1))
-    val rightRawRow = Some(RawRow("FirstColumn",1))
-    val columnDescriptionElem = <ColumnDescription
+    forAll(validColumnsTable) { (useDuringMatching: String) =>
+      val leftRawRow = Some(RawRow("FirstColumn", 1))
+      val rightRawRow = Some(RawRow("FirstColumn", 1))
+      val columnDescriptionElem = <ColumnDescription
       label="testColumn"
       startsAt="1"
       length="11"
@@ -24,15 +27,17 @@ class ComparisonBetweenTwoColumnsTest extends FlatSpec with Matchers with TableD
       useDuringReporting="false"
       useDuringMatching={useDuringMatching}
       />
-    val columnDescriptionEither = FixedColumnDescription(columnDescriptionElem.attributes)
-    columnDescriptionEither match {
-      case Right(columnDescription) =>
-        val comparisonBetweenTwoColumns = columnDescription.compareTwoColumns(leftRawRow, rightRawRow)
-        comparisonBetweenTwoColumns shouldBe ValidColumns
-      case Left(_) =>
-        columnDescriptionEither shouldBe a [Right[_,_]]
+      val columnDescriptionEither =
+        FixedColumnDescription(columnDescriptionElem.attributes)
+      columnDescriptionEither match {
+        case Right(columnDescription) =>
+          val comparisonBetweenTwoColumns =
+            columnDescription.compareTwoColumns(leftRawRow, rightRawRow)
+          comparisonBetweenTwoColumns shouldBe ValidColumns
+        case Left(_) =>
+          columnDescriptionEither shouldBe a[Right[_, _]]
+      }
     }
-  }
 
   val irrelevantColumnsTable = Table(
     ("leftRow", "rightRow", "useDuringMatching"),
@@ -43,10 +48,11 @@ class ComparisonBetweenTwoColumnsTest extends FlatSpec with Matchers with TableD
   )
   it should
     "return IrrelevantColumns when useDuringValidation = false  && useDuringReporting = false" in
-  forAll(irrelevantColumnsTable) { (leftRow: String, rightRow:String, useDuringMatching : String) =>
-      val leftRawRow = Some(RawRow(leftRow,1))
-      val rightRawRow = Some(RawRow(rightRow,1))
-      val columnDescriptionElem = <ColumnDescription
+    forAll(irrelevantColumnsTable) {
+      (leftRow: String, rightRow: String, useDuringMatching: String) =>
+        val leftRawRow = Some(RawRow(leftRow, 1))
+        val rightRawRow = Some(RawRow(rightRow, 1))
+        val columnDescriptionElem = <ColumnDescription
         label="testColumn"
         startsAt="1"
         length="11"
@@ -54,32 +60,37 @@ class ComparisonBetweenTwoColumnsTest extends FlatSpec with Matchers with TableD
         useDuringReporting="false"
         useDuringMatching={useDuringMatching}
         />
-      val columnDescriptionEither = FixedColumnDescription(columnDescriptionElem.attributes)
-      columnDescriptionEither match {
-        case Right(columnDescription) =>
-          val comparisonBetweenTwoColumns = columnDescription.compareTwoColumns(leftRawRow, rightRawRow)
-          comparisonBetweenTwoColumns shouldBe IrrelevantColumns
-        case Left(_) =>
-          columnDescriptionEither shouldBe a [Right[_,_]]
-      }
+        val columnDescriptionEither =
+          FixedColumnDescription(columnDescriptionElem.attributes)
+        columnDescriptionEither match {
+          case Right(columnDescription) =>
+            val comparisonBetweenTwoColumns =
+              columnDescription.compareTwoColumns(leftRawRow, rightRawRow)
+            comparisonBetweenTwoColumns shouldBe IrrelevantColumns
+          case Left(_) =>
+            columnDescriptionEither shouldBe a[Right[_, _]]
+        }
     }
 
   val reportingColumnsTable = Table(
-    ("useDuringValidation","leftRow", "rightRow","useDuringMatching"),
-    ("false","FirstColumn", "FirstColumn","true"),
-    ("false","FirstColumn", "FirstColumn","false"),
-    ("false","FirstColumn", "BecondColum","true"),
-    ("false","FirstColumn", "BecondColum","false"),
-    ("true","FirstColumn", "FirstColumn","false"),
-    ("true","FirstColumn", "FirstColumn","true")
+    ("useDuringValidation", "leftRow", "rightRow", "useDuringMatching"),
+    ("false", "FirstColumn", "FirstColumn", "true"),
+    ("false", "FirstColumn", "FirstColumn", "false"),
+    ("false", "FirstColumn", "BecondColum", "true"),
+    ("false", "FirstColumn", "BecondColum", "false"),
+    ("true", "FirstColumn", "FirstColumn", "false"),
+    ("true", "FirstColumn", "FirstColumn", "true")
   )
   it should
     "return a ReportingColumns when useDuringReporting = true && (useDuringValidation = false || (useDuringValidation = true && leftColumn == rightColumn)) " in
     forAll(reportingColumnsTable) {
-    (useDuringValidation: String, leftRow: String, rightRow: String,useDuringMatching: String) =>
-    val leftRawRow = Some(RawRow(leftRow,1))
-    val rightRawRow = Some(RawRow(rightRow,1))
-    val columnDescriptionElem = <ColumnDescription
+      (useDuringValidation: String,
+       leftRow: String,
+       rightRow: String,
+       useDuringMatching: String) =>
+        val leftRawRow = Some(RawRow(leftRow, 1))
+        val rightRawRow = Some(RawRow(rightRow, 1))
+        val columnDescriptionElem = <ColumnDescription
       label="testColumn"
       startsAt="1"
       length="11"
@@ -87,40 +98,40 @@ class ComparisonBetweenTwoColumnsTest extends FlatSpec with Matchers with TableD
       useDuringReporting="true"
       useDuringMatching={useDuringMatching}
       />
-    val columnDescriptionEither = FixedColumnDescription(columnDescriptionElem.attributes)
-    columnDescriptionEither match {
-      case Right(columnDescription) =>
+        val columnDescriptionEither =
+          FixedColumnDescription(columnDescriptionElem.attributes)
+        columnDescriptionEither match {
+          case Right(columnDescription) =>
+            val comparisonBetweenTwoColumns =
+              columnDescription.compareTwoColumns(leftRawRow, rightRawRow)
 
-        val comparisonBetweenTwoColumns = columnDescription.compareTwoColumns(leftRawRow, rightRawRow)
+            val expectedReportingColumn =
+              ReportingColumns(Some(leftRow),
+                               Some(rightRow),
+                               columnDescription.metaData.position,
+                               columnDescription.metaData.label)
 
-        val expectedReportingColumn = ReportingColumns(
-          Some(leftRow),
-          Some(rightRow),
-          columnDescription.metaData.position,
-          columnDescription.metaData.label)
-
-
-        comparisonBetweenTwoColumns shouldBe expectedReportingColumn
-      case Left(_) =>
-        columnDescriptionEither shouldBe a [Right[_,_]]
+            comparisonBetweenTwoColumns shouldBe expectedReportingColumn
+          case Left(_) =>
+            columnDescriptionEither shouldBe a[Right[_, _]]
+        }
     }
-  }
 
   val invalidColumns = Table(
-    ("useDuringReporting","useDuringMatching"),
-    ("true","false"),
-    ("true","true"),
-    ("false","false"),
-    ("false","true")
+    ("useDuringReporting", "useDuringMatching"),
+    ("true", "false"),
+    ("true", "true"),
+    ("false", "false"),
+    ("false", "true")
   )
   it should "return a InvalidColumns when useDuringValidation = true && leftColumn == rightColumn" in
-  forAll(invalidColumns) {
-    (useDuringReporting:String, useDuringMatching:String) =>
-      val firstColumnValue = "FirstColumn"
-      val misspelledFirstColumnValue = "BecondColum"
-      val leftRawRow = Some(RawRow(firstColumnValue,1))
-      val rightRawRow = Some(RawRow(misspelledFirstColumnValue,1))
-      val columnDescriptionElem = <ColumnDescription
+    forAll(invalidColumns) {
+      (useDuringReporting: String, useDuringMatching: String) =>
+        val firstColumnValue = "FirstColumn"
+        val misspelledFirstColumnValue = "BecondColum"
+        val leftRawRow = Some(RawRow(firstColumnValue, 1))
+        val rightRawRow = Some(RawRow(misspelledFirstColumnValue, 1))
+        val columnDescriptionElem = <ColumnDescription
         label="testColumn"
         startsAt="1"
         length="11"
@@ -128,19 +139,21 @@ class ComparisonBetweenTwoColumnsTest extends FlatSpec with Matchers with TableD
         useDuringReporting={useDuringReporting}
         useDuringMatching={useDuringMatching}
         />
-      val columnDescriptionEither = FixedColumnDescription(columnDescriptionElem.attributes)
-      columnDescriptionEither match {
-        case Right(columnDescription) =>
-          val comparisonBetweenTwoColumns = columnDescription.compareTwoColumns(leftRawRow, rightRawRow)
-          val expectedInvalidColumn = InvalidColumns(
-            Some(firstColumnValue),
-            Some(misspelledFirstColumnValue),
-            columnDescription.metaData.position,
-            columnDescription.metaData.label
-          )
-          comparisonBetweenTwoColumns shouldBe expectedInvalidColumn
-        case Left(_) =>
-          columnDescriptionEither shouldBe a [Right[_,_]]
-      }
-  }
+        val columnDescriptionEither =
+          FixedColumnDescription(columnDescriptionElem.attributes)
+        columnDescriptionEither match {
+          case Right(columnDescription) =>
+            val comparisonBetweenTwoColumns =
+              columnDescription.compareTwoColumns(leftRawRow, rightRawRow)
+            val expectedInvalidColumn = InvalidColumns(
+              Some(firstColumnValue),
+              Some(misspelledFirstColumnValue),
+              columnDescription.metaData.position,
+              columnDescription.metaData.label
+            )
+            comparisonBetweenTwoColumns shouldBe expectedInvalidColumn
+          case Left(_) =>
+            columnDescriptionEither shouldBe a[Right[_, _]]
+        }
+    }
 }

@@ -8,29 +8,37 @@ object CommandLineParser {
     new scopt.OptionParser[QuickState](quickName) {
       head(quickName, quickVersion)
 
-      opt[String]('d', "description").action {
-        (optionValue, config) =>
+      opt[String]('d', "description")
+        .action { (optionValue, config) =>
           config.copy(descriptionFile = optionValue)
-      }.required()
+        }
+        .required()
 
-      opt[String]('i', "id").action {
-        (optionValue, config) =>
+      opt[String]('i', "id")
+        .action { (optionValue, config) =>
           config.copy(descriptionId = Some(optionValue))
-      }.optional()
+        }
+        .optional()
 
-      opt[String]('l', "label").action {
-        (optionValue, config) =>
+      opt[String]('l', "label")
+        .action { (optionValue, config) =>
           config.addLabel(optionValue)
-      }.optional().maxOccurs(2)
+        }
+        .optional()
+        .maxOccurs(2)
 
-      opt[Unit]('m', "matchOnly").action{
-        (_, config) =>
+      opt[Unit]('m', "matchOnly")
+        .action { (_, config) =>
           config.copy(rowsProcessingPhase = QuickState.matchRows)
-      }.optional()
+        }
+        .optional()
 
-      arg[String]("<leftFile> <rightFile>").action {
-        (optionValue, config) =>
+      arg[String]("<leftFile> <rightFile>")
+        .action { (optionValue, config) =>
           config.addFile(optionValue)
-      }.required().minOccurs(2).maxOccurs(2)
+        }
+        .required()
+        .minOccurs(2)
+        .maxOccurs(2)
     }.parse(args, QuickState())
 }

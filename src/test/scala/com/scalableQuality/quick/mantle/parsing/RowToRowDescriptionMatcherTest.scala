@@ -11,9 +11,8 @@ class RowToRowDescriptionMatcherTest extends FlatSpec with Matchers {
         <ColumnIdentifier matchAgainst="^4[0-9]{15}"  label="Visa Card Number" startsAt="2" length="16"></ColumnIdentifier>
       </FixedOrderedRowDescription>
     val rowIdentifierEither = RowToRowDescriptionMatcher(rowDescriptionElem)
-    rowIdentifierEither shouldBe a [Right[_,_]]
+    rowIdentifierEither shouldBe a[Right[_, _]]
   }
-
 
   it should "handel both upper case and lower case ColumnDescriptions and FixedColumnIdentifier in FixedOrderedRowDescription" in {
     val rowDescriptionElem =
@@ -24,7 +23,7 @@ class RowToRowDescriptionMatcherTest extends FlatSpec with Matchers {
         <COLUMNIDENTIFIER matchAgainst="^4[0-9]{15}"  label="Visa Card Number" startsAt="2" length="16"></COLUMNIDENTIFIER>
       </FixedOrderedRowDescription>
     val rowIdentifierEither = RowToRowDescriptionMatcher(rowDescriptionElem)
-    rowIdentifierEither shouldBe a [Right[_,_]]
+    rowIdentifierEither shouldBe a[Right[_, _]]
   }
 
   it should "return Left[ErrorMessage] when label attribute is absent from FixedOrderedRowDescription" in {
@@ -34,7 +33,7 @@ class RowToRowDescriptionMatcherTest extends FlatSpec with Matchers {
         <ColumnIdentifier matchAgainst="^4[0-9]{15}"  label="Visa Card Number" startsAt="2" length="16"></ColumnIdentifier>
       </FixedOrderedRowDescription>
     val rowIdentifierEither = RowToRowDescriptionMatcher(rowDescriptionElem)
-    rowIdentifierEither shouldBe a [Left[_,_]]
+    rowIdentifierEither shouldBe a[Left[_, _]]
   }
 
   it should "return Left[ErrorMessage] if a misspelled attribute is present in FixedOrderedRowDescription" in {
@@ -44,7 +43,7 @@ class RowToRowDescriptionMatcherTest extends FlatSpec with Matchers {
         <ColumnIdentifier matchAgainst="^4[0-9]{15}"  label="Visa Card Number" startsAt="2" length="16"></ColumnIdentifier>
       </FixedOrderedRowDescription>
     val rowIdentifierEither = RowToRowDescriptionMatcher(rowDescriptionElem)
-    rowIdentifierEither shouldBe a [Left[_,_]]
+    rowIdentifierEither shouldBe a[Left[_, _]]
   }
 
   it should "return Left[ErrorMessage] if an unknown attribute is present in FixedOrderedRowDescription" in {
@@ -54,7 +53,7 @@ class RowToRowDescriptionMatcherTest extends FlatSpec with Matchers {
         <ColumnIdentifier matchAgainst="^4[0-9]{15}"  label="Visa Card Number" startsAt="2" length="16"></ColumnIdentifier>
       </FixedOrderedRowDescription>
     val rowIdentifierEither = RowToRowDescriptionMatcher(rowDescriptionElem)
-    rowIdentifierEither shouldBe a [Left[_,_]]
+    rowIdentifierEither shouldBe a[Left[_, _]]
   }
 
   it should "return Left[ErrorMessage] when no Column Identifiers are present in FixedOrderedRowDescription " in {
@@ -63,9 +62,8 @@ class RowToRowDescriptionMatcherTest extends FlatSpec with Matchers {
         <ColumnDescription label="seperator" startsAt="1" length="1" />
       </FixedOrderedRowDescription>
     val rowIdentifierEither = RowToRowDescriptionMatcher(rowDescriptionElem)
-    rowIdentifierEither shouldBe a [Left[_,_]]
+    rowIdentifierEither shouldBe a[Left[_, _]]
   }
-
 
   it should "return Left[ErrorMessage] when it encounters an unknown elem" in {
     val rowDescriptionElem =
@@ -75,7 +73,7 @@ class RowToRowDescriptionMatcherTest extends FlatSpec with Matchers {
         <MisspelledColumnDiscription />
       </FixedOrderedRowDescription>
     val rowIdentifierEither = RowToRowDescriptionMatcher(rowDescriptionElem)
-    rowIdentifierEither shouldBe a [Left[_,_]]
+    rowIdentifierEither shouldBe a[Left[_, _]]
   }
 
   it should "return Left[ErrorMessage] when it fails to create a FixedColumnDescription" in {
@@ -85,7 +83,7 @@ class RowToRowDescriptionMatcherTest extends FlatSpec with Matchers {
         <ColumnIdentifier matchAgainst="^4[0-9]{15}"  label="Visa Card Number" startsAt="2" length="16"></ColumnIdentifier>
       </FixedOrderedRowDescription>
     val rowIdentifierEither = RowToRowDescriptionMatcher(rowDescriptionElem)
-    rowIdentifierEither shouldBe a [Left[_,_]]
+    rowIdentifierEither shouldBe a[Left[_, _]]
   }
 
   it should "return Left[ErrorMessage] when it fails to create a FixedColumnIdentifier" in {
@@ -94,7 +92,7 @@ class RowToRowDescriptionMatcherTest extends FlatSpec with Matchers {
         <ColumnIdentifier  label="Visa Card Number" startsAt="2" length="16" ></ColumnIdentifier>
       </FixedOrderedRowDescription>
     val rowIdentifierEither = RowToRowDescriptionMatcher(rowDescriptionElem)
-    rowIdentifierEither shouldBe a [Left[_,_]]
+    rowIdentifierEither shouldBe a[Left[_, _]]
   }
 
   it should "handel both ColumnDescriptions and FixedColumnIdentifier in DelimitedOrderedRowDescription" in {
@@ -104,7 +102,7 @@ class RowToRowDescriptionMatcherTest extends FlatSpec with Matchers {
         <ColumnIdentifier matchAgainst="^4[0-9]{15}"  label="Visa Card Number" position="2"></ColumnIdentifier>
       </DelimitedOrderedRowDescription>
     val rowIdentifierEither = RowToRowDescriptionMatcher(rowDescriptionElem)
-    rowIdentifierEither shouldBe a [Right[_,_]]
+    rowIdentifierEither shouldBe a[Right[_, _]]
   }
 
   it should "handel both upper case and lower case ColumnDescriptions and ColumnIdentifier in DelimitedOrderedRowDescription" in {
@@ -116,7 +114,7 @@ class RowToRowDescriptionMatcherTest extends FlatSpec with Matchers {
         <COLUMNIDENTIFIER matchAgainst="^4[0-9]{15}"  label="Visa Card Number" position="1"></COLUMNIDENTIFIER>
       </DelimitedOrderedRowDescription>
     val rowIdentifierEither = RowToRowDescriptionMatcher(rowDescriptionElem)
-    rowIdentifierEither shouldBe a [Right[_,_]]
+    rowIdentifierEither shouldBe a[Right[_, _]]
   }
 
   it should "return Left[ErrorMessage] when label attribute is absent from DelimitedOrderedRowDescription" in {
@@ -126,7 +124,7 @@ class RowToRowDescriptionMatcherTest extends FlatSpec with Matchers {
         <ColumnIdentifier matchAgainst="^4[0-9]{15}"  label="Visa Card Number" position="2"></ColumnIdentifier>
       </DelimitedOrderedRowDescription>
     val rowIdentifierEither = RowToRowDescriptionMatcher(rowDescriptionElem)
-    rowIdentifierEither shouldBe a [Left[_,_]]
+    rowIdentifierEither shouldBe a[Left[_, _]]
   }
 
   it should "return Left[ErrorMessage] is a misspelled attribute is present in DelimitedOrderedRowDescription" in {
@@ -136,7 +134,7 @@ class RowToRowDescriptionMatcherTest extends FlatSpec with Matchers {
         <ColumnIdentifier matchAgainst="^4[0-9]{15}"  label="Visa Card Number" position="2"></ColumnIdentifier>
       </DelimitedOrderedRowDescription>
     val rowIdentifierEither = RowToRowDescriptionMatcher(rowDescriptionElem)
-    rowIdentifierEither shouldBe a [Left[_,_]]
+    rowIdentifierEither shouldBe a[Left[_, _]]
   }
 
   it should "return Left[ErrorMessage] is an unknown attribute is present in DelimitedOrderedRowDescription" in {
@@ -146,9 +144,8 @@ class RowToRowDescriptionMatcherTest extends FlatSpec with Matchers {
         <ColumnIdentifier matchAgainst="^4[0-9]{15}"  label="Visa Card Number" position="2"></ColumnIdentifier>
       </DelimitedOrderedRowDescription>
     val rowIdentifierEither = RowToRowDescriptionMatcher(rowDescriptionElem)
-    rowIdentifierEither shouldBe a [Left[_,_]]
+    rowIdentifierEither shouldBe a[Left[_, _]]
   }
-
 
   it should "return Left[ErrorMessage] when delimiter attribute is absent from DelimitedOrderedRowDescription" in {
     val rowDescriptionElem =
@@ -157,7 +154,7 @@ class RowToRowDescriptionMatcherTest extends FlatSpec with Matchers {
         <ColumnIdentifier matchAgainst="^4[0-9]{15}"  label="Visa Card Number" position="2"></ColumnIdentifier>
       </DelimitedOrderedRowDescription>
     val rowIdentifierEither = RowToRowDescriptionMatcher(rowDescriptionElem)
-    rowIdentifierEither shouldBe a [Left[_,_]]
+    rowIdentifierEither shouldBe a[Left[_, _]]
   }
 
   it should "return Left[ErrorMessage] when no Column Identifiers are present in DelimitedOrderedRowDescription" in {
@@ -166,7 +163,7 @@ class RowToRowDescriptionMatcherTest extends FlatSpec with Matchers {
         <ColumnDescription label="seperator" position="1" />
       </DelimitedOrderedRowDescription>
     val rowIdentifierEither = RowToRowDescriptionMatcher(rowDescriptionElem)
-    rowIdentifierEither shouldBe a [Left[_,_]]
+    rowIdentifierEither shouldBe a[Left[_, _]]
   }
 
   it should "return Left[ErrorMessage] when it encounters an unknown elem in DelimitedOrderedRowDescription" in {
@@ -177,7 +174,7 @@ class RowToRowDescriptionMatcherTest extends FlatSpec with Matchers {
         <MisspelledColumnDiscription />
       </DelimitedOrderedRowDescription>
     val rowIdentifierEither = RowToRowDescriptionMatcher(rowDescriptionElem)
-    rowIdentifierEither shouldBe a [Left[_,_]]
+    rowIdentifierEither shouldBe a[Left[_, _]]
   }
 
   it should "return Left[ErrorMessage] when it fails to create a ColumnDescription in DelimitedOrderedRowDescription" in {
@@ -187,7 +184,7 @@ class RowToRowDescriptionMatcherTest extends FlatSpec with Matchers {
         <ColumnIdentifier matchAgainst="^4[0-9]{15}"  label="Visa Card Number" position="2"></ColumnIdentifier>
       </DelimitedOrderedRowDescription>
     val rowIdentifierEither = RowToRowDescriptionMatcher(rowDescriptionElem)
-    rowIdentifierEither shouldBe a [Left[_,_]]
+    rowIdentifierEither shouldBe a[Left[_, _]]
   }
 
   it should "return Left[ErrorMessage] when it fails to create a ColumnIdentifier in DelimitedOrderedRowDescription" in {
@@ -197,13 +194,12 @@ class RowToRowDescriptionMatcherTest extends FlatSpec with Matchers {
         <ColumnIdentifier matchAgainst="^4[0-9]{15}"  label="Visa Card Number" startsAt="2"></ColumnIdentifier>
       </DelimitedOrderedRowDescription>
     val rowIdentifierEither = RowToRowDescriptionMatcher(rowDescriptionElem)
-    rowIdentifierEither shouldBe a [Left[_,_]]
+    rowIdentifierEither shouldBe a[Left[_, _]]
   }
 
   /**************************************/
-
   "RowToRowDescriptionMatcher.canIdentify" should "return true when the input string respects the FixedOrderedRowDescription" in {
-    val track2dataRow = RawRow(";1234567890123445=99011200XXXX00000000?*",1)
+    val track2dataRow = RawRow(";1234567890123445=99011200XXXX00000000?*", 1)
     val rowDescriptionElem =
       <FixedOrderedRowDescription label="Track2 data" >
         <ColumnIdentifier matchAgainst=";" label="Start sentinel" startsAt="1" length="1"/>
@@ -220,9 +216,8 @@ class RowToRowDescriptionMatcherTest extends FlatSpec with Matchers {
     }
   }
 
-
   it should "return false when the input string does not respect the FixedOrderedRowDescription" in {
-    val track2dataRow = RawRow("not track 2",1)
+    val track2dataRow = RawRow("not track 2", 1)
     val rowDescriptionElem =
       <FixedOrderedRowDescription label="Track2 data" >
         <ColumnIdentifier matchAgainst=";" label="Start sentinel" startsAt="1" length="1"/>
@@ -240,7 +235,7 @@ class RowToRowDescriptionMatcherTest extends FlatSpec with Matchers {
   }
 
   it should "return true when the input string respects the DelimitedOrderedRowDescription" in {
-    val track2dataRow = RawRow(";,1234567890123445,=,99011200XXXX00000000?*",1)
+    val track2dataRow = RawRow(";,1234567890123445,=,99011200XXXX00000000?*", 1)
     val rowDescriptionElem =
       <DelimitedOrderedRowDescription label="Track2 data" literalDelimiter="," >
         <ColumnIdentifier matchAgainst=";" label="Start sentinel" position="1"/>
@@ -258,7 +253,7 @@ class RowToRowDescriptionMatcherTest extends FlatSpec with Matchers {
   }
 
   it should "return false when the input string does not respect the DelimitedOrderedRowDescription" in {
-    val track2dataRow = RawRow("not track 2",1)
+    val track2dataRow = RawRow("not track 2", 1)
     val rowDescriptionElem =
       <DelimitedOrderedRowDescription label="Track2 data" literalDelimiter="," >
         <ColumnIdentifier matchAgainst=";" label="Start sentinel" position="1"/>

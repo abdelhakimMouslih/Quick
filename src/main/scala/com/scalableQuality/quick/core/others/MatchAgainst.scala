@@ -9,20 +9,22 @@ import com.scalableQuality.quick.mantle.error.UnrecoverableError
 import scala.xml.MetaData
 
 class MatchAgainst(
-                    pattern: Pattern
-                  ){
-  def apply(value: String ): Boolean = pattern.matcher(value).matches()
+    pattern: Pattern
+) {
+  def apply(value: String): Boolean = pattern.matcher(value).matches()
 }
 
 object MatchAgainst {
   def apply(
-             pattern: Pattern
-           ): MatchAgainst = new MatchAgainst(pattern)
+      pattern: Pattern
+  ): MatchAgainst = new MatchAgainst(pattern)
 
-
-  def apply(elemMetaData: MetaData): Either[UnrecoverableError, MatchAgainst] = {
-    val classParameterFromAttributes = AttributesValuesExtractor(elemMetaData, matchAgainstAttributeKey)
-    val patternValue = classParameterFromAttributes.get(matchAgainstAttributeKey)
+  def apply(
+      elemMetaData: MetaData): Either[UnrecoverableError, MatchAgainst] = {
+    val classParameterFromAttributes =
+      AttributesValuesExtractor(elemMetaData, matchAgainstAttributeKey)
+    val patternValue =
+      classParameterFromAttributes.get(matchAgainstAttributeKey)
     patternValue match {
       case Right(pattern) =>
         val matchAgainst = MatchAgainst(pattern)
@@ -31,6 +33,7 @@ object MatchAgainst {
         MatchAgainstErrorMessages.invalidAttributes(errorMessage)
     }
   }
-  private val matchAgainstAttributeKey = AttributeValueExtractor("matchAgainst", AttributeValueConversion.toPattern)
+  private val matchAgainstAttributeKey =
+    AttributeValueExtractor("matchAgainst", AttributeValueConversion.toPattern)
   val listOfAttributesKeys = List(matchAgainstAttributeKey)
 }

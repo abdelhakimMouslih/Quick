@@ -1,6 +1,9 @@
 package com.scalableQuality.quick.core.Reporting
 
-import com.scalableQuality.quick.core.fileComponentDescripts.{ColumnDescriptionMetaData, FixedColumnDescription}
+import com.scalableQuality.quick.core.fileComponentDescripts.{
+  ColumnDescriptionMetaData,
+  FixedColumnDescription
+}
 import com.scalableQuality.quick.core.others.{ReportingStage, ValidationStage}
 import com.scalableQuality.quick.mantle.parsing.RawRow
 
@@ -9,15 +12,17 @@ sealed trait ComparisonBetweenTwoColumns
 object ComparisonBetweenTwoColumns {
 
   def apply(
-             columnDescriptionMetaData: ColumnDescriptionMetaData,
-             leftFileColumnValue : => Option[String],
-             rightFileColumnValue: => Option[String],
-             theTwoColumnsAreEquivalent: => Boolean
-           ): ComparisonBetweenTwoColumns = {
-    val shouldUseInReporting = columnDescriptionMetaData.shouldUseDuring(ReportingStage)
-    val shouldUseInValidation = columnDescriptionMetaData.shouldUseDuring(ValidationStage)
+      columnDescriptionMetaData: ColumnDescriptionMetaData,
+      leftFileColumnValue: => Option[String],
+      rightFileColumnValue: => Option[String],
+      theTwoColumnsAreEquivalent: => Boolean
+  ): ComparisonBetweenTwoColumns = {
+    val shouldUseInReporting =
+      columnDescriptionMetaData.shouldUseDuring(ReportingStage)
+    val shouldUseInValidation =
+      columnDescriptionMetaData.shouldUseDuring(ValidationStage)
     if (shouldUseInValidation) {
-      if (theTwoColumnsAreEquivalent &&  shouldUseInReporting ) {
+      if (theTwoColumnsAreEquivalent && shouldUseInReporting) {
         ReportingColumns(
           leftFileColumnValue,
           rightFileColumnValue,
@@ -49,7 +54,7 @@ object ComparisonBetweenTwoColumns {
 }
 
 // represents the columns useDuringValidation = true  && useDuringReporting = false && leftColumn == rightColumn
-case object ValidColumns extends  ComparisonBetweenTwoColumns
+case object ValidColumns extends ComparisonBetweenTwoColumns
 
 // represents the columns useDuringValidation = false  && useDuringReporting = false
 case object IrrelevantColumns extends ComparisonBetweenTwoColumns
@@ -57,34 +62,39 @@ case object IrrelevantColumns extends ComparisonBetweenTwoColumns
 // represents the columns
 // useDuringReporting = true && (useDuringValidation = false || (useDuringValidation = true && leftColumn == rightColumn))
 class ReportingColumns(
-                        leftColumnValue: => Option[String],
-                        rightColumnValue: => Option[String],
-                        val  columnPosition: String,
-                        val columnLabel: String
-                      ) extends ComparisonBetweenTwoColumns {
+    leftColumnValue: => Option[String],
+    rightColumnValue: => Option[String],
+    val columnPosition: String,
+    val columnLabel: String
+) extends ComparisonBetweenTwoColumns {
   lazy val leftFileColumnValue: Option[String] = leftColumnValue
   lazy val rightFileColumnValue: Option[String] = rightColumnValue
 
   override def equals(that: scala.Any): Boolean = that match {
     case reportingColumn: ReportingColumns =>
       reportingColumn.leftFileColumnValue == this.leftFileColumnValue &&
-      reportingColumn.rightFileColumnValue == this.rightFileColumnValue &&
-      reportingColumn.columnPosition == this.columnPosition &&
-      reportingColumn.columnLabel == this.columnLabel
+        reportingColumn.rightFileColumnValue == this.rightFileColumnValue &&
+        reportingColumn.columnPosition == this.columnPosition &&
+        reportingColumn.columnLabel == this.columnLabel
     case _ => false
   }
 
-  override def toString: String = s" ${this.leftFileColumnValue} ${this.rightFileColumnValue} $columnPosition"
+  override def toString: String =
+    s" ${this.leftFileColumnValue} ${this.rightFileColumnValue} $columnPosition"
 
 }
 
 object ReportingColumns {
   def apply(
-             leftColumnValue: => Option[String],
-             rightColumnValue: => Option[String],
-             columnPosition: String,
-             columnLabel: String
-           ): ReportingColumns = new ReportingColumns(leftColumnValue,rightColumnValue,columnPosition,columnLabel)
+      leftColumnValue: => Option[String],
+      rightColumnValue: => Option[String],
+      columnPosition: String,
+      columnLabel: String
+  ): ReportingColumns =
+    new ReportingColumns(leftColumnValue,
+                         rightColumnValue,
+                         columnPosition,
+                         columnLabel)
 
   /*def apply(
              columnDescription: FixedColumnDescription,
@@ -101,33 +111,38 @@ object ReportingColumns {
 // represents the columns
 // useDuringValidation = true && leftColumn != rightColumn
 class InvalidColumns(
-                      leftColumnValue: => Option[String],
-                      rightColumnValue: => Option[String],
-                      val columnPosition: String,
-                      val columnLabel: String
-                    ) extends ComparisonBetweenTwoColumns {
+    leftColumnValue: => Option[String],
+    rightColumnValue: => Option[String],
+    val columnPosition: String,
+    val columnLabel: String
+) extends ComparisonBetweenTwoColumns {
   lazy val leftFileColumnValue = leftColumnValue
   lazy val rightFileColumnValue = rightColumnValue
   override def equals(that: scala.Any): Boolean = that match {
     case invalidColumn: InvalidColumns =>
-        invalidColumn.leftFileColumnValue == this.leftFileColumnValue &&
-        invalidColumn.rightFileColumnValue == this.rightFileColumnValue &&
-        invalidColumn.columnPosition == this.columnPosition //&&
-        invalidColumn.columnLabel == this.columnLabel
+      invalidColumn.leftFileColumnValue == this.leftFileColumnValue &&
+      invalidColumn.rightFileColumnValue == this.rightFileColumnValue &&
+      invalidColumn.columnPosition == this.columnPosition //&&
+      invalidColumn.columnLabel == this.columnLabel
     case _ => false
   }
 
-  override def toString: String = s" ${this.leftFileColumnValue} ${this.rightFileColumnValue} $columnPosition"
+  override def toString: String =
+    s" ${this.leftFileColumnValue} ${this.rightFileColumnValue} $columnPosition"
 
 }
 
 object InvalidColumns {
   def apply(
-             leftColumnValue: => Option[String],
-             rightColumnValue: => Option[String],
-             columnPosition: String,
-             columnLabel: String
-           ): InvalidColumns = new InvalidColumns(leftColumnValue, rightColumnValue, columnPosition, columnLabel )
+      leftColumnValue: => Option[String],
+      rightColumnValue: => Option[String],
+      columnPosition: String,
+      columnLabel: String
+  ): InvalidColumns =
+    new InvalidColumns(leftColumnValue,
+                       rightColumnValue,
+                       columnPosition,
+                       columnLabel)
 
   /*def apply(
              columnDescription: FixedColumnDescription,
@@ -140,5 +155,3 @@ object InvalidColumns {
     columnDescription.metaData.label
   )*/
 }
-
-
