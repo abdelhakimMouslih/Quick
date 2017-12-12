@@ -20,6 +20,18 @@ object ValidationAndMatchingReport {
       matchedRows
     )
   }
+  def keepOnlyFilledReports(reports: List[ValidationAndMatchingReport]): List[FilledValidationAndMatchingReport] = {
+    def loop(
+              allReports: List[ValidationAndMatchingReport],
+              filledReports : List[FilledValidationAndMatchingReport]
+            ): List[FilledValidationAndMatchingReport] = allReports match {
+      case Nil => filledReports.reverse
+      case EmptyValidationAndMatchingReport :: restOfReports => loop(restOfReports, filledReports)
+      case (filledReport: FilledValidationAndMatchingReport) :: restOfReports =>
+        loop(restOfReports, filledReport:: filledReports)
+    }
+    loop(reports, Nil)
+  }
 }
 
 case object EmptyValidationAndMatchingReport extends ValidationAndMatchingReport

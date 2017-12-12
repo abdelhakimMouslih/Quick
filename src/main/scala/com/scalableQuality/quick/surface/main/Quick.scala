@@ -32,7 +32,8 @@ object Quick extends App{
             fileDescriptionRootElem,
             fileDescriptionId,
             leftFileLabel,
-            rightFileLabel
+            rightFileLabel,
+            quickState
           )
           rowToRowDescriptionMatcherEither match {
             case Right(rowDescriptionMatcher) =>

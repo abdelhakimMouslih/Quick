@@ -23,9 +23,9 @@ object CommandLineParser {
           config.addLabel(optionValue)
       }.optional().maxOccurs(2)
 
-      opt[Unit]('m', "multijob").action{
+      opt[Unit]('m', "matchOnly").action{
         (_, config) =>
-          config.copy(multiJob = true)
+          config.copy(rowsProcessingPhase = QuickState.matchRows)
       }.optional()
 
       arg[String]("<leftFile> <rightFile>").action {
