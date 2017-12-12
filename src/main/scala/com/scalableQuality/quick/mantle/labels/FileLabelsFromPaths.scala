@@ -51,15 +51,35 @@ object FileLabelsFromPaths {
 
 
   private def minifyDirs(
-                                  leftFilePath: Vector[String],
-                                  rightFilePath: Vector[String]
-                                ): (Vector[String], Vector[String]) = {
-    if (leftFilePath.length != rightFilePath.length) {
-      (leftFilePath, rightFilePath)
+                                  leftDirPath: Vector[String],
+                                  rightDirPath: Vector[String]
+                                ): (Vector[String], Vector[String]) =
+    if (leftDirPath.length > rightDirPath.length) {
+      minifyDifferentLengthDirs(leftDirPath,rightDirPath)
+    } else if (rightDirPath.length < leftDirPath.length) {
+      val (minifiedRightPath, minifiedLeftPath) = minifyDifferentLengthDirs(rightDirPath,leftDirPath)
+      (minifiedLeftPath,minifiedRightPath)
     } else {
-      val zippedPaths = leftFilePath.zip(rightFilePath)
-      zippedPaths.dropWhile(dirs => dirs._1 == dirs._2).unzip
+      minifySameLengthDirs(leftDirPath, rightDirPath)
     }
+
+  private def minifySameLengthDirs(
+                                     leftPath: Vector[String],
+                                     rightPath: Vector[String]
+                                   ): (Vector[String], Vector[String]) = {
+    val zippedPaths = leftPath.zip(rightPath)
+    zippedPaths.dropWhile(dirs => dirs._1 == dirs._2).unzip
+  }
+
+  private def minifyDifferentLengthDirs(
+                                     longDirPath: Vector[String],
+                                     shortDirPath: Vector[String]
+                                     ): (Vector[String], Vector[String]) = {
+
+    val slicedLongPath = longDirPath.slice(0, shortDirPath.length)
+    val restOfLongPath = longDirPath.slice(shortDirPath.length, longDirPath.length)
+    val (minifiedSlicedLongPath, minifiedShortPath) = minifySameLengthDirs(slicedLongPath,shortDirPath)
+    (minifiedSlicedLongPath ++ restOfLongPath ,minifiedShortPath)
   }
 
   private def splitDirsFromFileName(path: String): (Vector[String], String) = {
