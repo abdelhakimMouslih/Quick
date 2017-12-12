@@ -1,16 +1,30 @@
 package com.scalableQuality.quick.core.fileComponentDescripts
 
-import com.scalableQuality.quick.core.Reporting.{InvalidColumns, IrrelevantColumns, ReportingColumns, ValidColumns}
-import com.scalableQuality.quick.core.others.{MatchingStage, ReportingStage, ValidationStage}
+import com.scalableQuality.quick.core.Reporting.{
+  InvalidColumns,
+  IrrelevantColumns,
+  ReportingColumns,
+  ValidColumns
+}
+import com.scalableQuality.quick.core.others.{
+  MatchingStage,
+  ReportingStage,
+  ValidationStage
+}
 import com.scalableQuality.quick.mantle.parsing.RawRow
 import org.scalatest.{FlatSpec, Matchers}
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 
-class FixedRowDividerTest  extends FlatSpec with Matchers with GeneratorDrivenPropertyChecks {
+class FixedRowDividerTest
+    extends FlatSpec
+    with Matchers
+    with GeneratorDrivenPropertyChecks {
 
   "FixedRowDivider.isMatchable" should
     "return true if at least one could should be used in matching and false otherwise" in forAll {
-    (firstColumnMatching: Boolean, secondColumnMatching: Boolean, thirdColumnMatching: Boolean) =>
+    (firstColumnMatching: Boolean,
+     secondColumnMatching: Boolean,
+     thirdColumnMatching: Boolean) =>
       val firstColumnDescriptionElem = <ColumnDescription
         label="firstColumn"
         startsAt="1"
@@ -27,19 +41,27 @@ class FixedRowDividerTest  extends FlatSpec with Matchers with GeneratorDrivenPr
         startsAt="8"
         endsAt="12"
         useDuringMatching={thirdColumnMatching.toString}/>
-      val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
-      val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
-      val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
+      val firstColumnDescriptionEither =
+        FixedColumnDescription(firstColumnDescriptionElem.attributes)
+      val secondColumnDescriptionEither =
+        FixedColumnDescription(secondColumnDescriptionElem.attributes)
+      val thirdColumnDescriptionEither =
+        FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
-      (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
-        case (Right(firstColumnDescription), Right(secondColumnDescription), Right(thirdColumnDescription)) =>
-          val columnDescriptionList = List(firstColumnDescription, secondColumnDescription, thirdColumnDescription)
+      (firstColumnDescriptionEither,
+       secondColumnDescriptionEither,
+       thirdColumnDescriptionEither) match {
+        case (Right(firstColumnDescription),
+              Right(secondColumnDescription),
+              Right(thirdColumnDescription)) =>
+          val columnDescriptionList = List(firstColumnDescription,
+                                           secondColumnDescription,
+                                           thirdColumnDescription)
           val fixedRowDivider = FixedRowDivider(columnDescriptionList)
           fixedRowDivider.isMatchable shouldBe (firstColumnMatching || secondColumnMatching || thirdColumnMatching)
         case _ => fail
       }
   }
-
 
   "FixedRowDivider.keepOnlyColumnsDescriptionsUsedIn" should
     "return an FixedRowDivider containing all columns used during validation " in {
@@ -61,22 +83,32 @@ class FixedRowDividerTest  extends FlatSpec with Matchers with GeneratorDrivenPr
       startsAt="8"
       endsAt="12"
       />
-    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
+    val firstColumnDescriptionEither =
+      FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither =
+      FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither =
+      FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
-    (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
-      case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
-        val columnDescriptionList = List(firstColumnDescription, secondColumnDescription, thirdColumnDescription)
+    (firstColumnDescriptionEither,
+     secondColumnDescriptionEither,
+     thirdColumnDescriptionEither) match {
+      case (Right(firstColumnDescription),
+            Right(secondColumnDescription),
+            Right(thirdColumnDescription)) =>
+        val columnDescriptionList = List(firstColumnDescription,
+                                         secondColumnDescription,
+                                         thirdColumnDescription)
         val fixedRowDivider = FixedRowDivider(columnDescriptionList)
 
-        val expectedColumnDescriptionList = List(firstColumnDescription, secondColumnDescription)
-        val expectedFixedRowDivider = FixedRowDivider(expectedColumnDescriptionList)
+        val expectedColumnDescriptionList =
+          List(firstColumnDescription, secondColumnDescription)
+        val expectedFixedRowDivider =
+          FixedRowDivider(expectedColumnDescriptionList)
         fixedRowDivider.keepOnlyColumnsDescriptionsUsedIn(ValidationStage) shouldBe expectedFixedRowDivider
       case _ => fail
     }
   }
-
 
   it should
     "return an FixedRowDivider containing all columns used during Matching " in {
@@ -98,23 +130,33 @@ class FixedRowDividerTest  extends FlatSpec with Matchers with GeneratorDrivenPr
       endsAt="12"
       useDuringMatching="true"
       />
-    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
+    val firstColumnDescriptionEither =
+      FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither =
+      FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither =
+      FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
-    (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
-      case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
-        val columnDescriptionList = List(firstColumnDescription, secondColumnDescription, thirdColumnDescription)
+    (firstColumnDescriptionEither,
+     secondColumnDescriptionEither,
+     thirdColumnDescriptionEither) match {
+      case (Right(firstColumnDescription),
+            Right(secondColumnDescription),
+            Right(thirdColumnDescription)) =>
+        val columnDescriptionList = List(firstColumnDescription,
+                                         secondColumnDescription,
+                                         thirdColumnDescription)
         val fixedRowDivider = FixedRowDivider(columnDescriptionList)
 
-        val expectedColumnDescriptionList = List(firstColumnDescription, thirdColumnDescription)
-        val expectedFixedRowDivider = FixedRowDivider(expectedColumnDescriptionList)
+        val expectedColumnDescriptionList =
+          List(firstColumnDescription, thirdColumnDescription)
+        val expectedFixedRowDivider =
+          FixedRowDivider(expectedColumnDescriptionList)
 
         fixedRowDivider.keepOnlyColumnsDescriptionsUsedIn(MatchingStage) shouldBe expectedFixedRowDivider
       case _ => fail
     }
   }
-
 
   it should
     "return an FixedRowDivider containing all columns used during Reporting " in {
@@ -136,18 +178,28 @@ class FixedRowDividerTest  extends FlatSpec with Matchers with GeneratorDrivenPr
       endsAt="12"
       useDuringReporting="true"
       />
-    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
+    val firstColumnDescriptionEither =
+      FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither =
+      FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither =
+      FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
-    (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
-      case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
-        val columnDescriptionList = List(firstColumnDescription, secondColumnDescription, thirdColumnDescription)
+    (firstColumnDescriptionEither,
+     secondColumnDescriptionEither,
+     thirdColumnDescriptionEither) match {
+      case (Right(firstColumnDescription),
+            Right(secondColumnDescription),
+            Right(thirdColumnDescription)) =>
+        val columnDescriptionList = List(firstColumnDescription,
+                                         secondColumnDescription,
+                                         thirdColumnDescription)
         val fixedRowDivider = FixedRowDivider(columnDescriptionList)
 
-
-        val expectedColumnDescriptionList = List(secondColumnDescription, thirdColumnDescription)
-        val expectedFixedRowDivider = FixedRowDivider(expectedColumnDescriptionList)
+        val expectedColumnDescriptionList =
+          List(secondColumnDescription, thirdColumnDescription)
+        val expectedFixedRowDivider =
+          FixedRowDivider(expectedColumnDescriptionList)
 
         fixedRowDivider.keepOnlyColumnsDescriptionsUsedIn(ReportingStage) shouldBe expectedFixedRowDivider
       case _ => fail
@@ -175,25 +227,40 @@ class FixedRowDividerTest  extends FlatSpec with Matchers with GeneratorDrivenPr
       endsAt="12"
       useDuringReporting="true"
       />
-    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
+    val firstColumnDescriptionEither =
+      FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither =
+      FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither =
+      FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
-    (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
-      case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
-        val columnDescriptionList = List(firstColumnDescription, secondColumnDescription, thirdColumnDescription)
+    (firstColumnDescriptionEither,
+     secondColumnDescriptionEither,
+     thirdColumnDescriptionEither) match {
+      case (Right(firstColumnDescription),
+            Right(secondColumnDescription),
+            Right(thirdColumnDescription)) =>
+        val columnDescriptionList = List(firstColumnDescription,
+                                         secondColumnDescription,
+                                         thirdColumnDescription)
         val fixedRowDivider = FixedRowDivider(columnDescriptionList)
 
-        val expectedColumnDescriptionList = List(firstColumnDescription, secondColumnDescription, thirdColumnDescription)
-        val expectedFixedRowDivider = FixedRowDivider(expectedColumnDescriptionList)
+        val expectedColumnDescriptionList = List(firstColumnDescription,
+                                                 secondColumnDescription,
+                                                 thirdColumnDescription)
+        val expectedFixedRowDivider =
+          FixedRowDivider(expectedColumnDescriptionList)
 
-        fixedRowDivider.keepOnlyColumnsDescriptionsUsedIn(ValidationStage, MatchingStage, ReportingStage) shouldBe expectedFixedRowDivider
+        fixedRowDivider.keepOnlyColumnsDescriptionsUsedIn(
+          ValidationStage,
+          MatchingStage,
+          ReportingStage) shouldBe expectedFixedRowDivider
       case _ => fail
     }
   }
 
   "FixedRowDivider.columnsComparisonValuesFor" should "extract column values of all 3 validation columns" in {
-    val rawRow = RawRow("FirstColumnSecondColumnThirdColumn",1)
+    val rawRow = RawRow("FirstColumnSecondColumnThirdColumn", 1)
     val firstColumnDescriptionElem = <ColumnDescription
       label="FirstColumn"
       startsAt="1"
@@ -214,22 +281,32 @@ class FixedRowDividerTest  extends FlatSpec with Matchers with GeneratorDrivenPr
       useDuringValidation="true"
       />
 
-    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
+    val firstColumnDescriptionEither =
+      FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither =
+      FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither =
+      FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
-    (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
-      case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
-        val columnDescriptionList = List(firstColumnDescription, secondColumnDescription, thirdColumnDescription)
+    (firstColumnDescriptionEither,
+     secondColumnDescriptionEither,
+     thirdColumnDescriptionEither) match {
+      case (Right(firstColumnDescription),
+            Right(secondColumnDescription),
+            Right(thirdColumnDescription)) =>
+        val columnDescriptionList = List(firstColumnDescription,
+                                         secondColumnDescription,
+                                         thirdColumnDescription)
         val fixedRowDivider = FixedRowDivider(columnDescriptionList)
-        val expectedColumnValues = List(Some("FirstColumn"), Some("SecondColumn"), Some("ThirdColumn"))
+        val expectedColumnValues =
+          List(Some("FirstColumn"), Some("SecondColumn"), Some("ThirdColumn"))
         fixedRowDivider.columnsComparisonValuesFor(ValidationStage, rawRow) shouldBe expectedColumnValues
       case _ => fail
     }
   }
 
   it should "extract column values of only validation columns" in {
-    val rawRow = RawRow("FirstColumnSecondColumnThirdColumn",1)
+    val rawRow = RawRow("FirstColumnSecondColumnThirdColumn", 1)
     val firstColumnDescriptionElem = <ColumnDescription
       label="FirstColumn"
       startsAt="1"
@@ -250,23 +327,33 @@ class FixedRowDividerTest  extends FlatSpec with Matchers with GeneratorDrivenPr
       useDuringValidation="true"
       />
 
-    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
+    val firstColumnDescriptionEither =
+      FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither =
+      FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither =
+      FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
-    (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
-      case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
-        val columnDescriptionList = List(firstColumnDescription, secondColumnDescription, thirdColumnDescription)
+    (firstColumnDescriptionEither,
+     secondColumnDescriptionEither,
+     thirdColumnDescriptionEither) match {
+      case (Right(firstColumnDescription),
+            Right(secondColumnDescription),
+            Right(thirdColumnDescription)) =>
+        val columnDescriptionList = List(firstColumnDescription,
+                                         secondColumnDescription,
+                                         thirdColumnDescription)
         val fixedRowDivider = FixedRowDivider(columnDescriptionList)
 
-        val expectedColumnValues = List(Some("FirstColumn"), Some("ThirdColumn"))
+        val expectedColumnValues =
+          List(Some("FirstColumn"), Some("ThirdColumn"))
         fixedRowDivider.columnsComparisonValuesFor(ValidationStage, rawRow) shouldBe expectedColumnValues
       case _ => fail
     }
   }
 
   it should "the extracted column values should include None for every validation column that does not exist" in {
-    val rawRow = RawRow("FirstColumn",1)
+    val rawRow = RawRow("FirstColumn", 1)
     val firstColumnDescriptionElem = <ColumnDescription
       label="FirstColumn"
       startsAt="1"
@@ -287,13 +374,22 @@ class FixedRowDividerTest  extends FlatSpec with Matchers with GeneratorDrivenPr
       useDuringValidation="true"
       />
 
-    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
+    val firstColumnDescriptionEither =
+      FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither =
+      FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither =
+      FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
-    (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
-      case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
-        val columnDescriptionList = List(firstColumnDescription, secondColumnDescription, thirdColumnDescription)
+    (firstColumnDescriptionEither,
+     secondColumnDescriptionEither,
+     thirdColumnDescriptionEither) match {
+      case (Right(firstColumnDescription),
+            Right(secondColumnDescription),
+            Right(thirdColumnDescription)) =>
+        val columnDescriptionList = List(firstColumnDescription,
+                                         secondColumnDescription,
+                                         thirdColumnDescription)
         val fixedRowDivider = FixedRowDivider(columnDescriptionList)
         val expectedColumnValues = List(Some("FirstColumn"), None, None)
 
@@ -303,7 +399,7 @@ class FixedRowDividerTest  extends FlatSpec with Matchers with GeneratorDrivenPr
   }
 
   it should "extract column values of all 3 matching columns" in {
-    val rawRow = RawRow("FirstColumnSecondColumnThirdColumn",1)
+    val rawRow = RawRow("FirstColumnSecondColumnThirdColumn", 1)
     val firstColumnDescriptionElem = <ColumnDescription
       label="FirstColumn"
       startsAt="1"
@@ -324,22 +420,32 @@ class FixedRowDividerTest  extends FlatSpec with Matchers with GeneratorDrivenPr
       useDuringMatching="true"
       />
 
-    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
+    val firstColumnDescriptionEither =
+      FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither =
+      FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither =
+      FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
-    (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
-      case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
-        val columnDescriptionList = List(firstColumnDescription, secondColumnDescription, thirdColumnDescription)
+    (firstColumnDescriptionEither,
+     secondColumnDescriptionEither,
+     thirdColumnDescriptionEither) match {
+      case (Right(firstColumnDescription),
+            Right(secondColumnDescription),
+            Right(thirdColumnDescription)) =>
+        val columnDescriptionList = List(firstColumnDescription,
+                                         secondColumnDescription,
+                                         thirdColumnDescription)
         val fixedRowDivider = FixedRowDivider(columnDescriptionList)
-        val expectedColumnValues = List(Some("FirstColumn"), Some("SecondColumn"), Some("ThirdColumn"))
+        val expectedColumnValues =
+          List(Some("FirstColumn"), Some("SecondColumn"), Some("ThirdColumn"))
         fixedRowDivider.columnsComparisonValuesFor(MatchingStage, rawRow) shouldBe expectedColumnValues
       case _ => fail
     }
   }
 
   it should "extract column values of only matching columns" in {
-    val rawRow = RawRow("FirstColumnSecondColumnThirdColumn",1)
+    val rawRow = RawRow("FirstColumnSecondColumnThirdColumn", 1)
     val firstColumnDescriptionElem = <ColumnDescription
       label="FirstColumn"
       startsAt="1"
@@ -360,23 +466,33 @@ class FixedRowDividerTest  extends FlatSpec with Matchers with GeneratorDrivenPr
       useDuringMatching="true"
       />
 
-    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
+    val firstColumnDescriptionEither =
+      FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither =
+      FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither =
+      FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
-    (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
-      case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
-        val columnDescriptionList = List(firstColumnDescription, secondColumnDescription, thirdColumnDescription)
+    (firstColumnDescriptionEither,
+     secondColumnDescriptionEither,
+     thirdColumnDescriptionEither) match {
+      case (Right(firstColumnDescription),
+            Right(secondColumnDescription),
+            Right(thirdColumnDescription)) =>
+        val columnDescriptionList = List(firstColumnDescription,
+                                         secondColumnDescription,
+                                         thirdColumnDescription)
         val fixedRowDivider = FixedRowDivider(columnDescriptionList)
 
-        val expectedColumnValues = List(Some("FirstColumn"), Some("ThirdColumn"))
+        val expectedColumnValues =
+          List(Some("FirstColumn"), Some("ThirdColumn"))
         fixedRowDivider.columnsComparisonValuesFor(MatchingStage, rawRow) shouldBe expectedColumnValues
       case _ => fail
     }
   }
 
   it should "the extracted column values should include None for every matching column that does not exist" in {
-    val rawRow = RawRow("FirstColumn",1)
+    val rawRow = RawRow("FirstColumn", 1)
     val firstColumnDescriptionElem = <ColumnDescription
       label="FirstColumn"
       startsAt="1"
@@ -397,13 +513,22 @@ class FixedRowDividerTest  extends FlatSpec with Matchers with GeneratorDrivenPr
       useDuringMatching="true"
       />
 
-    val firstColumnDescriptionEither = FixedColumnDescription(firstColumnDescriptionElem.attributes)
-    val secondColumnDescriptionEither = FixedColumnDescription(secondColumnDescriptionElem.attributes)
-    val thirdColumnDescriptionEither = FixedColumnDescription(thirdColumnDescriptionElem.attributes)
+    val firstColumnDescriptionEither =
+      FixedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither =
+      FixedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither =
+      FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
-    (firstColumnDescriptionEither, secondColumnDescriptionEither, thirdColumnDescriptionEither) match {
-      case (Right(firstColumnDescription),Right(secondColumnDescription),Right(thirdColumnDescription)) =>
-        val columnDescriptionList = List(firstColumnDescription, secondColumnDescription, thirdColumnDescription)
+    (firstColumnDescriptionEither,
+     secondColumnDescriptionEither,
+     thirdColumnDescriptionEither) match {
+      case (Right(firstColumnDescription),
+            Right(secondColumnDescription),
+            Right(thirdColumnDescription)) =>
+        val columnDescriptionList = List(firstColumnDescription,
+                                         secondColumnDescription,
+                                         thirdColumnDescription)
         val fixedRowDivider = FixedRowDivider(columnDescriptionList)
         val expectedColumnValues = List(Some("FirstColumn"), None, None)
 
@@ -413,8 +538,8 @@ class FixedRowDividerTest  extends FlatSpec with Matchers with GeneratorDrivenPr
   }
 
   "FixedRowDivider.compare" should "return ValidColumns, IrrelevantColumns, ReportingColumns and InvalidColumns" in {
-    val leftRawRow = Some(RawRow("OneTwoThreeFour",1))
-    val rightRawRow = Some(RawRow("OneBwoRRreeSour",2))
+    val leftRawRow = Some(RawRow("OneTwoThreeFour", 1))
+    val rightRawRow = Some(RawRow("OneBwoRRreeSour", 2))
     val validColumnsDescriptionElem = <ColumnDescription
       label="valid column"
       startsAt="1"
@@ -443,10 +568,14 @@ class FixedRowDividerTest  extends FlatSpec with Matchers with GeneratorDrivenPr
       useDuringValidation="true"
       useDuringReporting="false"
       />
-    val validColumnsDescriptionEither = FixedColumnDescription(validColumnsDescriptionElem.attributes)
-    val irrelevantColumnsDescriptionEither = FixedColumnDescription(irrelevantColumnsDescriptionElem.attributes)
-    val reportingColumnsDescriptionEither = FixedColumnDescription(reportingColumnsDescriptionElem.attributes)
-    val invalidColumnsDescriptionEither = FixedColumnDescription(invalidColumnsDescriptionElem.attributes)
+    val validColumnsDescriptionEither =
+      FixedColumnDescription(validColumnsDescriptionElem.attributes)
+    val irrelevantColumnsDescriptionEither =
+      FixedColumnDescription(irrelevantColumnsDescriptionElem.attributes)
+    val reportingColumnsDescriptionEither =
+      FixedColumnDescription(reportingColumnsDescriptionElem.attributes)
+    val invalidColumnsDescriptionEither =
+      FixedColumnDescription(invalidColumnsDescriptionElem.attributes)
     (
       validColumnsDescriptionEither,
       irrelevantColumnsDescriptionEither,
@@ -454,13 +583,15 @@ class FixedRowDividerTest  extends FlatSpec with Matchers with GeneratorDrivenPr
       invalidColumnsDescriptionEither
     ) match {
       case (
-        Right(validColumnsDescription),
-        Right(irrelevantColumnsDescription),
-        Right(reportingColumnsDescription),
-        Right(invalidColumnsDescription)
-        ) =>
-
-        val columnDescriptionList = List(validColumnsDescription,irrelevantColumnsDescription,reportingColumnsDescription,invalidColumnsDescription)
+          Right(validColumnsDescription),
+          Right(irrelevantColumnsDescription),
+          Right(reportingColumnsDescription),
+          Right(invalidColumnsDescription)
+          ) =>
+        val columnDescriptionList = List(validColumnsDescription,
+                                         irrelevantColumnsDescription,
+                                         reportingColumnsDescription,
+                                         invalidColumnsDescription)
         val fixedRowDivider = FixedRowDivider(columnDescriptionList)
 
         val expectedReportingColumns = ReportingColumns(
@@ -477,7 +608,10 @@ class FixedRowDividerTest  extends FlatSpec with Matchers with GeneratorDrivenPr
           "invalid column"
         )
 
-        val expectedComparison = List(ValidColumns,IrrelevantColumns,expectedReportingColumns,expectedInvalidColumns)
+        val expectedComparison = List(ValidColumns,
+                                      IrrelevantColumns,
+                                      expectedReportingColumns,
+                                      expectedInvalidColumns)
 
         fixedRowDivider.compare(leftRawRow, rightRawRow) shouldBe expectedComparison
       case _ =>

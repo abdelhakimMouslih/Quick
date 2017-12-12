@@ -5,22 +5,23 @@ import com.scalableQuality.quick.mantle.error._
 import scala.xml.Elem
 
 object RowToRowDescriptionMatcherErrorMessages {
-  private val validatingFixedRowDescription = "validating FixedOrderedRowDescription attributes and child elements"
+  private val validatingFixedRowDescription =
+    "validating FixedOrderedRowDescription attributes and child elements"
 
-  private val invalidFixedRowDescriptionHeadLine = "Invalid FixedOrderedRowDescription"
+  private val invalidFixedRowDescriptionHeadLine =
+    "Invalid FixedOrderedRowDescription"
 
-  private val invalidDelimitedRowDescriptionHeadLine = "Invalid DelimitedOrderedRowDescription"
+  private val invalidDelimitedRowDescriptionHeadLine =
+    "Invalid DelimitedOrderedRowDescription"
 
-  private val validatingDelimitedRowDescription = "validating DelimitedOrderedRowDescription attributes and child elements"
-
+  private val validatingDelimitedRowDescription =
+    "validating DelimitedOrderedRowDescription attributes and child elements"
 
   def unknownFixedRowDescriptionChildElem(elem: Elem) =
     unknownChildElem(validatingFixedRowDescription, elem)
 
-
   def unknownDelimitedRowDescriptionChildElem(elem: Elem) =
     unknownChildElem(validatingDelimitedRowDescription, elem)
-
 
   def unknownRowDescriptionElem(elem: Elem) = {
     val errorMessage = EncounteredError(
@@ -41,19 +42,21 @@ object RowToRowDescriptionMatcherErrorMessages {
   }
 
   def invalidFixedRowDescriptionChildElemOrAttribute(
-                                                      errorMessages: UnrecoverableError*
-                                                    ) =
-    invalidChildElemOrAttribute(invalidFixedRowDescriptionHeadLine, errorMessages.toList)
+      errorMessages: UnrecoverableError*
+  ) =
+    invalidChildElemOrAttribute(invalidFixedRowDescriptionHeadLine,
+                                errorMessages.toList)
 
   def invalidDelimitedRowDescriptionChildElemOrAttribute(
-                                                          errorMessages: UnrecoverableError*
-                                                        ) =
-    invalidChildElemOrAttribute(invalidDelimitedRowDescriptionHeadLine, errorMessages.toList )
+      errorMessages: UnrecoverableError*
+  ) =
+    invalidChildElemOrAttribute(invalidDelimitedRowDescriptionHeadLine,
+                                errorMessages.toList)
 
   private def invalidChildElemOrAttribute(
-                                           doing: String,
-                                           errorMessages: List[UnrecoverableError]
-                                         )  = {
+      doing: String,
+      errorMessages: List[UnrecoverableError]
+  ) = {
     val errorMessage = DependencyError(
       doing,
       errorMessages

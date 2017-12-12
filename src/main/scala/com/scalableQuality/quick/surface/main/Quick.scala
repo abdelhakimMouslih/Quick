@@ -6,9 +6,13 @@ import com.scalableQuality.quick.mantle.parsing.GroupRowsByRowDescription
 import com.scalableQuality.quick.mantle.reportInterptations.textReport.ValidationAndMatchingTextReport
 import com.scalableQuality.quick.surface.commandLineOptions.CommandLineParser
 import com.scalableQuality.quick.surface.input.{ReadRowsFromFile, ReadXmlFile}
-import com.scalableQuality.quick.surface.output.{ExitWithStatus, WriteTextReportToStdout, WriteToStderr}
+import com.scalableQuality.quick.surface.output.{
+  ExitWithStatus,
+  WriteTextReportToStdout,
+  WriteToStderr
+}
 
-object Quick extends App{
+object Quick extends App {
 
   val quickStateOpt = CommandLineParser(args)
   quickStateOpt match {
@@ -17,7 +21,7 @@ object Quick extends App{
       val rightFilePath = quickState.rightFile
       val fileDescriptionPath = quickState.descriptionFile
 
-      val fileDescriptionId : Option[String] = quickState.descriptionId
+      val fileDescriptionId: Option[String] = quickState.descriptionId
 
       val (leftFileLabel, rightFileLabel) = FileLabelsFromPaths(quickState)
 
@@ -26,8 +30,9 @@ object Quick extends App{
       val fileDescriptionPathEither = ReadXmlFile(fileDescriptionPath)
 
       (leftFilePathEither, rightFilePathEither, fileDescriptionPathEither) match {
-        case (Right(leftFileRows), Right(rightFileRows),Right(fileDescriptionRootElem)) =>
-
+        case (Right(leftFileRows),
+              Right(rightFileRows),
+              Right(fileDescriptionRootElem)) =>
           val rowToRowDescriptionMatcherEither = GroupRowsByRowDescription(
             fileDescriptionRootElem,
             fileDescriptionId,
@@ -38,13 +43,19 @@ object Quick extends App{
           rowToRowDescriptionMatcherEither match {
             case Right(rowDescriptionMatcher) =>
               val validationAndMatchingProcesses =
-                rowDescriptionMatcher.validateAndMatchTheseTwoFiles(leftFileRows(), rightFileRows())
+                rowDescriptionMatcher.validateAndMatchTheseTwoFiles(
+                  leftFileRows(),
+                  rightFileRows())
 
-              val validationAndMatchingReports = validationAndMatchingProcesses.validationAndMatchingReports
+              val validationAndMatchingReports =
+                validationAndMatchingProcesses.validationAndMatchingReports
 
-              val validationAndMatchingTextReports = validationAndMatchingReports.map(ValidationAndMatchingTextReport(_))
+              val validationAndMatchingTextReports =
+                validationAndMatchingReports.map(
+                  ValidationAndMatchingTextReport(_))
 
-              validationAndMatchingTextReports.foreach(WriteTextReportToStdout(_))
+              validationAndMatchingTextReports.foreach(
+                WriteTextReportToStdout(_))
               ExitWithStatus.exitWithReport(validationAndMatchingReports)
             case Left(errorMessage) =>
               WriteToStderr(errorMessage)
@@ -52,7 +63,10 @@ object Quick extends App{
           }
 
         case _ =>
-          val errorMessages = UnrecoverableError.collectAllErrorsToList(leftFilePathEither, rightFilePathEither, fileDescriptionPathEither)
+          val errorMessages = UnrecoverableError.collectAllErrorsToList(
+            leftFilePathEither,
+            rightFilePathEither,
+            fileDescriptionPathEither)
           errorMessages.foreach(WriteToStderr(_))
           ExitWithStatus.interruptedByAnError
       }
