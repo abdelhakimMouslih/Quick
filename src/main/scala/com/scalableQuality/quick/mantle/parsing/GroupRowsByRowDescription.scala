@@ -45,7 +45,7 @@ class GroupRowsByRowDescription(
           this.rightFileLabel
         )
       }
-    ValidateAndMatchTwoFiles(validationAndMatchingProcesses)
+    ValidateAndMatchTwoFiles(validationAndMatchingProcesses, quickState)
   }
 
   private def matchGroupsRowsByRowDescription(

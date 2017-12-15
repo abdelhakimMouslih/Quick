@@ -33,6 +33,13 @@ object CommandLineParser {
         }
         .optional()
 
+      opt[Unit]('p', "parallel")
+        .action { (_, config) =>
+          config.copy(rowsProcessingPhaseExecution =
+            QuickState.parallelRowsProcessingPhaseExecutionFunction)
+        }
+        .optional()
+
       arg[String]("<leftFile> <rightFile>")
         .action { (optionValue, config) =>
           config.addFile(optionValue)
