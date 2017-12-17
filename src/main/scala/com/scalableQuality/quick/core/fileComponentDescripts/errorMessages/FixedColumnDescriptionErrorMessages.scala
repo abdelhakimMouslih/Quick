@@ -1,13 +1,20 @@
 package com.scalableQuality.quick.core.fileComponentDescripts.errorMessages
 
-import com.scalableQuality.quick.mantle.error.{BunchOfErrors, DependencyError, UnrecoverableError}
+import com.scalableQuality.quick.mantle.error.{
+  BunchOfErrors,
+  DependencyError,
+  UnrecoverableError
+}
 
 object FixedColumnDescriptionErrorMessages {
 
-  val invalidColumnDescriptionWithoutLabel = "Invalid ColumnDescription no label is provided"
-  def invalidColumnDescriptionWithLabel(label: String) = s"""Invalid ColumnDescription with label "${label}" """
+  val invalidColumnDescriptionWithoutLabel =
+    "Invalid ColumnDescription no label is provided"
+  def invalidColumnDescriptionWithLabel(label: String) =
+    s"""Invalid ColumnDescription with label "${label}" """
 
-  def invalidAttributes(label: String, encounteredErrors: List[UnrecoverableError]) = {
+  def invalidAttributes(label: String,
+                        encounteredErrors: List[UnrecoverableError]) = {
     val errorMessages = DependencyError(
       invalidColumnDescriptionWithLabel(label),
       encounteredErrors

@@ -1,14 +1,18 @@
 package com.scalableQuality.quick.core.fileComponentDescripts.errorMessages
 
 import com.scalableQuality.quick.core.fileComponentDescripts.DelimitedPosition
-import com.scalableQuality.quick.mantle.error.{DependencyError, EncounteredError, UnrecoverableError}
-
+import com.scalableQuality.quick.mantle.error.{
+  DependencyError,
+  EncounteredError,
+  UnrecoverableError
+}
 
 object DelimitedPositionErrorMessages {
 
   val actionDescription = "validating column position attribute"
 
-  def invalidAttributes(encounteredError: UnrecoverableError): Either[UnrecoverableError, DelimitedPosition] = {
+  def invalidAttributes(encounteredError: UnrecoverableError)
+    : Either[UnrecoverableError, DelimitedPosition] = {
     val errorMessage = DependencyError(
       actionDescription,
       encounteredError
@@ -16,7 +20,7 @@ object DelimitedPositionErrorMessages {
     Left(errorMessage)
   }
 
-  val positionIsLessThanOne : Either[UnrecoverableError, Int] = {
+  val positionIsLessThanOne: Either[UnrecoverableError, Int] = {
     val errorMessage = EncounteredError(
       actionDescription,
       "the provided position value is less than one",

@@ -1,31 +1,46 @@
 package com.scalableQuality.quick.surface.commandLineOptions
 
 object CommandLineParser {
-  private val quickName = "quick"
-  private val quickVersion = "0.4"
+  private val quickName = "Quick\n"
+  private val quickVersion = "\rrelease: 0.5\ncommit: 61e51a1"
 
-  def apply(args: Array[String]): Option[CommandLineInput] =
-    new scopt.OptionParser[CommandLineInput](quickName) {
+  def apply(args: Array[String]): Option[QuickState] =
+    new scopt.OptionParser[QuickState](quickName) {
       head(quickName, quickVersion)
+      version("version")
+      help("help")
 
-      opt[String]('d', "description").action {
-        (optionValue, config) =>
+      opt[String]('d', "description")
+        .action { (optionValue, config) =>
           config.copy(descriptionFile = optionValue)
-      }.required()
+        }
+        .required()
 
-      opt[String]('i', "id").action {
-        (optionValue, config) =>
+      opt[String]('i', "id")
+        .action { (optionValue, config) =>
           config.copy(descriptionId = Some(optionValue))
-      }.optional()
+        }
+        .optional()
 
-      opt[String]('l', "label").action {
-        (optionValue, config) =>
+      opt[String]('l', "label")
+        .action { (optionValue, config) =>
           config.addLabel(optionValue)
-      }.optional().maxOccurs(2)
+        }
+        .optional()
+        .maxOccurs(2)
 
-      arg[String]("<leftFile> <rightFile>").action {
-        (optionValue, config) =>
+      opt[Unit]('m', "matchOnly")
+        .action { (_, config) =>
+          config.copy(rowsProcessingPhase = QuickState.matchRows)
+        }
+        .optional()
+
+      arg[String]("<leftFile> <rightFile>")
+        .action { (optionValue, config) =>
           config.addFile(optionValue)
-      }.required().minOccurs(2).maxOccurs(2)
-    }.parse(args, CommandLineInput())
+        }
+        .required()
+        .minOccurs(2)
+        .maxOccurs(2)
+    }.parse(args, QuickState())
 }

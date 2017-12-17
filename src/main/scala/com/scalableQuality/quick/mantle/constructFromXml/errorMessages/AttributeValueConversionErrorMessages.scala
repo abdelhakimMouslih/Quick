@@ -7,11 +7,11 @@ import scala.xml.Attribute
 object AttributeValueConversionErrorMessages {
 
   def failedToConvertStringIntoAnInt(value: String) = {
-      val errorMessage = InvalidAttributeValueError(
-          s"""converting the following value "${value}" into an integer """,
-          """the provided value is not an integer""",
-          s"""provide an integer between ${Int.MinValue} and ${Int.MaxValue}"""
-        )
+    val errorMessage = InvalidAttributeValueError(
+      s"""converting the following value "${value}" into an integer """,
+      """the provided value is not an integer""",
+      s"""provide an integer between ${Int.MinValue} and ${Int.MaxValue}"""
+    )
     Left(errorMessage)
   }
 
@@ -25,7 +25,7 @@ object AttributeValueConversionErrorMessages {
   }*/
 
   def failedToConvertStringIntoABoolean(value: String) = {
-    val errorMessage = InvalidAttributeValueError (
+    val errorMessage = InvalidAttributeValueError(
       s"""converting the following value "${value}" into a boolean """,
       """the provided value is not a boolean""",
       s"""provide one of these values ${true} or ${false}"""
@@ -43,7 +43,8 @@ object AttributeValueConversionErrorMessages {
   }*/
 
   def failedToCompileRegex(value: String, exception: Throwable) = {
-    val javaRegexDocumentation = new URL("https://docs.oracle.com/javase/tutorial/essential/regex/")
+    val javaRegexDocumentation = new URL(
+      "https://docs.oracle.com/javase/tutorial/essential/regex/")
     val errorMessage = InvalidAttributeValueError(
       s"""creating a regular expression from "${value}"""",
       s"""${exception.getMessage}""",

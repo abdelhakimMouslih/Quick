@@ -1,13 +1,20 @@
 package com.scalableQuality.quick.core.others
 
-import org.scalatest.prop.{GeneratorDrivenPropertyChecks, TableDrivenPropertyChecks}
+import org.scalatest.prop.{
+  GeneratorDrivenPropertyChecks,
+  TableDrivenPropertyChecks
+}
 import org.scalatest.{FlatSpec, Matchers}
 
-class MatchAgainstTest extends FlatSpec with Matchers with GeneratorDrivenPropertyChecks with TableDrivenPropertyChecks {
+class MatchAgainstTest
+    extends FlatSpec
+    with Matchers
+    with GeneratorDrivenPropertyChecks
+    with TableDrivenPropertyChecks {
   "MatchAgainst.apply(MetaData)" should " return Right(MatchAgainst) with the the specified pattern" in {
     val columnIdentifierElem = <ColumnIdentifier matchAgainst=".*" />
     val matchAgainstEither = MatchAgainst(columnIdentifierElem.attributes)
-    matchAgainstEither shouldBe a [Right[_,_]]
+    matchAgainstEither shouldBe a[Right[_, _]]
   }
 
   val invalidPatterns = Table(
@@ -18,17 +25,17 @@ class MatchAgainstTest extends FlatSpec with Matchers with GeneratorDrivenProper
     """\""",
     "["
   )
-  it should "return Left(_) when the pattern presented is invalid" in forAll(invalidPatterns) {
-    (pattern: String) =>
+  it should "return Left(_) when the pattern presented is invalid" in forAll(
+    invalidPatterns) { (pattern: String) =>
     val columnIdentifierElem = <ColumnIdentifier matchAgainst={pattern} />
     val matchAgainstEither = MatchAgainst(columnIdentifierElem.attributes)
-    matchAgainstEither shouldBe a [Left[_,_]]
+    matchAgainstEither shouldBe a[Left[_, _]]
   }
 
   it should "return  Left(_) when no matchAgainst Attribute is present" in {
     val columnIdentifierElem = <ColumnIdentifier />
     val matchAgainstEither = MatchAgainst(columnIdentifierElem.attributes)
-    matchAgainstEither shouldBe a [Left[_,_]]
+    matchAgainstEither shouldBe a[Left[_, _]]
   }
 
   it should "match a string witht the specified pattern" in {

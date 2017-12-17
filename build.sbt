@@ -10,7 +10,8 @@ assemblyJarName in assembly := "quick.jar"
 scalaVersion := "2.11.11"
 scalacOptions ++= Seq(
   "-target:jvm-1.6",
-  "-encoding", "UTF-8",
+  "-encoding",
+  "UTF-8",
   "-unchecked",
   "-deprecation",
   "-Xfuture",
@@ -24,12 +25,10 @@ scalacOptions ++= Seq(
   "-optimise",
   "-feature"
 )
-//enabling code coverage through scoverage
-coverageEnabled := false
 
 // import libraries
 // adding scopt, a CLI options parsing library
-libraryDependencies ++= Seq("com.github.scopt" %% "scopt" % "3.6.0" )
+libraryDependencies ++= Seq("com.github.scopt" %% "scopt" % "3.6.0")
 // adding scala.xml, scala standard xml parsing library
 libraryDependencies := {
   CrossVersion.partialVersion(scalaVersion.value) match {
@@ -38,12 +37,14 @@ libraryDependencies := {
       libraryDependencies.value ++ Seq(
         "org.scala-lang.modules" %% "scala-xml" % "1.0.6",
         "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4",
-        "org.scala-lang.modules" %% "scala-swing" % "2.0.0-M2")
+        "org.scala-lang.modules" %% "scala-swing" % "2.0.0-M2"
+      )
     case Some((2, scalaMajor)) if scalaMajor >= 11 =>
       libraryDependencies.value ++ Seq(
         "org.scala-lang.modules" %% "scala-xml" % "1.0.6",
         "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4",
-        "org.scala-lang.modules" %% "scala-swing" % "1.0.2")
+        "org.scala-lang.modules" %% "scala-swing" % "1.0.2"
+      )
     case _ =>
       // or just libraryDependencies.value if you don't depend on scala-swing
       libraryDependencies.value :+ "org.scala-lang" % "scala-swing" % scalaVersion.value
@@ -57,3 +58,12 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
 // adding ScalaCheck
 libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.13.4" % "test"
 
+// add scalafmt
+def latestScalafmt = "1.3.0"
+commands += Command.args("scalafmt", "Run scalafmt cli.") {
+  case (state, args) =>
+    val Right(scalafmt) =
+      org.scalafmt.bootstrap.ScalafmtBootstrap.fromVersion(latestScalafmt)
+    scalafmt.main("--non-interactive" +: args.toArray)
+    state
+}

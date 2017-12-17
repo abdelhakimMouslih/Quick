@@ -9,8 +9,8 @@ import scala.annotation.tailrec
 object ColumnComparisonTable {
 
   def apply(
-             differenceBetweenMatchedRows : DifferenceBetweenMatchedRows
-           ): List[String] = {
+      differenceBetweenMatchedRows: DifferenceBetweenMatchedRows
+  ): List[String] = {
     val tableHeaderRowComponent = ColumnComparisonTableRow(
       "Label",
       "Position",
@@ -21,19 +21,22 @@ object ColumnComparisonTable {
 
     val columnsComparisonRows = interpretColumnComparisons(
       differenceBetweenMatchedRows.columnComparisons,
-    dataRowSizes,
-    invalidColumnsRowFormatter,
-    reportingColumnsRowFormatter,
-    softHorizontalDivider
+      dataRowSizes,
+      invalidColumnsRowFormatter,
+      reportingColumnsRowFormatter,
+      softHorizontalDivider
     )
     strongHorizontalDivider :: tableHeaderRow :: strongHorizontalDivider :: columnsComparisonRows ::: strongHorizontalDivider :: Nil
   }
 
   private val dataRowSizes = ColumnComparisonTableColumnSizes(15, 10, 30)
 
-  private val invalidColumnsRowBorders = ColumnComparisonTableColumnsBorders("# ", " | ", " |")
-  private val reportingColumnsRowBorders = ColumnComparisonTableColumnsBorders("! ", " | ", " |")
-  private val normalRowBorders = ColumnComparisonTableColumnsBorders("| ", " | ", " |")
+  private val invalidColumnsRowBorders =
+    ColumnComparisonTableColumnsBorders("# ", " | ", " |")
+  private val reportingColumnsRowBorders =
+    ColumnComparisonTableColumnsBorders("! ", " | ", " |")
+  private val normalRowBorders =
+    ColumnComparisonTableColumnsBorders("| ", " | ", " |")
 
   private val invalidColumnsRowFormatter = ColumnComparisonTableRowFormat(
     invalidColumnsRowBorders,
@@ -51,7 +54,7 @@ object ColumnComparisonTable {
   )
 
   private val softHorizontalDivider = normalColumnsRowFormatter(
-    ColumnComparisonTableRow("","","","")
+    ColumnComparisonTableRow("", "", "", "")
   )
 
   private val strongHorizontalDivider = {
@@ -60,9 +63,15 @@ object ColumnComparisonTable {
     val labelColumnSize = 17
     val positionColumnSize = 12
     val valueColumnSize = 32
-    val strongHorizontalDividerBorders = ColumnComparisonTableColumnsBorders(borderChar,borderChar,borderChar)
-    val strongHorizontalDividerSizes = ColumnComparisonTableColumnSizes(labelColumnSize, positionColumnSize, labelColumnSize)
-    val strongHorizontalDividerFormat = ColumnComparisonTableRowFormat(strongHorizontalDividerBorders,strongHorizontalDividerSizes)
+    val strongHorizontalDividerBorders =
+      ColumnComparisonTableColumnsBorders(borderChar, borderChar, borderChar)
+    val strongHorizontalDividerSizes = ColumnComparisonTableColumnSizes(
+      labelColumnSize,
+      positionColumnSize,
+      labelColumnSize)
+    val strongHorizontalDividerFormat = ColumnComparisonTableRowFormat(
+      strongHorizontalDividerBorders,
+      strongHorizontalDividerSizes)
     val strongHorizontalDividerComponents = ColumnComparisonTableRow(
       fillerChar * labelColumnSize,
       fillerChar * positionColumnSize,
@@ -72,32 +81,30 @@ object ColumnComparisonTable {
     strongHorizontalDividerFormat(strongHorizontalDividerComponents)
   }
 
-
-  private def interpretColumnComparisons (
-                                           comparisonBetweenTwoColumnsList: List[ComparisonBetweenTwoColumns],
-                                           sizes: ColumnComparisonTableColumnSizes,
-                                           invalidColumnsFormatter: ColumnComparisonTableRowFormat,
-                                           reportingColumnsFormatter: ColumnComparisonTableRowFormat,
-                                           rowsDivider: String
-                                      ): List[String] = {
+  private def interpretColumnComparisons(
+      comparisonBetweenTwoColumnsList: List[ComparisonBetweenTwoColumns],
+      sizes: ColumnComparisonTableColumnSizes,
+      invalidColumnsFormatter: ColumnComparisonTableRowFormat,
+      reportingColumnsFormatter: ColumnComparisonTableRowFormat,
+      rowsDivider: String
+  ): List[String] = {
     @tailrec def loop(
-                       comparisonBetweenTwoColumnsList: List[ComparisonBetweenTwoColumns],
-                       sizes: ColumnComparisonTableColumnSizes,
-                       invalidColumnsFormatter: ColumnComparisonTableRowFormat,
-                       reportingColumnsFormatter: ColumnComparisonTableRowFormat,
-                       rowsDivider: String,
-                       accumulator: List[List[String]]
-                     ): List[String] = comparisonBetweenTwoColumnsList match {
+        comparisonBetweenTwoColumnsList: List[ComparisonBetweenTwoColumns],
+        sizes: ColumnComparisonTableColumnSizes,
+        invalidColumnsFormatter: ColumnComparisonTableRowFormat,
+        reportingColumnsFormatter: ColumnComparisonTableRowFormat,
+        rowsDivider: String,
+        accumulator: List[List[String]]
+    ): List[String] = comparisonBetweenTwoColumnsList match {
       case Nil => accumulator.reverse.flatten
 
       case (ValidColumns | IrrelevantColumns) :: restOfColumnComparisons =>
-        loop(
-          restOfColumnComparisons,
-          sizes,
-          invalidColumnsFormatter,
-          reportingColumnsFormatter,
-          rowsDivider,
-          accumulator)
+        loop(restOfColumnComparisons,
+             sizes,
+             invalidColumnsFormatter,
+             reportingColumnsFormatter,
+             rowsDivider,
+             accumulator)
       case (reportingColumns: ReportingColumns) :: restOfColumnComparisons =>
         val columnComparisonRows = ColumnComparisonTableRow(
           sizes,
@@ -106,7 +113,8 @@ object ColumnComparisonTable {
           reportingColumns.leftFileColumnValue,
           reportingColumns.rightFileColumnValue
         )
-        val columnComparisonTableRowText = rowsDivider :: columnComparisonRows.map(reportingColumnsFormatter(_))
+        val columnComparisonTableRowText = rowsDivider :: columnComparisonRows
+          .map(reportingColumnsFormatter(_))
         loop(
           restOfColumnComparisons,
           sizes,
@@ -123,7 +131,8 @@ object ColumnComparisonTable {
           invalidColumns.leftFileColumnValue,
           invalidColumns.rightFileColumnValue
         )
-        val columnComparisonTableRowText = rowsDivider :: columnComparisonRows.map(invalidColumnsFormatter(_))
+        val columnComparisonTableRowText = rowsDivider :: columnComparisonRows
+          .map(invalidColumnsFormatter(_))
         loop(
           restOfColumnComparisons,
           sizes,

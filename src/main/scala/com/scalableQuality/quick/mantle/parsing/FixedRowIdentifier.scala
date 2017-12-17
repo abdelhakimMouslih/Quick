@@ -4,20 +4,21 @@ import com.scalableQuality.quick.mantle.error.UnrecoverableError
 import com.scalableQuality.quick.mantle.parsing.errorMessages.FixedRowIdentifierErrorMessages
 
 class FixedRowIdentifier(
-                          columnsIdentifiers: List[FixedColumnIdentifier]
-                        ) extends RowIdentifier {
+    columnsIdentifiers: List[FixedColumnIdentifier]
+) extends RowIdentifier {
   def canIdentify(rawRow: RawRow): Boolean = columnsIdentifiers match {
     case Nil => RowToRowDescriptionMatcher.defaultIdentificationResult
-    case columnIdentifier::restOfColumnIdentifiers =>
+    case columnIdentifier :: restOfColumnIdentifiers =>
       val canIdentifyTheFirstColumn = columnIdentifier(rawRow)
-      restOfColumnIdentifiers.foldLeft(canIdentifyTheFirstColumn)(_ && _(rawRow))
+      restOfColumnIdentifiers.foldLeft(canIdentifyTheFirstColumn)(
+        _ && _(rawRow))
   }
 }
 
 object FixedRowIdentifier {
   def apply(
-             columnIdentifiers: List[FixedColumnIdentifier]
-           ): Either[UnrecoverableError,FixedRowIdentifier] = columnIdentifiers match {
+      columnIdentifiers: List[FixedColumnIdentifier]
+  ): Either[UnrecoverableError, FixedRowIdentifier] = columnIdentifiers match {
     case Nil =>
       FixedRowIdentifierErrorMessages.noColumnIdentifierIsProvided
     case _ =>
