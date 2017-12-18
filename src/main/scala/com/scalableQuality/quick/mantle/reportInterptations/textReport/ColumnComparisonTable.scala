@@ -96,7 +96,7 @@ object ColumnComparisonTable {
         rowsDivider: String,
         accumulator: List[List[String]]
     ): List[String] = comparisonBetweenTwoColumnsList match {
-      case Nil => accumulator.reverse.flatten
+      case Nil => accumulator.flatten
 
       case (ValidColumns | IrrelevantColumns) :: restOfColumnComparisons =>
         loop(restOfColumnComparisons,
