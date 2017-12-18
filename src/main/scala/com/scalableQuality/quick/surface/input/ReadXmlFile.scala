@@ -9,13 +9,18 @@ import scala.util.{Failure, Success, Try}
 import scala.xml.{Elem, XML}
 
 object ReadXmlFile {
-  def apply(quickState: QuickState): Either[UnrecoverableError, FileDescriptionElem] =
+  def apply(
+      quickState: QuickState): Either[UnrecoverableError, FileDescriptionElem] =
     Try(readXmlFile(quickState.descriptionFile)) match {
       case Success(elem) =>
-        val fileDescriptionElem = FileDescriptionElem(elem, quickState.descriptionFile, quickState.descriptionId)
+        val fileDescriptionElem = FileDescriptionElem(
+          elem,
+          quickState.descriptionFile,
+          quickState.descriptionId)
         Right(fileDescriptionElem)
       case Failure(throwable) =>
-        ReadFromFileErrorMessages.cannotReadFile(quickState.descriptionFile, throwable)
+        ReadFromFileErrorMessages.cannotReadFile(quickState.descriptionFile,
+                                                 throwable)
     }
   private def readXmlFile(filePath: String): Elem = XML.loadFile(filePath)
 }
