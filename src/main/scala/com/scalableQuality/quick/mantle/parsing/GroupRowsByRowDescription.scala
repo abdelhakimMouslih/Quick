@@ -35,7 +35,10 @@ class GroupRowsByRowDescription(
         listOfRowIdentifier,
         quickState.ignoreUnknownRows,
         GroupRowsByRowDescriptionErrorMessages
-          .unknownRow(quickState.leftFile, quickState.descriptionFile, quickState.descriptionId, _)
+          .unknownRow(quickState.leftFile,
+                      quickState.descriptionFile,
+                      quickState.descriptionId,
+                      _)
       )
     val groupRightFileRowsByRowDescriptionEither =
       groupRowsByRowDescription(
@@ -43,7 +46,10 @@ class GroupRowsByRowDescription(
         listOfRowIdentifier,
         quickState.ignoreUnknownRows,
         GroupRowsByRowDescriptionErrorMessages
-          .unknownRow(quickState.leftFile, quickState.descriptionFile, quickState.descriptionId, _)
+          .unknownRow(quickState.leftFile,
+                      quickState.descriptionFile,
+                      quickState.descriptionId,
+                      _)
       )
 
     (groupLeftFileRowsByRowDescriptionEither,

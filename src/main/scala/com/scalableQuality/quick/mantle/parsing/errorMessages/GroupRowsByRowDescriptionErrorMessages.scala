@@ -11,7 +11,10 @@ import scala.xml.Elem
 
 object GroupRowsByRowDescriptionErrorMessages {
 
-  def unknownRow(filePath: String, xmlFilePath: String, fileDescriptionIdOpt: Option[String], rowLine: Int) = {
+  def unknownRow(filePath: String,
+                 xmlFilePath: String,
+                 fileDescriptionIdOpt: Option[String],
+                 rowLine: Int) = {
     val fileDescriptionId = fileDescriptionIdOpt.getOrElse("N/A")
     val errorMessages = EncounteredError(
       s"parsing file $filePath",
