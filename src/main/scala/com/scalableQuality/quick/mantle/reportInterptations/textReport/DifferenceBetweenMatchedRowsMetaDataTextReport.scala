@@ -6,11 +6,11 @@ object DifferenceBetweenMatchedRowsMetaDataTextReport {
   def apply(
       metaData: DifferenceBetweenMatchedRowsMetaData
   ): List[String] = {
-    val rowLabel = s"Two rows of type ${metaData.rowLabel} are different"
+    val rowLabel = s"comparison of two rows using the row description: ${metaData.rowLabel}"
     val leftFileRowNumber =
-      s"row at line number ${metaData.leftFileRowLineNumber} in the file ${metaData.leftFileLabel}"
+      s"from file ${metaData.leftFileLabel} the row at line ${metaData.leftFileRowLineNumber} is used"
     val rightFileRowNumber =
-      s"row at line number ${metaData.rightFileRowLineNumber} in the file ${metaData.rightFileLabel}"
+      s"from file ${metaData.rightFileLabel} the row at line ${metaData.rightFileRowLineNumber} is used"
     rowLabel :: leftFileRowNumber :: rightFileRowNumber :: Nil
   }
 }
