@@ -146,12 +146,13 @@ class GroupRowsByRowDescription(
           } yield (orderedRowAndItsRows._1, orderedRowAndItsRows._2.toList)
           Right(rowDescriptionAndRows.toList)
         case row :: restOfRows =>
-          val orderedRowDescriptionOpt = rowIdentifiers.collectFirst {
-            case rowIdentifier if rowIdentifier.canIdentify(row) =>
-              rowIdentifier.orderedRowDescription
-          }
-          orderedRowDescriptionOpt match {
-            case None =>
+          val orderedRowDescriptionList =
+            rowIdentifiers.collect {
+              case orderedRowDesc if orderedRowDesc.canIdentify(row) =>
+                orderedRowDesc.orderedRowDescription
+            }
+          orderedRowDescriptionList match {
+            case Nil =>
               if (ignoreUnknownRows)
                 loop(
                   restOfRows,
@@ -162,12 +163,14 @@ class GroupRowsByRowDescription(
                 )
               else
                 unknownRowError(row.lineNumber)
-            case Some(orderedRowDescription) =>
+            case _ =>
+              orderedRowDescriptionList.foreach(
+                rowDesc => rowDescriptionToRowsHashMap.addBinding(rowDesc, row)
+              )
               loop(
                 restOfRows,
                 rowIdentifiers,
-                rowDescriptionToRowsHashMap.addBinding(orderedRowDescription,
-                                                       row),
+                rowDescriptionToRowsHashMap,
                 ignoreUnknownRows,
                 unknownRowError
               )
