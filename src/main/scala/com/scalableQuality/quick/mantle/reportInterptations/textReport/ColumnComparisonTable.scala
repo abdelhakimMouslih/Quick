@@ -26,7 +26,7 @@ object ColumnComparisonTable {
       reportingColumnsRowFormatter,
       softHorizontalDivider
     )
-    strongHorizontalDivider :: tableHeaderRow :: strongHorizontalDivider :: columnsComparisonRows ::: strongHorizontalDivider :: Nil
+    strongHorizontalDivider :: tableHeaderRow :: strongHorizontalDivider :: columnsComparisonRows ::: strongHorizontalDivider :: invisibleHorizontalDivider :: Nil
   }
 
   private val dataRowSizes = ColumnComparisonTableColumnSizes(15, 10, 30)
@@ -81,6 +81,7 @@ object ColumnComparisonTable {
     strongHorizontalDividerFormat(strongHorizontalDividerComponents)
   }
 
+  private val invisibleHorizontalDivider = "\n\n"
   private def interpretColumnComparisons(
       comparisonBetweenTwoColumnsList: List[ComparisonBetweenTwoColumns],
       sizes: ColumnComparisonTableColumnSizes,
