@@ -27,25 +27,50 @@ class GroupRowsByRowDescription(
   def validateAndMatchTheseTwoFiles(
       leftFileRows: => List[RawRow],
       rightFileRows: => List[RawRow]
-  ): ValidateAndMatchTwoFiles = {
-    val groupLeftFileRowsByRowDescription =
-      groupRowsByRowDescription(leftFileRows, listOfRowIdentifier)
-    val groupRightFileRowsByRowDescription =
-      groupRowsByRowDescription(rightFileRows, listOfRowIdentifier)
-    val matchedGroups = matchGroupsRowsByRowDescription(
-      groupLeftFileRowsByRowDescription,
-      groupRightFileRowsByRowDescription)
-    val validationAndMatchingProcesses: List[RowsProcessingPhase] =
-      matchedGroups.map { rowsProcessingPhaseParameters =>
-        quickState.rowsProcessingPhase(
-          rowsProcessingPhaseParameters._1,
-          rowsProcessingPhaseParameters._2,
-          rowsProcessingPhaseParameters._3,
-          this.leftFileLabel,
-          this.rightFileLabel
-        )
-      }
-    ValidateAndMatchTwoFiles(validationAndMatchingProcesses)
+  ): Either[UnrecoverableError, ValidateAndMatchTwoFiles] = {
+
+    val groupLeftFileRowsByRowDescriptionEither =
+      groupRowsByRowDescription(
+        leftFileRows,
+        listOfRowIdentifier,
+        quickState.ignoreUnknownRows,
+        GroupRowsByRowDescriptionErrorMessages
+          .unknownRow(quickState.leftFile, quickState.descriptionFile, quickState.descriptionId, _)
+      )
+    val groupRightFileRowsByRowDescriptionEither =
+      groupRowsByRowDescription(
+        rightFileRows,
+        listOfRowIdentifier,
+        quickState.ignoreUnknownRows,
+        GroupRowsByRowDescriptionErrorMessages
+          .unknownRow(quickState.leftFile, quickState.descriptionFile, quickState.descriptionId, _)
+      )
+
+    (groupLeftFileRowsByRowDescriptionEither,
+     groupRightFileRowsByRowDescriptionEither) match {
+      case (Right(groupLeftFileRowsByRowDescription),
+            Right(groupRightFileRowsByRowDescription)) =>
+        val matchedGroups = matchGroupsRowsByRowDescription(
+          groupLeftFileRowsByRowDescription,
+          groupRightFileRowsByRowDescription)
+        val validationAndMatchingProcesses: List[RowsProcessingPhase] =
+          matchedGroups.map { rowsProcessingPhaseParameters =>
+            quickState.rowsProcessingPhase(
+              rowsProcessingPhaseParameters._1,
+              rowsProcessingPhaseParameters._2,
+              rowsProcessingPhaseParameters._3,
+              this.leftFileLabel,
+              this.rightFileLabel
+            )
+          }
+        val validateAndMatchTwoFiles = ValidateAndMatchTwoFiles(
+          validationAndMatchingProcesses)
+        Right(validateAndMatchTwoFiles)
+      case (Left(leftFileError), _) =>
+        Left(leftFileError)
+      case (_, Left(rightFileError)) =>
+        Left(rightFileError)
+    }
   }
 
   private def matchGroupsRowsByRowDescription(
@@ -85,8 +110,12 @@ class GroupRowsByRowDescription(
 
   def groupRowsByRowDescription(
       rows: List[RawRow],
-      rowIdentifiers: List[RowToRowDescriptionMatcher]
-  ): List[(OrderedRowDescription, List[RawRow])] = {
+      rowIdentifiers: List[RowToRowDescriptionMatcher],
+      ignoreUnknownRows: Boolean,
+      unknownRowError: Int => Either[
+        UnrecoverableError,
+        List[(OrderedRowDescription, List[RawRow])]]
+  ): Either[UnrecoverableError, List[(OrderedRowDescription, List[RawRow])]] = {
 
     type RowDescriptionToRowsHashMap = mutable.HashMap[
       OrderedRowDescription,
@@ -95,40 +124,55 @@ class GroupRowsByRowDescription(
     @tailrec def loop(
         rows: List[RawRow],
         rowIdentifiers: List[RowToRowDescriptionMatcher],
-        rowDescriptionToRowsHashMap: RowDescriptionToRowsHashMap
-    ): List[(OrderedRowDescription, List[RawRow])] = rows match {
-      case Nil =>
-        val rowDescriptionAndRows = for {
-          orderedRowAndItsRows <- rowDescriptionToRowsHashMap
-        } yield (orderedRowAndItsRows._1, orderedRowAndItsRows._2.toList)
-        rowDescriptionAndRows.toList
-
-      case row :: restOfRows =>
-        val orderedRowDescriptionOpt = rowIdentifiers.collectFirst {
-          case rowIdentifier if rowIdentifier.canIdentify(row) =>
-            rowIdentifier.orderedRowDescription
-        }
-        orderedRowDescriptionOpt match {
-          case None =>
-            loop(
-              restOfRows,
-              rowIdentifiers,
-              rowDescriptionToRowsHashMap
-            )
-
-          case Some(orderedRowDescription) =>
-            loop(
-              restOfRows,
-              rowIdentifiers,
-              rowDescriptionToRowsHashMap.addBinding(orderedRowDescription, row)
-            )
-        }
-    }
+        rowDescriptionToRowsHashMap: RowDescriptionToRowsHashMap,
+        ignoreUnknownRows: Boolean,
+        unknownRowError: Int => Either[UnrecoverableError,
+                                       List[(OrderedRowDescription,
+                                             List[RawRow])]]
+    ): Either[UnrecoverableError, List[(OrderedRowDescription, List[RawRow])]] =
+      rows match {
+        case Nil =>
+          val rowDescriptionAndRows = for {
+            orderedRowAndItsRows <- rowDescriptionToRowsHashMap
+          } yield (orderedRowAndItsRows._1, orderedRowAndItsRows._2.toList)
+          Right(rowDescriptionAndRows.toList)
+        case row :: restOfRows =>
+          val orderedRowDescriptionOpt = rowIdentifiers.collectFirst {
+            case rowIdentifier if rowIdentifier.canIdentify(row) =>
+              rowIdentifier.orderedRowDescription
+          }
+          orderedRowDescriptionOpt match {
+            case None =>
+              if (ignoreUnknownRows)
+                loop(
+                  restOfRows,
+                  rowIdentifiers,
+                  rowDescriptionToRowsHashMap,
+                  ignoreUnknownRows,
+                  unknownRowError
+                )
+              else
+                unknownRowError(row.lineNumber)
+            case Some(orderedRowDescription) =>
+              loop(
+                restOfRows,
+                rowIdentifiers,
+                rowDescriptionToRowsHashMap.addBinding(orderedRowDescription,
+                                                       row),
+                ignoreUnknownRows,
+                unknownRowError
+              )
+          }
+      }
 
     val rowDescriptionToRowsHashMap =
       new mutable.HashMap[OrderedRowDescription, mutable.Set[RawRow]]
       with mutable.MultiMap[OrderedRowDescription, RawRow]
-    loop(rows, rowIdentifiers, rowDescriptionToRowsHashMap)
+    loop(rows,
+         rowIdentifiers,
+         rowDescriptionToRowsHashMap,
+         ignoreUnknownRows,
+         unknownRowError)
   }
 }
 
