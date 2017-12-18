@@ -17,7 +17,8 @@ case class QuickState(
     rightFileLabel: Option[String] = None,
     leftFile: String = "",
     rightFile: String = "",
-    rowsProcessingPhase: RowsProcessingPhaseConstructor = validateAndMatchRows
+    rowsProcessingPhase: RowsProcessingPhaseConstructor = validateAndMatchRows,
+    ignoreUnknownRows: Boolean = false
 ) {
   def addLabel(label: String): QuickState = leftFileLabel match {
     case None =>

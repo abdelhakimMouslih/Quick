@@ -42,21 +42,26 @@ object Quick extends App {
           )
           rowToRowDescriptionMatcherEither match {
             case Right(rowDescriptionMatcher) =>
-              val validationAndMatchingProcesses =
+              val validationAndMatchingProcessesEither =
                 rowDescriptionMatcher.validateAndMatchTheseTwoFiles(
                   leftFileRows(),
                   rightFileRows())
+              validationAndMatchingProcessesEither match {
+                case Right(validationAndMatchingProcesses) =>
+                  val validationAndMatchingReports =
+                    validationAndMatchingProcesses.validationAndMatchingReports
 
-              val validationAndMatchingReports =
-                validationAndMatchingProcesses.validationAndMatchingReports
+                  val validationAndMatchingTextReports =
+                    validationAndMatchingReports.map(
+                      ValidationAndMatchingTextReport(_))
 
-              val validationAndMatchingTextReports =
-                validationAndMatchingReports.map(
-                  ValidationAndMatchingTextReport(_))
-
-              validationAndMatchingTextReports.foreach(
-                WriteTextReportToStdout(_))
-              ExitWithStatus.exitWithReport(validationAndMatchingReports)
+                  validationAndMatchingTextReports.foreach(
+                    WriteTextReportToStdout(_))
+                  ExitWithStatus.exitWithReport(validationAndMatchingReports)
+                case Left(unknownRowErrorMessage) =>
+                  WriteToStderr(unknownRowErrorMessage)
+                  ExitWithStatus.interruptedByAnError
+              }
             case Left(errorMessage) =>
               WriteToStderr(errorMessage)
               ExitWithStatus.interruptedByAnError

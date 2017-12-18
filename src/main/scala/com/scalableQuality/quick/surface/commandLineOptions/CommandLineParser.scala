@@ -35,6 +35,12 @@ object CommandLineParser {
         }
         .optional()
 
+      opt[Unit]('u', "unknown")
+        .action { (_, config) =>
+          config.copy(ignoreUnknownRows = true)
+        }
+        .optional()
+
       arg[String]("<leftFile> <rightFile>")
         .action { (optionValue, config) =>
           config.addFile(optionValue)
