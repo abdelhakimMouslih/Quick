@@ -19,23 +19,19 @@ object Quick extends App {
     case Some(quickState) =>
       val leftFilePath = quickState.leftFile
       val rightFilePath = quickState.rightFile
-      val fileDescriptionPath = quickState.descriptionFile
-
-      val fileDescriptionId: Option[String] = quickState.descriptionId
 
       val (leftFileLabel, rightFileLabel) = FileLabelsFromPaths(quickState)
 
       val leftFilePathEither = ReadRowsFromFile(leftFilePath)
       val rightFilePathEither = ReadRowsFromFile(rightFilePath)
-      val fileDescriptionPathEither = ReadXmlFile(fileDescriptionPath)
+      val fileDescriptionPathEither = ReadXmlFile(quickState)
 
       (leftFilePathEither, rightFilePathEither, fileDescriptionPathEither) match {
         case (Right(leftFileRows),
               Right(rightFileRows),
-              Right(fileDescriptionRootElem)) =>
+              Right(fileDescriptionElem)) =>
           val rowToRowDescriptionMatcherEither = GroupRowsByRowDescription(
-            fileDescriptionRootElem,
-            fileDescriptionId,
+            fileDescriptionElem,
             leftFileLabel,
             rightFileLabel,
             quickState

@@ -11,7 +11,10 @@ import com.scalableQuality.quick.mantle.error.{
   BunchOfErrors,
   UnrecoverableError
 }
-import com.scalableQuality.quick.mantle.parsing.errorMessages.GroupRowsByRowDescriptionErrorMessages
+import com.scalableQuality.quick.mantle.parsing.errorMessages.{
+  FileDescriptionElemErrorMessages,
+  GroupRowsByRowDescriptionErrorMessages
+}
 import com.scalableQuality.quick.surface.commandLineOptions.QuickState
 
 import scala.annotation.tailrec
@@ -237,164 +240,34 @@ object GroupRowsByRowDescription {
                                   rightFileLabel,
                                   quickState)
       case Left(errorMessage) =>
-        GroupRowsByRowDescriptionErrorMessages.invalidFileDescriptionFile(
-          errorMessage)
+        Left(errorMessage)
     }
 
   }
 
   def apply(
-      fileDescriptionRootElem: Elem,
-      parserId: Option[String],
+      fileDescriptionElem: FileDescriptionElem,
       leftFileLabel: Option[String],
       RightFileLabel: Option[String],
       quickState: QuickState
   ): Either[UnrecoverableError, GroupRowsByRowDescription] = {
-    val fileDescriptionElem =
-      getFileDescriptionElem(fileDescriptionRootElem, parserId)
-    fileDescriptionElem match {
+    fileDescriptionElem.elem match {
       case Right(fileDescElem) =>
-        GroupRowsByRowDescription(fileDescElem,
-                                  leftFileLabel,
-                                  RightFileLabel,
-                                  quickState)
-      case Left(errorMessage) =>
-        GroupRowsByRowDescriptionErrorMessages.invalidFileDescriptionFile(
-          errorMessage)
-    }
-  }
-
-  private def getFileDescriptionElem(
-      fileDescriptionRootElem: Elem,
-      parserIdOption: Option[String]
-  ): Either[UnrecoverableError, Elem] = {
-    val fileDescriptionsList = getFileDescriptionsList(fileDescriptionRootElem)
-    fileDescriptionsList match {
+        val groupRowsByRowDescription = GroupRowsByRowDescription(
+          fileDescElem,
+          leftFileLabel,
+          RightFileLabel,
+          quickState)
+        groupRowsByRowDescription match {
+          case Right(_) => groupRowsByRowDescription
+          case Left(errorMessage) =>
+            FileDescriptionElemErrorMessages.ErrorValidatingFileDescription(
+              fileDescriptionElem,
+              errorMessage)
+        }
       case Left(errorMessage) =>
         Left(errorMessage)
-      case Right(listOfElems) =>
-        getFileDescriptionWithId(listOfElems, parserIdOption)
     }
   }
 
-  private def getFileDescriptionWithId(
-      listOfFileDescriptions: List[Elem],
-      providedIdOption: Option[String]
-  ): Either[UnrecoverableError, Elem] = {
-    @tailrec def loop(
-        listOfFileDescriptions: List[Elem],
-        providedId: String
-    ): Either[UnrecoverableError, Elem] = listOfFileDescriptions match {
-      case Nil =>
-        GroupRowsByRowDescriptionErrorMessages.noFileDescriptionElemsForId(
-          providedId)
-      case fileDescElem :: restOfElems
-          if XMLHelperFunctions.haveLabel(fileDescElem,
-                                          fileDescriptionElemLabel) =>
-        val fileDescIdOpt = getId(fileDescElem.attributes)
-        fileDescIdOpt match {
-          case Right(fileDescId) if fileDescId == providedId =>
-            Right(fileDescElem)
-          case Left(error: BunchOfErrors) =>
-            GroupRowsByRowDescriptionErrorMessages
-              .invalidUnorderedFileDescriptionAttributes(error)
-          case _ =>
-            loop(restOfElems, providedId)
-        }
-      case elem :: _ =>
-        GroupRowsByRowDescriptionErrorMessages
-          .unknownFileDescriptionsListChildElem(elem) // dead code
-    }
-
-    (listOfFileDescriptions, providedIdOption) match {
-      case (Nil, _) =>
-        GroupRowsByRowDescriptionErrorMessages.noFileDescriptionElemIsFound
-      case (fileDescElem :: Nil, None) =>
-        Right(fileDescElem)
-      case (_, None) =>
-        GroupRowsByRowDescriptionErrorMessages.noIdProvided
-      case (_, Some(providedId)) =>
-        loop(listOfFileDescriptions, providedId)
-    }
-  }
-
-  private def getId(
-      fileDescMetaData: MetaData): Either[UnrecoverableError, String] = {
-    val unknownAttributes = XMLHelperFunctions.collectUnknownAttributes(
-      fileDescriptionAttributeKeysList,
-      fileDescMetaData)
-    unknownAttributes match {
-      case Nil =>
-        val classParameters = AttributesValuesExtractor(
-          fileDescMetaData,
-          fileDescriptionAttributeKeysList)
-        classParameters.get(fileDescriptionIdAttributeKey)
-      case _ =>
-        val bunchOfErrors = BunchOfErrors(unknownAttributes)
-        Left(bunchOfErrors)
-    }
-  }
-
-  private def getFileDescriptionsList(
-      fileDescRootElem: Elem
-  ): Either[UnrecoverableError, List[Elem]] =
-    if (XMLHelperFunctions.haveLabel(fileDescRootElem,
-                                     fileDescriptionElemLabel)) {
-      Right(List(fileDescRootElem))
-    } else if (XMLHelperFunctions.haveLabel(fileDescRootElem,
-                                            fileDescriptionsListElemLabel)) {
-      validateFileDescriptionsListAndGetChildElems(fileDescRootElem)
-    } else {
-      GroupRowsByRowDescriptionErrorMessages.unknownFileDescriptionRootElem(
-        fileDescRootElem)
-    }
-
-  private def validateFileDescriptionsListAndGetChildElems(
-      fileDescriptionsListElem: Elem
-  ): Either[UnrecoverableError, List[Elem]] = {
-    val unknownAttributes = XMLHelperFunctions.collectUnknownAttributes(
-      fileDescriptionsListAttributeKeysList,
-      fileDescriptionsListElem.attributes)
-    unknownAttributes match {
-      case Nil =>
-        val descriptionListChildElem =
-          XMLHelperFunctions.collectElemChildren(fileDescriptionsListElem)
-        validateFileDescriptionChildElems(descriptionListChildElem)
-
-      case _ =>
-        val bunchOfErrors = BunchOfErrors(unknownAttributes)
-        GroupRowsByRowDescriptionErrorMessages
-          .invalidUnorderedFilesDescriptionsListAttributes(bunchOfErrors)
-    }
-  }
-
-  private def validateFileDescriptionChildElems(
-      childElems: List[Elem]
-  ): Either[UnrecoverableError, List[Elem]] = {
-    def collectUnknownChildElems(childElems: List[Elem]): List[Elem] =
-      childElems.filter {
-        !XMLHelperFunctions.haveLabel(_, fileDescriptionElemLabel)
-      }
-
-    val unknownChildElems = collectUnknownChildElems(childElems)
-    unknownChildElems match {
-      case Nil =>
-        Right(childElems)
-      case _ =>
-        val unknownChildElemsErrorMessages = unknownChildElems.map(
-          GroupRowsByRowDescriptionErrorMessages
-            .unknownFileDescriptionsListChildElemError(_)
-        )
-        Left(BunchOfErrors(unknownChildElemsErrorMessages))
-    }
-
-  }
-
-  private val fileDescriptionsListElemLabel = "FileDescriptionsList"
-  private val fileDescriptionElemLabel = "UnorderedFileDescription"
-  private val fileDescriptionIdAttributeKey =
-    AttributeValueExtractor("Id", AttributeValueConversion.extractValue)
-  private val fileDescriptionAttributeKeysList = List(
-    fileDescriptionIdAttributeKey)
-  private val fileDescriptionsListAttributeKeysList = Nil
 }
