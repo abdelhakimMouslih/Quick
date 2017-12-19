@@ -3,6 +3,7 @@ scala:
    - 2.11.11
 
 jdk:
-  - oraclejdk9
   - oraclejdk8
   - oraclejdk7
+  - openjdk8
+  - openjdk7
