@@ -1,6 +1,9 @@
 package com.scalableQuality.quick.core.checks.errorMessages
 
-import com.scalableQuality.quick.mantle.error.{DependencyError, UnrecoverableError}
+import com.scalableQuality.quick.mantle.error.{
+  DependencyError,
+  UnrecoverableError
+}
 
 object CheckColumnValueErrorMessages {
   def invalidChecksAttributesValues(errors: List[UnrecoverableError]) = {

@@ -7,5 +7,4 @@ trait Check {
   def apply(value: Option[String]): Boolean =
     value.map(executeCheck(_)).getOrElse(defaultCheckResult)
 
-
 }
