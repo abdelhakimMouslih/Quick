@@ -14,12 +14,13 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
          <ColumnIdentifier matchAgainst="99" label="labeling" startsAt="300" length="48"/>
        </FixedOrderedRowDescription>
      </UnorderedFileDescription>
+    val fileDescriptionElem = FileDescriptionElem(
+      unorderedFileDescription,
+      "",
+      None
+    )
     val RowToRowDescriptionMatcherEither =
-      GroupRowsByRowDescription(unorderedFileDescription,
-                                None,
-                                None,
-                                None,
-                                QuickState())
+      GroupRowsByRowDescription(fileDescriptionElem, None, None, QuickState())
     RowToRowDescriptionMatcherEither shouldBe a[Right[_, _]]
   }
 
@@ -33,12 +34,13 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
           </FixedOrderedRowDescription>
         </UnorderedFileDescription>
       </FileDescriptionsList>
+    val fileDescriptionElem = FileDescriptionElem(
+      unorderedFileDescription,
+      "",
+      None
+    )
     val RowToRowDescriptionMatcherEither =
-      GroupRowsByRowDescription(unorderedFileDescription,
-                                None,
-                                None,
-                                None,
-                                QuickState())
+      GroupRowsByRowDescription(fileDescriptionElem, None, None, QuickState())
     RowToRowDescriptionMatcherEither shouldBe a[Right[_, _]]
   }
 
@@ -57,12 +59,13 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
           </FixedOrderedRowDescription>
         </UnorderedFileDescription>
       </FileDescriptionsList>
+    val fileDescriptionElem = FileDescriptionElem(
+      unorderedFileDescription,
+      "",
+      Some("firstDesc")
+    )
     val RowToRowDescriptionMatcherEither =
-      GroupRowsByRowDescription(unorderedFileDescription,
-                                Some("firstDesc"),
-                                None,
-                                None,
-                                QuickState())
+      GroupRowsByRowDescription(fileDescriptionElem, None, None, QuickState())
     RowToRowDescriptionMatcherEither shouldBe a[Right[_, _]]
   }
 
@@ -81,12 +84,13 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
           </FixedOrderedRowDescription>
         </UnorderedFileDescription>
       </FileDescriptionsList>
+    val fileDescriptionElem = FileDescriptionElem(
+      unorderedFileDescription,
+      "",
+      Some("dude")
+    )
     val RowToRowDescriptionMatcherEither =
-      GroupRowsByRowDescription(unorderedFileDescription,
-                                Some("dude"),
-                                None,
-                                None,
-                                QuickState())
+      GroupRowsByRowDescription(fileDescriptionElem, None, None, QuickState())
     RowToRowDescriptionMatcherEither shouldBe a[Left[_, _]]
   }
 
@@ -100,12 +104,13 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
           </FixedOrderedRowDescription>
         </UnorderedFileDescription>
       </missSpelledFileDescriptionsList>
+    val fileDescriptionElem = FileDescriptionElem(
+      unorderedFileDescription,
+      "",
+      None
+    )
     val RowToRowDescriptionMatcherEither =
-      GroupRowsByRowDescription(unorderedFileDescription,
-                                None,
-                                None,
-                                None,
-                                QuickState())
+      GroupRowsByRowDescription(fileDescriptionElem, None, None, QuickState())
     RowToRowDescriptionMatcherEither shouldBe a[Left[_, _]]
   }
 
@@ -119,12 +124,13 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
           </FixedOrderedRowDescription>
         </MisspelledUnorderedFileDescription>
       </FileDescriptionsList>
+    val fileDescriptionElem = FileDescriptionElem(
+      unorderedFileDescription,
+      "",
+      None
+    )
     val RowToRowDescriptionMatcherEither =
-      GroupRowsByRowDescription(unorderedFileDescription,
-                                None,
-                                None,
-                                None,
-                                QuickState())
+      GroupRowsByRowDescription(fileDescriptionElem, None, None, QuickState())
     RowToRowDescriptionMatcherEither shouldBe a[Left[_, _]]
   }
 
@@ -136,12 +142,13 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
           <ColumnIdentifier matchAgainst="^4[0-9]{15}"  label="Visa Card Number" startsAt="2" length="16"></ColumnIdentifier>
           <MisspelledColumnDiscription />
         </UnorderedFileDescription>
+    val fileDescriptionElem = FileDescriptionElem(
+      unorderedFileDescription,
+      "",
+      None
+    )
     val RowToRowDescriptionMatcherEither =
-      GroupRowsByRowDescription(unorderedFileDescription,
-                                None,
-                                None,
-                                None,
-                                QuickState())
+      GroupRowsByRowDescription(fileDescriptionElem, None, None, QuickState())
     RowToRowDescriptionMatcherEither shouldBe a[Left[_, _]]
   }
 
@@ -149,12 +156,13 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
     val unorderedFileDescription =
       <FileDescriptionsList>
       </FileDescriptionsList>
+    val fileDescriptionElem = FileDescriptionElem(
+      unorderedFileDescription,
+      "",
+      None
+    )
     val RowToRowDescriptionMatcherEither =
-      GroupRowsByRowDescription(unorderedFileDescription,
-                                None,
-                                None,
-                                None,
-                                QuickState())
+      GroupRowsByRowDescription(fileDescriptionElem, None, None, QuickState())
     RowToRowDescriptionMatcherEither shouldBe a[Left[_, _]]
   }
 
@@ -164,12 +172,13 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
         <UnorderedFileDescription>
         </UnorderedFileDescription>
       </FileDescriptionsList>
+    val fileDescriptionElem = FileDescriptionElem(
+      unorderedFileDescription,
+      "",
+      None
+    )
     val RowToRowDescriptionMatcherEither =
-      GroupRowsByRowDescription(unorderedFileDescription,
-                                None,
-                                None,
-                                None,
-                                QuickState())
+      GroupRowsByRowDescription(fileDescriptionElem, None, None, QuickState())
     RowToRowDescriptionMatcherEither shouldBe a[Left[_, _]]
   }
 
@@ -188,12 +197,13 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
           </FixedOrderedRowDescription>
         </UnorderedFileDescription>
       </FileDescriptionsList>
+    val fileDescriptionElem = FileDescriptionElem(
+      unorderedFileDescription,
+      "",
+      None
+    )
     val RowToRowDescriptionMatcherEither =
-      GroupRowsByRowDescription(unorderedFileDescription,
-                                None,
-                                None,
-                                None,
-                                QuickState())
+      GroupRowsByRowDescription(fileDescriptionElem, None, None, QuickState())
     RowToRowDescriptionMatcherEither shouldBe a[Left[_, _]]
   }
 
@@ -207,12 +217,13 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
           </FixedOrderedRowDescription>
         </UnorderedFileDescription>
       </FileDescriptionsList>
+    val fileDescriptionElem = FileDescriptionElem(
+      unorderedFileDescription,
+      "",
+      Some("wrong")
+    )
     val RowToRowDescriptionMatcherEither =
-      GroupRowsByRowDescription(unorderedFileDescription,
-                                Some("wrong"),
-                                None,
-                                None,
-                                QuickState())
+      GroupRowsByRowDescription(fileDescriptionElem, None, None, QuickState())
     RowToRowDescriptionMatcherEither shouldBe a[Left[_, _]]
   }
 
@@ -226,12 +237,13 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
           </FixedOrderedRowDescription>
         </UnorderedFileDescription>
       </FileDescriptionsList>
+    val fileDescriptionElem = FileDescriptionElem(
+      unorderedFileDescription,
+      "",
+      None
+    )
     val RowToRowDescriptionMatcherEither =
-      GroupRowsByRowDescription(unorderedFileDescription,
-                                None,
-                                None,
-                                None,
-                                QuickState())
+      GroupRowsByRowDescription(fileDescriptionElem, None, None, QuickState())
     RowToRowDescriptionMatcherEither shouldBe a[Left[_, _]]
   }
 
@@ -245,12 +257,13 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
           </FixedOrderedRowDescription>
         </UnorderedFileDescription>
       </FileDescriptionsList>
+    val fileDescriptionElem = FileDescriptionElem(
+      unorderedFileDescription,
+      "",
+      Some("sup")
+    )
     val RowToRowDescriptionMatcherEither =
-      GroupRowsByRowDescription(unorderedFileDescription,
-                                Some("sup"),
-                                None,
-                                None,
-                                QuickState())
+      GroupRowsByRowDescription(fileDescriptionElem, None, None, QuickState())
     RowToRowDescriptionMatcherEither shouldBe a[Left[_, _]]
   }
 

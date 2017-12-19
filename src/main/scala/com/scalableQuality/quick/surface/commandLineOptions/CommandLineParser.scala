@@ -2,7 +2,7 @@ package com.scalableQuality.quick.surface.commandLineOptions
 
 object CommandLineParser {
   private val quickName = "Quick\n"
-  private val quickVersion = "\rrelease: 0.5\ncommit: 61e51a1"
+  private val quickVersion = "\rrelease: 0.6\ncommit: 3934d5d5d35128ee5905b3655caae3369567945d"
 
   def apply(args: Array[String]): Option[QuickState] =
     new scopt.OptionParser[QuickState](quickName) {
@@ -32,6 +32,12 @@ object CommandLineParser {
       opt[Unit]('m', "matchOnly")
         .action { (_, config) =>
           config.copy(rowsProcessingPhase = QuickState.matchRows)
+        }
+        .optional()
+
+      opt[Unit]('u', "unknown")
+        .action { (_, config) =>
+          config.copy(ignoreUnknownRows = true)
         }
         .optional()
 
