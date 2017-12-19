@@ -1,6 +1,6 @@
 // project specifications
 name := "Quick"
-version := "0.4"
+version := "0.6"
 
 // fat JAR specifications
 mainClass in assembly := Some("com.scalableQuality.quick.surface.main.Quick")
