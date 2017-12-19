@@ -1,6 +1,6 @@
 package com.scalableQuality.quick.core.fileProcessingPhase
 
-import com.scalableQuality.quick.core.fileComponentDescripts.{
+import com.scalableQuality.quick.core.fileComponentDescriptions.{
   FixedColumnDescription,
   FixedRowDivider,
   OrderedRowDescription

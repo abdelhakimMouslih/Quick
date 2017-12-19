@@ -1,6 +1,6 @@
 package com.scalableQuality.quick.mantle.parsing
 
-import com.scalableQuality.quick.core.fileComponentDescripts._
+import com.scalableQuality.quick.core.fileComponentDescriptions._
 import com.scalableQuality.quick.mantle.constructFromXml._
 import com.scalableQuality.quick.mantle.error.{
   BunchOfErrors,

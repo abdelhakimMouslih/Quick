@@ -1,0 +1,59 @@
+package com.scalableQuality.quick.core.fileComponentDescriptions
+
+import com.scalableQuality.quick.core.Reporting.ComparisonBetweenTwoColumns
+import com.scalableQuality.quick.core.phases.{ColumnUsageStages, MatchingStage}
+import com.scalableQuality.quick.mantle.parsing.RawRow
+
+class FixedRowDivider(
+    private[FixedRowDivider] val columnsDescriptions: List[
+      FixedColumnDescription]
+) extends RowDivider {
+
+  override def keepOnlyColumnsDescriptionsUsedIn(
+      columnUsages: ColumnUsageStages*
+  ): FixedRowDivider = {
+    val keptColumnDescriptions = for {
+      colDesc <- columnsDescriptions
+      if colDesc.shouldUseDuring(columnUsages: _*)
+    } yield colDesc
+    FixedRowDivider(keptColumnDescriptions)
+  }
+
+  override def compare(
+      leftFileRawRow: Option[RawRow],
+      rightFileRawRow: Option[RawRow]
+  ): List[ComparisonBetweenTwoColumns] =
+    for {
+      colDesc <- columnsDescriptions
+    } yield colDesc.compareTwoColumns(leftFileRawRow, rightFileRawRow)
+
+  override def isMatchable: Boolean =
+    columnsDescriptions
+      .collectFirst {
+        case col if col.shouldUseDuring(MatchingStage) => true
+      }
+      .getOrElse(false)
+
+  override def columnsComparisonValuesFor(
+      stage: ColumnUsageStages,
+      rawRow: RawRow): List[Option[String]] =
+    for {
+      colDesc <- columnsDescriptions
+      if colDesc.shouldUseDuring(stage)
+    } yield colDesc.comparisonValue(rawRow)
+
+  override def equals(obj: scala.Any): Boolean = obj match {
+    case rowDivider: FixedRowDivider =>
+      rowDivider.columnsDescriptions == this.columnsDescriptions
+    case _ => false
+  }
+
+}
+
+object FixedRowDivider {
+
+  def apply(
+      columnsDescriptions: List[FixedColumnDescription]
+  ): FixedRowDivider = new FixedRowDivider(columnsDescriptions)
+
+}

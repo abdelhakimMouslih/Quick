@@ -4,7 +4,7 @@ import com.scalableQuality.quick.core.Reporting.{
   FilledValidationAndMatchingReport,
   ValidationAndMatchingReport
 }
-import com.scalableQuality.quick.core.fileComponentDescripts.OrderedRowDescription
+import com.scalableQuality.quick.core.fileComponentDescriptions.OrderedRowDescription
 import com.scalableQuality.quick.mantle.parsing.RawRow
 class ValidateAndMatchRows(
     orderedRowDescription: OrderedRowDescription,
