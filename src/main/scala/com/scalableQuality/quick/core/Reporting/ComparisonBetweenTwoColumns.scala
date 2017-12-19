@@ -1,5 +1,6 @@
 package com.scalableQuality.quick.core.Reporting
 
+import com.scalableQuality.quick.core.Reporting.InvalidColumns.FailedChecksColumns
 import com.scalableQuality.quick.core.fileComponentDescriptions.ColumnDescriptionMetaData
 import com.scalableQuality.quick.core.phases.{ReportingStage, ValidationStage}
 
@@ -11,8 +12,9 @@ object ComparisonBetweenTwoColumns {
       columnDescriptionMetaData: ColumnDescriptionMetaData,
       leftFileColumnValue: => Option[String],
       rightFileColumnValue: => Option[String],
-      theTwoColumnsAreEquivalent: => Boolean
-  ): ComparisonBetweenTwoColumns = {
+      theTwoColumnsAreEquivalent: => Boolean,
+      passedChecksSuccessfully: => Boolean
+  ): ComparisonBetweenTwoColumns = if (passedChecksSuccessfully) {
     val shouldUseInReporting =
       columnDescriptionMetaData.shouldUseDuring(ReportingStage)
     val shouldUseInValidation =
@@ -46,6 +48,13 @@ object ComparisonBetweenTwoColumns {
       IrrelevantColumns
     }
 
+  } else {
+    FailedChecksColumns(
+      leftFileColumnValue,
+      rightFileColumnValue,
+      columnDescriptionMetaData.position,
+      columnDescriptionMetaData.label
+    )
   }
 }
 
@@ -140,14 +149,41 @@ object InvalidColumns {
                        columnPosition,
                        columnLabel)
 
-  /*def apply(
-             columnDescription: FixedColumnDescription,
-             leftFileRawRow : Option[RawRow],
-             rightFileRawRow : Option[RawRow]
-           ): InvalidColumns = InvalidColumns(
-    leftFileRawRow.flatMap(columnDescription.columnValue),
-    rightFileRawRow.flatMap(columnDescription.columnValue),
-    columnDescription.metaData.position,
-    columnDescription.metaData.label
-  )*/
+
+
+
+  class FailedChecksColumns(
+                        leftColumnValue: => Option[String],
+                        rightColumnValue: => Option[String],
+                        val columnPosition: String,
+                        val columnLabel: String
+                      ) extends ComparisonBetweenTwoColumns {
+    lazy val leftFileColumnValue = leftColumnValue
+    lazy val rightFileColumnValue = rightColumnValue
+    override def equals(that: scala.Any): Boolean = that match {
+      case failedChecksColumns: FailedChecksColumns =>
+        failedChecksColumns.leftFileColumnValue == this.leftFileColumnValue &&
+          failedChecksColumns.rightFileColumnValue == this.rightFileColumnValue &&
+          failedChecksColumns.columnPosition == this.columnPosition //&&
+        failedChecksColumns.columnLabel == this.columnLabel
+      case _ => false
+    }
+
+    override def toString: String =
+      s" ${this.leftFileColumnValue} ${this.rightFileColumnValue} $columnPosition"
+
+  }
+
+  object FailedChecksColumns {
+    def apply(
+               leftColumnValue: => Option[String],
+               rightColumnValue: => Option[String],
+               columnPosition: String,
+               columnLabel: String
+             ): FailedChecksColumns =
+      new FailedChecksColumns(leftColumnValue,
+        rightColumnValue,
+        columnPosition,
+        columnLabel)
+  }
 }

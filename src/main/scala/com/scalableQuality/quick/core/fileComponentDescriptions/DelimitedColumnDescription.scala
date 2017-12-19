@@ -1,7 +1,7 @@
 package com.scalableQuality.quick.core.fileComponentDescriptions
 
 import com.scalableQuality.quick.core.Reporting.ComparisonBetweenTwoColumns
-import com.scalableQuality.quick.core.checks.CheckColumnValue
+import com.scalableQuality.quick.core.checks.{Check, CheckColumnValue}
 import com.scalableQuality.quick.core.fileComponentDescriptions.errorMessages.DelimitedColumnDescriptionErrorMessages
 import com.scalableQuality.quick.core.phases.{
   ColumnUsageStages,
@@ -36,12 +36,19 @@ class DelimitedColumnDescription(
       this.metaData,
       leftRow.flatMap(this.columnValue),
       rightRow.flatMap(this.columnValue),
-      compare(leftRow, rightRow)
+      compare(leftRow, rightRow),
+      checkColumnValue(leftRow) && checkColumnValue(rightRow)
     )
   def checkColumnValue(row: Vector[String]): Boolean = {
     val value = columnValue(row)
     columnValueChecks(value)
   }
+
+  private def checkColumnValue(maybeStrings: Option[Vector[String]]): Boolean =
+    maybeStrings
+      .map(checkColumnValue(_))
+      .getOrElse(Check.noChecksWereExecutedDefaultResult)
+
   private def compare(leftRow: Option[Vector[String]],
                       rightRow: Option[Vector[String]]): Boolean = {
     val leftColumn = leftRow.flatMap(this.comparisonValue)

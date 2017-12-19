@@ -1,23 +1,12 @@
 package com.scalableQuality.quick.core.fileComponentDescriptions
 
 import com.scalableQuality.quick.core.Reporting.ComparisonBetweenTwoColumns
-import com.scalableQuality.quick.core.checks.CheckColumnValue
+import com.scalableQuality.quick.core.checks.{Check, CheckColumnValue}
 import com.scalableQuality.quick.core.fileComponentDescriptions.errorMessages.FixedColumnDescriptionErrorMessages
-import com.scalableQuality.quick.core.phases.{
-  ColumnUsageStages,
-  ShouldUseDuring
-}
+import com.scalableQuality.quick.core.phases.{ColumnUsageStages, ShouldUseDuring}
 import com.scalableQuality.quick.core.valueMapping.ValueMapper
-import com.scalableQuality.quick.mantle.constructFromXml.{
-  AttributeValueConversion,
-  AttributeValueExtractor,
-  AttributesValuesExtractor,
-  XMLHelperFunctions
-}
-import com.scalableQuality.quick.mantle.error.{
-  BunchOfErrors,
-  UnrecoverableError
-}
+import com.scalableQuality.quick.mantle.constructFromXml.{AttributeValueConversion, AttributeValueExtractor, AttributesValuesExtractor, XMLHelperFunctions}
+import com.scalableQuality.quick.mantle.error.{BunchOfErrors, UnrecoverableError}
 import com.scalableQuality.quick.mantle.parsing.RawRow
 
 import scala.xml.MetaData
@@ -40,13 +29,19 @@ class FixedColumnDescription(
       this.metaData,
       leftRow.flatMap(this.columnValue),
       rightRow.flatMap(this.columnValue),
-      compare(leftRow, rightRow)
+      compare(leftRow, rightRow),
+      checkColumnValue(leftRow) && checkColumnValue(rightRow)
     )
 
   def checkColumnValue(row: RawRow): Boolean = {
     val value = columnValue(row)
     columnValueChecks(value)
   }
+  private def checkColumnValue(maybeRow: Option[RawRow]): Boolean =
+    maybeRow
+      .map(checkColumnValue(_))
+      .getOrElse(Check.noChecksWereExecutedDefaultResult)
+
 
   private def compare(leftRow: Option[RawRow],
                       rightRow: Option[RawRow]): Boolean = {
@@ -86,7 +81,7 @@ object FixedColumnDescription {
   def apply(metaData: MetaData)
     : Either[UnrecoverableError, FixedColumnDescription] = {
     val unknownAttributeList = XMLHelperFunctions.collectUnknownAttributes(
-      listOfAttributesKeys,
+      FixedColumnDescription.listOfAttributesKeys,
       metaData)
     unknownAttributeList match {
       case Nil =>

@@ -1322,14 +1322,14 @@ class OrderedRowDescriptionTest
       FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
     (firstColumnDescriptionEither,
-      secondColumnDescriptionEither,
-      thirdColumnDescriptionEither) match {
+     secondColumnDescriptionEither,
+     thirdColumnDescriptionEither) match {
       case (Right(firstColumnDescription),
-      Right(secondColumnDescription),
-      Right(thirdColumnDescription)) =>
+            Right(secondColumnDescription),
+            Right(thirdColumnDescription)) =>
         val columnDescriptionList = List(firstColumnDescription,
-          secondColumnDescription,
-          thirdColumnDescription)
+                                         secondColumnDescription,
+                                         thirdColumnDescription)
         val fixedRowDivider = FixedRowDivider(columnDescriptionList)
         val orderedRowDescription =
           OrderedRowDescription(fixedRowDivider, "label")
@@ -1371,14 +1371,14 @@ class OrderedRowDescriptionTest
       FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
     (firstColumnDescriptionEither,
-      secondColumnDescriptionEither,
-      thirdColumnDescriptionEither) match {
+     secondColumnDescriptionEither,
+     thirdColumnDescriptionEither) match {
       case (Right(firstColumnDescription),
-      Right(secondColumnDescription),
-      Right(thirdColumnDescription)) =>
+            Right(secondColumnDescription),
+            Right(thirdColumnDescription)) =>
         val columnDescriptionList = List(firstColumnDescription,
-          secondColumnDescription,
-          thirdColumnDescription)
+                                         secondColumnDescription,
+                                         thirdColumnDescription)
         val fixedRowDivider = FixedRowDivider(columnDescriptionList)
         val orderedRowDescription =
           OrderedRowDescription(fixedRowDivider, "label")
@@ -1422,14 +1422,14 @@ class OrderedRowDescriptionTest
       FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
     (firstColumnDescriptionEither,
-      secondColumnDescriptionEither,
-      thirdColumnDescriptionEither) match {
+     secondColumnDescriptionEither,
+     thirdColumnDescriptionEither) match {
       case (Right(firstColumnDescription),
-      Right(secondColumnDescription),
-      Right(thirdColumnDescription)) =>
+            Right(secondColumnDescription),
+            Right(thirdColumnDescription)) =>
         val columnDescriptionList = List(firstColumnDescription,
-          secondColumnDescription,
-          thirdColumnDescription)
+                                         secondColumnDescription,
+                                         thirdColumnDescription)
         val fixedRowDivider = FixedRowDivider(columnDescriptionList)
         val orderedRowDescription =
           OrderedRowDescription(fixedRowDivider, "label")
@@ -1472,14 +1472,14 @@ class OrderedRowDescriptionTest
       FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
     (firstColumnDescriptionEither,
-      secondColumnDescriptionEither,
-      thirdColumnDescriptionEither) match {
+     secondColumnDescriptionEither,
+     thirdColumnDescriptionEither) match {
       case (Right(firstColumnDescription),
-      Right(secondColumnDescription),
-      Right(thirdColumnDescription)) =>
+            Right(secondColumnDescription),
+            Right(thirdColumnDescription)) =>
         val columnDescriptionList = List(firstColumnDescription,
-          secondColumnDescription,
-          thirdColumnDescription)
+                                         secondColumnDescription,
+                                         thirdColumnDescription)
         val fixedRowDivider = FixedRowDivider(columnDescriptionList)
         val orderedRowDescription =
           OrderedRowDescription(fixedRowDivider, "label")
@@ -1523,14 +1523,14 @@ class OrderedRowDescriptionTest
       FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
     (firstColumnDescriptionEither,
-      secondColumnDescriptionEither,
-      thirdColumnDescriptionEither) match {
+     secondColumnDescriptionEither,
+     thirdColumnDescriptionEither) match {
       case (Right(firstColumnDescription),
-      Right(secondColumnDescription),
-      Right(thirdColumnDescription)) =>
+            Right(secondColumnDescription),
+            Right(thirdColumnDescription)) =>
         val columnDescriptionList = List(firstColumnDescription,
-          secondColumnDescription,
-          thirdColumnDescription)
+                                         secondColumnDescription,
+                                         thirdColumnDescription)
         val fixedRowDivider = FixedRowDivider(columnDescriptionList)
         val orderedRowDescription =
           OrderedRowDescription(fixedRowDivider, "label")
@@ -1573,14 +1573,14 @@ class OrderedRowDescriptionTest
       FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
     (firstColumnDescriptionEither,
-      secondColumnDescriptionEither,
-      thirdColumnDescriptionEither) match {
+     secondColumnDescriptionEither,
+     thirdColumnDescriptionEither) match {
       case (Right(firstColumnDescription),
-      Right(secondColumnDescription),
-      Right(thirdColumnDescription)) =>
+            Right(secondColumnDescription),
+            Right(thirdColumnDescription)) =>
         val columnDescriptionList = List(firstColumnDescription,
-          secondColumnDescription,
-          thirdColumnDescription)
+                                         secondColumnDescription,
+                                         thirdColumnDescription)
         val fixedRowDivider = FixedRowDivider(columnDescriptionList)
         val orderedRowDescription =
           OrderedRowDescription(fixedRowDivider, "label")
@@ -1624,14 +1624,14 @@ class OrderedRowDescriptionTest
       FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
     (firstColumnDescriptionEither,
-      secondColumnDescriptionEither,
-      thirdColumnDescriptionEither) match {
+     secondColumnDescriptionEither,
+     thirdColumnDescriptionEither) match {
       case (Right(firstColumnDescription),
-      Right(secondColumnDescription),
-      Right(thirdColumnDescription)) =>
+            Right(secondColumnDescription),
+            Right(thirdColumnDescription)) =>
         val columnDescriptionList = List(firstColumnDescription,
-          secondColumnDescription,
-          thirdColumnDescription)
+                                         secondColumnDescription,
+                                         thirdColumnDescription)
         val fixedRowDivider = FixedRowDivider(columnDescriptionList)
         val orderedRowDescription =
           OrderedRowDescription(fixedRowDivider, "label")
@@ -1674,14 +1674,14 @@ class OrderedRowDescriptionTest
       FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
     (firstColumnDescriptionEither,
-      secondColumnDescriptionEither,
-      thirdColumnDescriptionEither) match {
+     secondColumnDescriptionEither,
+     thirdColumnDescriptionEither) match {
       case (Right(firstColumnDescription),
-      Right(secondColumnDescription),
-      Right(thirdColumnDescription)) =>
+            Right(secondColumnDescription),
+            Right(thirdColumnDescription)) =>
         val columnDescriptionList = List(firstColumnDescription,
-          secondColumnDescription,
-          thirdColumnDescription)
+                                         secondColumnDescription,
+                                         thirdColumnDescription)
         val fixedRowDivider = FixedRowDivider(columnDescriptionList)
         val orderedRowDescription =
           OrderedRowDescription(fixedRowDivider, "label")
@@ -1725,14 +1725,14 @@ class OrderedRowDescriptionTest
       FixedColumnDescription(thirdColumnDescriptionElem.attributes)
 
     (firstColumnDescriptionEither,
-      secondColumnDescriptionEither,
-      thirdColumnDescriptionEither) match {
+     secondColumnDescriptionEither,
+     thirdColumnDescriptionEither) match {
       case (Right(firstColumnDescription),
-      Right(secondColumnDescription),
-      Right(thirdColumnDescription)) =>
+            Right(secondColumnDescription),
+            Right(thirdColumnDescription)) =>
         val columnDescriptionList = List(firstColumnDescription,
-          secondColumnDescription,
-          thirdColumnDescription)
+                                         secondColumnDescription,
+                                         thirdColumnDescription)
         val fixedRowDivider = FixedRowDivider(columnDescriptionList)
         val orderedRowDescription =
           OrderedRowDescription(fixedRowDivider, "label")

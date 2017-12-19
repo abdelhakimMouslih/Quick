@@ -1,6 +1,7 @@
 package com.scalableQuality.quick.core.fileComponentDescriptions
 
 import com.scalableQuality.quick.core.Reporting.ComparisonBetweenTwoColumns
+import com.scalableQuality.quick.core.checks.Check
 import com.scalableQuality.quick.core.phases.{ColumnUsageStages, MatchingStage}
 import com.scalableQuality.quick.mantle.parsing.RawRow
 
@@ -44,7 +45,7 @@ class FixedRowDivider(
 
   override def executeCheckOn(row: RawRow): Boolean = {
     def getCheckResult(results: List[Boolean]): Boolean = {
-      val rowDefaultCheckResult = true
+      val rowDefaultCheckResult = Check.noChecksWereExecutedDefaultResult
       results.foldLeft(rowDefaultCheckResult)(_ && _)
     }
     val allChecksResults = for {

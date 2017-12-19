@@ -1,14 +1,16 @@
 package com.scalableQuality.quick.core.Reporting
 
+import com.scalableQuality.quick.core.Reporting.InvalidColumns.FailedChecksColumns
 import com.scalableQuality.quick.core.fileComponentDescriptions.FixedColumnDescription
 import com.scalableQuality.quick.mantle.parsing.RawRow
-import org.scalatest.prop.TableDrivenPropertyChecks
+import org.scalatest.prop.{GeneratorDrivenPropertyChecks, TableDrivenPropertyChecks}
 import org.scalatest.{FlatSpec, Matchers}
 
 class ComparisonBetweenTwoColumnsTest
     extends FlatSpec
     with Matchers
-    with TableDrivenPropertyChecks {
+    with TableDrivenPropertyChecks
+    with GeneratorDrivenPropertyChecks {
   val validColumnsTable = Table(
     "useDuringMatching",
     "true",
@@ -156,4 +158,34 @@ class ComparisonBetweenTwoColumnsTest
             columnDescriptionEither shouldBe a[Right[_, _]]
         }
     }
+
+
+  it should "return FailedChecksColumns if any of the left row's columns failed the checks" in forAll {
+    (useDuringValidation: Boolean,
+     useDuringMatching: Boolean,
+     useDuringReporting: Boolean) =>
+      {
+        val leftRawRow = Some(RawRow("FirstColumn", 1))
+        val rightRawRow = Some(RawRow("FFFstColumn", 1))
+        val columnDescriptionElem = <ColumnDescription
+        label="testColumn"
+        startsAt="1"
+        length="11"
+        useDuringValidation={useDuringValidation.toString}
+        useDuringReporting={useDuringMatching.toString}
+        useDuringMatching={useDuringReporting.toString}
+        checkColumnValueMatches="[1-9]+"
+        />
+        val columnDescriptionEither =
+          FixedColumnDescription(columnDescriptionElem.attributes)
+        columnDescriptionEither match {
+          case Right(columnDescription) =>
+            val comparisonBetweenTwoColumns =
+              columnDescription.compareTwoColumns(leftRawRow, rightRawRow)
+            comparisonBetweenTwoColumns shouldBe a[FailedChecksColumns]
+          case Left(_) =>
+            columnDescriptionEither shouldBe a[Right[_, _]]
+        }
+      }
+  }
 }

@@ -4,7 +4,7 @@ import com.scalableQuality.quick.core.fileComponentDescriptions.OrderedRowDescri
 import com.scalableQuality.quick.core.fileProcessingPhase.{
   MatchRows,
   RowsProcessingPhase,
-  ValidateAndMatchRows
+  CheckAndValidateAndMatchRows
 }
 import com.scalableQuality.quick.mantle.parsing.RawRow
 import QuickState.{RowsProcessingPhaseConstructor, validateAndMatchRows}
@@ -42,6 +42,6 @@ object QuickState {
                                          Option[String]) => RowsProcessingPhase
 
   def validateAndMatchRows: RowsProcessingPhaseConstructor =
-    ValidateAndMatchRows(_, _, _, _, _)
+    CheckAndValidateAndMatchRows(_, _, _, _, _)
   def matchRows: RowsProcessingPhaseConstructor = MatchRows(_, _, _, _, _)
 }

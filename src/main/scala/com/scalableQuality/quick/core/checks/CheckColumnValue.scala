@@ -20,7 +20,7 @@ class CheckColumnValue(
 ) {
   def apply(columnValue: Option[String]): Boolean =
     checks match {
-      case Nil => CheckColumnValue.noChecksResult
+      case Nil => Check.noChecksWereExecutedDefaultResult
       case firstPreValidationFunction :: restOfPreValidationFunctions =>
         val firstPreValidationResult = firstPreValidationFunction(columnValue)
         restOfPreValidationFunctions.foldLeft(firstPreValidationResult) {
@@ -31,7 +31,6 @@ class CheckColumnValue(
 }
 
 object CheckColumnValue {
-  private[CheckColumnValue] val noChecksResult = true
 
   def apply(
       checks: List[Check]

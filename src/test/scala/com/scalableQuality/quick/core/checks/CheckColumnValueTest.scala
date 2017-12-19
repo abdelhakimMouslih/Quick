@@ -50,7 +50,6 @@ class CheckColumnValueTest
     columnValueCheckEither shouldBe a[Left[_, _]]
   }
 
-
   "CheckColumnValue.apply(Option[String])" should "checks only existence if no check attributes were supplied" in
     forAll(columnValuesTable) { (columnValue: Option[String]) =>
       {

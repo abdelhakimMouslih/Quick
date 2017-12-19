@@ -6,7 +6,7 @@ import com.scalableQuality.quick.core.Reporting.{
 }
 import com.scalableQuality.quick.core.fileComponentDescriptions.OrderedRowDescription
 import com.scalableQuality.quick.mantle.parsing.RawRow
-class ValidateAndMatchRows(
+class CheckAndValidateAndMatchRows(
     orderedRowDescription: OrderedRowDescription,
     leftFileRows: List[RawRow],
     rightFileRows: List[RawRow],
@@ -14,11 +14,21 @@ class ValidateAndMatchRows(
     rightFileLabel: Option[String]
 ) extends RowsProcessingPhase {
   override def execute(): ValidationAndMatchingReport = {
-    val invalidRowsFromTwoFiles =
-      ValidationProcess(orderedRowDescription, leftFileRows, rightFileRows)
+    val (leftFileRowsPassedChecks, leftFileRowsFailedChecks) =
+      CheckingProcess(orderedRowDescription, leftFileRows)
+    val (rightFileRowsPassedChecks, rightFileRowsFailedChecks) =
+      CheckingProcess(orderedRowDescription, rightFileRows)
+
+    val (invalidLeftFileRows, invalidRightFileRows) =
+      ValidationProcess(orderedRowDescription,
+                        leftFileRowsPassedChecks,
+                        rightFileRowsPassedChecks)
+
+    val leftFileRowsToBeMatched = invalidLeftFileRows ::: leftFileRowsFailedChecks
+    val rightFileRowsToBeMatched = invalidRightFileRows ::: rightFileRowsFailedChecks
     val matchedRows = MatchingProcess(orderedRowDescription,
-                                      invalidRowsFromTwoFiles._1,
-                                      invalidRowsFromTwoFiles._2)
+                                      leftFileRowsToBeMatched,
+                                      rightFileRowsToBeMatched)
     ValidationAndMatchingReport(
       orderedRowDescription,
       leftFileLabel,
@@ -27,14 +37,14 @@ class ValidateAndMatchRows(
     )
   }
 }
-object ValidateAndMatchRows {
+object CheckAndValidateAndMatchRows {
   def apply(
       orderedRowDescription: OrderedRowDescription,
       leftFileRows: List[RawRow],
       rightFileRows: List[RawRow],
       leftFileLabel: Option[String],
       rightFileLabel: Option[String]
-  ): ValidateAndMatchRows = new ValidateAndMatchRows(
+  ): CheckAndValidateAndMatchRows = new CheckAndValidateAndMatchRows(
     orderedRowDescription,
     leftFileRows,
     rightFileRows,
