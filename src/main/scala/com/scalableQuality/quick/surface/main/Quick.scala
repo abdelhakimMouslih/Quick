@@ -19,44 +19,45 @@ object Quick extends App {
     case Some(quickState) =>
       val leftFilePath = quickState.leftFile
       val rightFilePath = quickState.rightFile
-      val fileDescriptionPath = quickState.descriptionFile
-
-      val fileDescriptionId: Option[String] = quickState.descriptionId
 
       val (leftFileLabel, rightFileLabel) = FileLabelsFromPaths(quickState)
 
       val leftFilePathEither = ReadRowsFromFile(leftFilePath)
       val rightFilePathEither = ReadRowsFromFile(rightFilePath)
-      val fileDescriptionPathEither = ReadXmlFile(fileDescriptionPath)
+      val fileDescriptionPathEither = ReadXmlFile(quickState)
 
       (leftFilePathEither, rightFilePathEither, fileDescriptionPathEither) match {
         case (Right(leftFileRows),
               Right(rightFileRows),
-              Right(fileDescriptionRootElem)) =>
+              Right(fileDescriptionElem)) =>
           val rowToRowDescriptionMatcherEither = GroupRowsByRowDescription(
-            fileDescriptionRootElem,
-            fileDescriptionId,
+            fileDescriptionElem,
             leftFileLabel,
             rightFileLabel,
             quickState
           )
           rowToRowDescriptionMatcherEither match {
             case Right(rowDescriptionMatcher) =>
-              val validationAndMatchingProcesses =
+              val validationAndMatchingProcessesEither =
                 rowDescriptionMatcher.validateAndMatchTheseTwoFiles(
                   leftFileRows(),
                   rightFileRows())
+              validationAndMatchingProcessesEither match {
+                case Right(validationAndMatchingProcesses) =>
+                  val validationAndMatchingReports =
+                    validationAndMatchingProcesses.validationAndMatchingReports
 
-              val validationAndMatchingReports =
-                validationAndMatchingProcesses.validationAndMatchingReports
+                  val validationAndMatchingTextReports =
+                    validationAndMatchingReports.map(
+                      ValidationAndMatchingTextReport(_))
 
-              val validationAndMatchingTextReports =
-                validationAndMatchingReports.map(
-                  ValidationAndMatchingTextReport(_))
-
-              validationAndMatchingTextReports.foreach(
-                WriteTextReportToStdout(_))
-              ExitWithStatus.exitWithReport(validationAndMatchingReports)
+                  validationAndMatchingTextReports.foreach(
+                    WriteTextReportToStdout(_))
+                  ExitWithStatus.exitWithReport(validationAndMatchingReports)
+                case Left(unknownRowErrorMessage) =>
+                  WriteToStderr(unknownRowErrorMessage)
+                  ExitWithStatus.interruptedByAnError
+              }
             case Left(errorMessage) =>
               WriteToStderr(errorMessage)
               ExitWithStatus.interruptedByAnError

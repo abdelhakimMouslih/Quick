@@ -1,10 +1,10 @@
 package com.scalableQuality.quick.surface.commandLineOptions
 
-import com.scalableQuality.quick.core.fileComponentDescripts.OrderedRowDescription
+import com.scalableQuality.quick.core.fileComponentDescriptions.OrderedRowDescription
 import com.scalableQuality.quick.core.fileProcessingPhase.{
   MatchRows,
   RowsProcessingPhase,
-  ValidateAndMatchRows
+  CheckAndValidateAndMatchRows
 }
 import com.scalableQuality.quick.mantle.parsing.RawRow
 import QuickState.{RowsProcessingPhaseConstructor, validateAndMatchRows}
@@ -17,7 +17,8 @@ case class QuickState(
     rightFileLabel: Option[String] = None,
     leftFile: String = "",
     rightFile: String = "",
-    rowsProcessingPhase: RowsProcessingPhaseConstructor = validateAndMatchRows
+    rowsProcessingPhase: RowsProcessingPhaseConstructor = validateAndMatchRows,
+    ignoreUnknownRows: Boolean = false
 ) {
   def addLabel(label: String): QuickState = leftFileLabel match {
     case None =>
@@ -41,6 +42,6 @@ object QuickState {
                                          Option[String]) => RowsProcessingPhase
 
   def validateAndMatchRows: RowsProcessingPhaseConstructor =
-    ValidateAndMatchRows(_, _, _, _, _)
+    CheckAndValidateAndMatchRows(_, _, _, _, _)
   def matchRows: RowsProcessingPhaseConstructor = MatchRows(_, _, _, _, _)
 }
