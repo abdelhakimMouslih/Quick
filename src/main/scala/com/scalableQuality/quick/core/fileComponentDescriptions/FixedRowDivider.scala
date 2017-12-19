@@ -42,6 +42,17 @@ class FixedRowDivider(
       if colDesc.shouldUseDuring(stage)
     } yield colDesc.comparisonValue(rawRow)
 
+  override def executeCheckOn(row: RawRow): Boolean = {
+    def getCheckResult(results: List[Boolean]): Boolean = {
+      val rowDefaultCheckResult = true
+      results.foldLeft(rowDefaultCheckResult)(_ && _)
+    }
+    val allChecksResults = for {
+      colDesc <- columnsDescriptions
+    } yield colDesc.checkColumnValue(row)
+    getCheckResult(allChecksResults)
+  }
+
   override def equals(obj: scala.Any): Boolean = obj match {
     case rowDivider: FixedRowDivider =>
       rowDivider.columnsDescriptions == this.columnsDescriptions

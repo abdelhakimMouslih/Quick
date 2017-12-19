@@ -50,12 +50,23 @@ class DelimitedRowDivider(
     } yield colDesc.comparisonValue(splittedRow)
   }
 
+  override def executeCheckOn(row: RawRow): Boolean = {
+    def getCheckResult(results: List[Boolean]): Boolean = {
+      val rowDefaultCheckResult = true
+      results.foldLeft(rowDefaultCheckResult)(_ && _)
+    }
+    val splitRow = delimiter.splitRow(row)
+    val allChecksResults = for {
+      colDesc <- columnsDescriptions
+    } yield colDesc.checkColumnValue(splitRow)
+    getCheckResult(allChecksResults)
+  }
+
   override def equals(obj: scala.Any): Boolean = obj match {
     case rowDivider: DelimitedRowDivider =>
       rowDivider.columnsDescriptions == this.columnsDescriptions
     case _ => false
   }
-
 }
 
 object DelimitedRowDivider {

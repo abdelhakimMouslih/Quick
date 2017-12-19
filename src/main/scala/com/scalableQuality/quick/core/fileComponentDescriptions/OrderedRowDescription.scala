@@ -128,6 +128,8 @@ class OrderedRowDescription(
     loop(columns, None, Nil)
   }
 
+  def check(rawRow: RawRow): Boolean = rowDivider.executeCheckOn(rawRow)
+
   override def equals(obj: scala.Any): Boolean = obj match {
     case rowDescription: OrderedRowDescription =>
       rowDescription.rowDivider == this.rowDivider &&

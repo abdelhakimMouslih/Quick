@@ -50,8 +50,8 @@ class CheckColumnValueTest
     columnValueCheckEither shouldBe a[Left[_, _]]
   }
 
-  val columnValuesTable = Table("columnValue", Some("value"), None)
-  "CheckColumnValue.apply(Option[String])" should " always return true if checkColumnValueMatches and checkColumnValueExists are not present" in
+
+  "CheckColumnValue.apply(Option[String])" should "checks only existence if no check attributes were supplied" in
     forAll(columnValuesTable) { (columnValue: Option[String]) =>
       {
         val columnDescription = <ColumnDescription />
@@ -59,13 +59,14 @@ class CheckColumnValueTest
           CheckColumnValue(columnDescription.attributes)
         columnValueCheckEither match {
           case Right(checkColumnValue) =>
-            checkColumnValue(columnValue) shouldBe true
+            checkColumnValue(None) shouldBe false
           case Left(_) =>
             fail()
         }
       }
     }
 
+  val columnValuesTable = Table("columnValue", Some("value"), None)
   it should "always return true if checkColumnValueExists is false and checkColumnValueMatches is absent" in forAll(
     columnValuesTable) { (columnValue: Option[String]) =>
     {
@@ -81,6 +82,19 @@ class CheckColumnValueTest
       }
     }
 
+  }
+
+  it should "return false if no column value exists and checkColumnValueExists is true and checkColumnValueMatches is absent" in {
+    val columnDescription =
+      <ColumnDescription checkColumnValueExists="true" />
+    val columnValueCheckEither =
+      CheckColumnValue(columnDescription.attributes)
+    columnValueCheckEither match {
+      case Right(checkColumnValue) =>
+        checkColumnValue(None) shouldBe false
+      case Left(_) =>
+        fail()
+    }
   }
 
   it should "return true if the column's value matches the checkColumnValueMatches pattern " in {
@@ -111,7 +125,7 @@ class CheckColumnValueTest
 
   it should "return false if the column's value does not exist and checkColumnValueMatches contains a pattern " in {
     val columnDescription =
-      <ColumnDescription checkColumnValueMatches="[0-9]+" />
+      <ColumnDescription checkColumnValueMatches="[0-9]+" checkColumnValueExists="false" />
     val columnValueCheckEither =
       CheckColumnValue(columnDescription.attributes)
     columnValueCheckEither match {

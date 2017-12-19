@@ -113,9 +113,11 @@ object CheckColumnValue {
     AttributeValueExtractor("checkColumnValueMatches",
                             AttributeValueConversion.toPattern)
 
-  private val defaultCheckColumnValueExistsAttributeValue = Right(false)
+  private val defaultCheckColumnValueExistsAttributeValue = Right(true)
   private val checkColumnValueExistsAttributeKey = AttributeValueExtractor(
     "checkColumnValueExists",
     AttributeValueConversion.toBoolean,
     defaultCheckColumnValueExistsAttributeValue)
+  val listOfAttributesKeys = List(checkColumnValueMatchRegexAttributeKey,
+                                  checkColumnValueExistsAttributeKey)
 }

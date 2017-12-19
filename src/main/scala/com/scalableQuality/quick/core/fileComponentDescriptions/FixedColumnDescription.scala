@@ -1,6 +1,7 @@
 package com.scalableQuality.quick.core.fileComponentDescriptions
 
 import com.scalableQuality.quick.core.Reporting.ComparisonBetweenTwoColumns
+import com.scalableQuality.quick.core.checks.CheckColumnValue
 import com.scalableQuality.quick.core.fileComponentDescriptions.errorMessages.FixedColumnDescriptionErrorMessages
 import com.scalableQuality.quick.core.phases.{
   ColumnUsageStages,
@@ -21,10 +22,11 @@ import com.scalableQuality.quick.mantle.parsing.RawRow
 
 import scala.xml.MetaData
 
-case class FixedColumnDescription(
+class FixedColumnDescription(
     val metaData: ColumnDescriptionMetaData,
     val position: FixedPosition,
-    comparisonMapper: ValueMapper
+    comparisonMapper: ValueMapper,
+    columnValueChecks: CheckColumnValue
 ) {
   def shouldUseDuring(stages: ColumnUsageStages*): Boolean =
     metaData.shouldUseDuring(stages: _*)
@@ -40,6 +42,12 @@ case class FixedColumnDescription(
       rightRow.flatMap(this.columnValue),
       compare(leftRow, rightRow)
     )
+
+  def checkColumnValue(row: RawRow): Boolean = {
+    val value = columnValue(row)
+    columnValueChecks(value)
+  }
+
   private def compare(leftRow: Option[RawRow],
                       rightRow: Option[RawRow]): Boolean = {
     val leftColumn = leftRow.flatMap(this.comparisonValue)
@@ -50,14 +58,29 @@ case class FixedColumnDescription(
 
 object FixedColumnDescription {
   def apply(
+      metaData: ColumnDescriptionMetaData,
+      position: FixedPosition,
+      comparisonMapper: ValueMapper,
+      columnValueChecks: CheckColumnValue
+  ): FixedColumnDescription =
+    new FixedColumnDescription(metaData,
+                               position,
+                               comparisonMapper,
+                               columnValueChecks)
+
+  def apply(
       position: FixedPosition,
       shouldUseDuring: ShouldUseDuring,
       comparisonMapper: ValueMapper,
-      label: String
+      label: String,
+      columnValueChecks: CheckColumnValue
   ): FixedColumnDescription = {
     val metaData =
       ColumnDescriptionMetaData(position.toString, label, shouldUseDuring)
-    FixedColumnDescription(metaData, position, comparisonMapper)
+    FixedColumnDescription(metaData,
+                           position,
+                           comparisonMapper,
+                           columnValueChecks)
   }
 
   def apply(metaData: MetaData)
@@ -71,20 +94,27 @@ object FixedColumnDescription {
         val labelAttributeValue = attributesValues.get(labelKey)
 
         val fixedPositionEither = FixedPosition(metaData)
-        val shouldUseDuringAttribute = ShouldUseDuring(metaData)
-        val comparisonMapperAttribute = ValueMapper(metaData)
+        val shouldUseDuringEither = ShouldUseDuring(metaData)
+        val comparisonMapperEither = ValueMapper(metaData)
+        val checkColumnValueEither = CheckColumnValue(metaData)
 
         validateAttributeValues(labelAttributeValue,
                                 fixedPositionEither,
-                                shouldUseDuringAttribute,
-                                comparisonMapperAttribute) match {
+                                shouldUseDuringEither,
+                                comparisonMapperEither,
+                                checkColumnValueEither) match {
           case Right(
-              (label, fixedPosition, shouldUseDuring, comparisonMapper)) =>
+              (label,
+               fixedPosition,
+               shouldUseDuring,
+               comparisonMapper,
+               checkColumnValue)) =>
             val fixedColumnDescription = FixedColumnDescription(
               fixedPosition,
               shouldUseDuring,
               comparisonMapper,
-              label
+              label,
+              checkColumnValue
             )
             Right(fixedColumnDescription)
           case Left(errorMessage) =>
@@ -97,25 +127,38 @@ object FixedColumnDescription {
 
   }
   private def validateAttributeValues(
-      labelAttributeValue: Either[UnrecoverableError, String],
-      positionComponent: Either[UnrecoverableError, FixedPosition],
-      shouldUseDuringComponent: Either[UnrecoverableError, ShouldUseDuring],
-      valueMapperComponent: Either[UnrecoverableError, ValueMapper]
-  ): Either[UnrecoverableError,
-            (String, FixedPosition, ShouldUseDuring, ValueMapper)] =
-    labelAttributeValue match {
+      labelAttributeValueEither: Either[UnrecoverableError, String],
+      positionEither: Either[UnrecoverableError, FixedPosition],
+      shouldUseDuringEither: Either[UnrecoverableError, ShouldUseDuring],
+      valueMapperEither: Either[UnrecoverableError, ValueMapper],
+      checkColumnValueEither: Either[UnrecoverableError, CheckColumnValue]
+  ): Either[
+    UnrecoverableError,
+    (String, FixedPosition, ShouldUseDuring, ValueMapper, CheckColumnValue)] =
+    labelAttributeValueEither match {
 
       case Right(labelAttributeValue) =>
-        (positionComponent, shouldUseDuringComponent, valueMapperComponent) match {
-          case (Right(position), Right(shouldUseDuring), Right(valueMapper)) =>
+        (positionEither,
+         shouldUseDuringEither,
+         valueMapperEither,
+         checkColumnValueEither) match {
+          case (Right(position),
+                Right(shouldUseDuring),
+                Right(valueMapper),
+                Right(checkColumnValue)) =>
             val classParameters =
-              (labelAttributeValue, position, shouldUseDuring, valueMapper)
+              (labelAttributeValue,
+               position,
+               shouldUseDuring,
+               valueMapper,
+               checkColumnValue)
             Right(classParameters)
           case _ =>
             val errorMessages = UnrecoverableError.collectAllErrorsToList(
-              positionComponent,
-              shouldUseDuringComponent,
-              valueMapperComponent)
+              positionEither,
+              shouldUseDuringEither,
+              valueMapperEither,
+              checkColumnValueEither)
             FixedColumnDescriptionErrorMessages.invalidAttributes(
               labelAttributeValue,
               errorMessages)
@@ -123,15 +166,21 @@ object FixedColumnDescription {
 
       case Left(labelAttributeErrorMessage) =>
         val otherErrors = UnrecoverableError.collectAllErrorsToList(
-          positionComponent,
-          shouldUseDuringComponent,
-          valueMapperComponent)
+          positionEither,
+          shouldUseDuringEither,
+          valueMapperEither,
+          checkColumnValueEither)
         FixedColumnDescriptionErrorMessages.invalidAttributes(
           labelAttributeErrorMessage :: otherErrors)
     }
 
   private val labelKey =
     AttributeValueExtractor("label", AttributeValueConversion.extractValue)
-  val listOfAttributesKeys = labelKey :: ShouldUseDuring.listOfAttributesKeys ::: ValueMapper.listOfAttributesKeys ::: FixedPosition.listOfAttributesKeys
+  val listOfAttributesKeys =
+    labelKey ::
+      ShouldUseDuring.listOfAttributesKeys :::
+      ValueMapper.listOfAttributesKeys :::
+      FixedPosition.listOfAttributesKeys :::
+      CheckColumnValue.listOfAttributesKeys
 
 }

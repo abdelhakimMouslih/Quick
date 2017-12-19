@@ -19,4 +19,5 @@ trait RowDivider {
   def columnsComparisonValuesFor(stage: ColumnUsageStages,
                                  rawRow: RawRow): List[Option[String]]
 
+  def executeCheckOn(row: RawRow): Boolean
 }
