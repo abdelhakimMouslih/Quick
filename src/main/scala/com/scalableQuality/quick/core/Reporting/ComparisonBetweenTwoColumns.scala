@@ -1,6 +1,6 @@
 package com.scalableQuality.quick.core.Reporting
 
-import com.scalableQuality.quick.core.Reporting.InvalidColumns.FailedChecksColumns
+import com.scalableQuality.quick.core.Reporting.InvalidColumns.{BothColumnsFailedChecks, LeftColumnFailedChecks, RightColumnFailedChecks}
 import com.scalableQuality.quick.core.fileComponentDescriptions.ColumnDescriptionMetaData
 import com.scalableQuality.quick.core.phases.{ReportingStage, ValidationStage}
 
@@ -13,8 +13,9 @@ object ComparisonBetweenTwoColumns {
       leftFileColumnValue: => Option[String],
       rightFileColumnValue: => Option[String],
       theTwoColumnsAreEquivalent: => Boolean,
-      passedChecksSuccessfully: => Boolean
-  ): ComparisonBetweenTwoColumns = if (passedChecksSuccessfully) {
+      leftColumnPassedChecksSuccessfully: => Boolean,
+      rightColumnPassedChecksSuccessfully: => Boolean
+  ): ComparisonBetweenTwoColumns = if (leftColumnPassedChecksSuccessfully && rightColumnPassedChecksSuccessfully) {
     val shouldUseInReporting =
       columnDescriptionMetaData.shouldUseDuring(ReportingStage)
     val shouldUseInValidation =
@@ -48,8 +49,22 @@ object ComparisonBetweenTwoColumns {
       IrrelevantColumns
     }
 
+  } else if(leftColumnPassedChecksSuccessfully) {
+    RightColumnFailedChecks(
+      leftFileColumnValue,
+      rightFileColumnValue,
+      columnDescriptionMetaData.position,
+      columnDescriptionMetaData.label
+    )
+  } else if(rightColumnPassedChecksSuccessfully) {
+    LeftColumnFailedChecks(
+      leftFileColumnValue,
+      rightFileColumnValue,
+      columnDescriptionMetaData.position,
+      columnDescriptionMetaData.label
+    )
   } else {
-    FailedChecksColumns(
+    BothColumnsFailedChecks(
       leftFileColumnValue,
       rightFileColumnValue,
       columnDescriptionMetaData.position,
@@ -152,7 +167,7 @@ object InvalidColumns {
 
 
 
-  class FailedChecksColumns(
+  class BothColumnsFailedChecks(
                         leftColumnValue: => Option[String],
                         rightColumnValue: => Option[String],
                         val columnPosition: String,
@@ -161,7 +176,7 @@ object InvalidColumns {
     lazy val leftFileColumnValue = leftColumnValue
     lazy val rightFileColumnValue = rightColumnValue
     override def equals(that: scala.Any): Boolean = that match {
-      case failedChecksColumns: FailedChecksColumns =>
+      case failedChecksColumns: BothColumnsFailedChecks =>
         failedChecksColumns.leftFileColumnValue == this.leftFileColumnValue &&
           failedChecksColumns.rightFileColumnValue == this.rightFileColumnValue &&
           failedChecksColumns.columnPosition == this.columnPosition //&&
@@ -174,14 +189,85 @@ object InvalidColumns {
 
   }
 
-  object FailedChecksColumns {
+  object BothColumnsFailedChecks {
     def apply(
                leftColumnValue: => Option[String],
                rightColumnValue: => Option[String],
                columnPosition: String,
                columnLabel: String
-             ): FailedChecksColumns =
-      new FailedChecksColumns(leftColumnValue,
+             ): BothColumnsFailedChecks =
+      new BothColumnsFailedChecks(leftColumnValue,
+        rightColumnValue,
+        columnPosition,
+        columnLabel)
+  }
+
+  class LeftColumnFailedChecks(
+                                 leftColumnValue: => Option[String],
+                                 rightColumnValue: => Option[String],
+                                 val columnPosition: String,
+                                 val columnLabel: String
+                               ) extends ComparisonBetweenTwoColumns {
+    lazy val leftFileColumnValue = leftColumnValue
+    lazy val rightFileColumnValue = rightColumnValue
+    override def equals(that: scala.Any): Boolean = that match {
+      case failedChecksColumns: LeftColumnFailedChecks =>
+        failedChecksColumns.leftFileColumnValue == this.leftFileColumnValue &&
+          failedChecksColumns.rightFileColumnValue == this.rightFileColumnValue &&
+          failedChecksColumns.columnPosition == this.columnPosition //&&
+        failedChecksColumns.columnLabel == this.columnLabel
+      case _ => false
+    }
+
+    override def toString: String =
+      s" ${this.leftFileColumnValue} ${this.rightFileColumnValue} $columnPosition"
+
+  }
+
+  object LeftColumnFailedChecks {
+    def apply(
+               leftColumnValue: => Option[String],
+               rightColumnValue: => Option[String],
+               columnPosition: String,
+               columnLabel: String
+             ): LeftColumnFailedChecks =
+      new LeftColumnFailedChecks(leftColumnValue,
+        rightColumnValue,
+        columnPosition,
+        columnLabel)
+  }
+
+
+  class RightColumnFailedChecks(
+                                leftColumnValue: => Option[String],
+                                rightColumnValue: => Option[String],
+                                val columnPosition: String,
+                                val columnLabel: String
+                              ) extends ComparisonBetweenTwoColumns {
+    lazy val leftFileColumnValue = leftColumnValue
+    lazy val rightFileColumnValue = rightColumnValue
+    override def equals(that: scala.Any): Boolean = that match {
+      case failedChecksColumns: LeftColumnFailedChecks =>
+        failedChecksColumns.leftFileColumnValue == this.leftFileColumnValue &&
+          failedChecksColumns.rightFileColumnValue == this.rightFileColumnValue &&
+          failedChecksColumns.columnPosition == this.columnPosition //&&
+        failedChecksColumns.columnLabel == this.columnLabel
+      case _ => false
+    }
+
+    override def toString: String =
+      s" ${this.leftFileColumnValue} ${this.rightFileColumnValue} $columnPosition"
+
+  }
+
+  object RightColumnFailedChecks {
+    def apply(
+               leftColumnValue: => Option[String],
+               rightColumnValue: => Option[String],
+               columnPosition: String,
+               columnLabel: String
+             ): RightColumnFailedChecks =
+      new RightColumnFailedChecks(leftColumnValue,
         rightColumnValue,
         columnPosition,
         columnLabel)

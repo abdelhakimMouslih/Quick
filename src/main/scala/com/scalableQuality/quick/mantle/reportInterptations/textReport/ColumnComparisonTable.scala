@@ -1,8 +1,6 @@
 package com.scalableQuality.quick.mantle.reportInterptations.textReport
 
-import java.util.concurrent.atomic.DoubleAccumulator
-
-import com.scalableQuality.quick.core.Reporting.InvalidColumns.FailedChecksColumns
+import com.scalableQuality.quick.core.Reporting.InvalidColumns.{BothColumnsFailedChecks, LeftColumnFailedChecks, RightColumnFailedChecks}
 import com.scalableQuality.quick.core.Reporting._
 
 import scala.annotation.tailrec
@@ -25,7 +23,9 @@ object ColumnComparisonTable {
       dataRowSizes,
       invalidColumnsRowFormatter,
       reportingColumnsRowFormatter,
-      failedChecksColumnsRowFormatter,
+      bothColumnsFailedChecksColumnsRowFormatter,
+      leftColumnFailedChecksRowFormatter,
+      rightColumnFailedChecksRowFormatter,
       softHorizontalDivider
     )
     strongHorizontalDivider :: tableHeaderRow :: strongHorizontalDivider :: columnsComparisonRows ::: strongHorizontalDivider :: invisibleHorizontalDivider :: Nil
@@ -35,17 +35,34 @@ object ColumnComparisonTable {
 
   private val invalidColumnsRowBorders =
     ColumnComparisonTableColumnsBorders("# ", " | ", " |")
-  private val failedChecksColumnsRowBorders =
-    ColumnComparisonTableColumnsBorders("~ ", " | ", " |")
+  private val botchColumnsFailedChecksRowBorders =
+    ColumnComparisonTableColumnsBorders("~ ", " | ", " ~ ", " ~ ", " |")
+  private val leftColumnFailedChecksRowBorders =
+    ColumnComparisonTableColumnsBorders("~ ", " | ", " ~ ", " | ", " |")
+  private val rightColumnFailedChecksRowBorders =
+    ColumnComparisonTableColumnsBorders("~ ", " | ", " | ", " ~ ", " |")
   private val reportingColumnsRowBorders =
     ColumnComparisonTableColumnsBorders("! ", " | ", " |")
   private val normalRowBorders =
     ColumnComparisonTableColumnsBorders("| ", " | ", " |")
 
-  private val failedChecksColumnsRowFormatter = ColumnComparisonTableRowFormat(
-    failedChecksColumnsRowBorders,
-    dataRowSizes
-  )
+  private val bothColumnsFailedChecksColumnsRowFormatter =
+    ColumnComparisonTableRowFormat(
+      botchColumnsFailedChecksRowBorders,
+      dataRowSizes
+    )
+
+  private val leftColumnFailedChecksRowFormatter =
+    ColumnComparisonTableRowFormat(
+      leftColumnFailedChecksRowBorders,
+      dataRowSizes
+    )
+
+  private val rightColumnFailedChecksRowFormatter =
+    ColumnComparisonTableRowFormat(
+      rightColumnFailedChecksRowBorders,
+      dataRowSizes
+    )
 
   private val invalidColumnsRowFormatter = ColumnComparisonTableRowFormat(
     invalidColumnsRowBorders,
@@ -96,7 +113,9 @@ object ColumnComparisonTable {
       sizes: ColumnComparisonTableColumnSizes,
       invalidColumnsFormatter: ColumnComparisonTableRowFormat,
       reportingColumnsFormatter: ColumnComparisonTableRowFormat,
-      failedChecksColumnsFormatter: ColumnComparisonTableRowFormat,
+      bothColumnsFailedChecksFormatter: ColumnComparisonTableRowFormat,
+      leftColumnFailedChecksFormatter: ColumnComparisonTableRowFormat,
+      rightColumnFailedChecksFormatter: ColumnComparisonTableRowFormat,
       rowsDivider: String
   ): List[String] = {
     @tailrec def loop(
@@ -104,20 +123,26 @@ object ColumnComparisonTable {
         sizes: ColumnComparisonTableColumnSizes,
         invalidColumnsFormatter: ColumnComparisonTableRowFormat,
         reportingColumnsFormatter: ColumnComparisonTableRowFormat,
-        failedChecksColumnsFormatter: ColumnComparisonTableRowFormat,
+        bothColumnsFailedChecksFormatter: ColumnComparisonTableRowFormat,
+        leftColumnFailedChecksFormatter: ColumnComparisonTableRowFormat,
+        rightColumnFailedChecksFormatter: ColumnComparisonTableRowFormat,
         rowsDivider: String,
         accumulator: List[List[String]]
     ): List[String] = comparisonBetweenTwoColumnsList match {
       case Nil => accumulator.flatten
 
       case (ValidColumns | IrrelevantColumns) :: restOfColumnComparisons =>
-        loop(restOfColumnComparisons,
-             sizes,
-             invalidColumnsFormatter,
-             reportingColumnsFormatter,
-             failedChecksColumnsFormatter,
-             rowsDivider,
-             accumulator)
+        loop(
+          restOfColumnComparisons,
+          sizes,
+          invalidColumnsFormatter,
+          reportingColumnsFormatter,
+          bothColumnsFailedChecksFormatter,
+          leftColumnFailedChecksFormatter: ColumnComparisonTableRowFormat,
+          rightColumnFailedChecksFormatter: ColumnComparisonTableRowFormat,
+          rowsDivider,
+          accumulator
+        )
       case (reportingColumns: ReportingColumns) :: restOfColumnComparisons =>
         val columnComparisonRows = ColumnComparisonTableRow(
           sizes,
@@ -133,7 +158,9 @@ object ColumnComparisonTable {
           sizes,
           invalidColumnsFormatter,
           reportingColumnsFormatter,
-          failedChecksColumnsFormatter,
+          bothColumnsFailedChecksFormatter,
+          leftColumnFailedChecksFormatter: ColumnComparisonTableRowFormat,
+          rightColumnFailedChecksFormatter: ColumnComparisonTableRowFormat,
           rowsDivider,
           columnComparisonTableRowText :: accumulator
         )
@@ -152,26 +179,72 @@ object ColumnComparisonTable {
           sizes,
           invalidColumnsFormatter,
           reportingColumnsFormatter,
-          failedChecksColumnsFormatter,
+          bothColumnsFailedChecksFormatter,
+          leftColumnFailedChecksFormatter: ColumnComparisonTableRowFormat,
+          rightColumnFailedChecksFormatter: ColumnComparisonTableRowFormat,
           rowsDivider,
           columnComparisonTableRowText :: accumulator
         )
-      case (failedChecksColumns: FailedChecksColumns) :: restOfColumnComparisons =>
+      case (bothColumnsFailedChecks: BothColumnsFailedChecks) :: restOfColumnComparisons =>
         val columnComparisonRows = ColumnComparisonTableRow(
           sizes,
-          failedChecksColumns.columnLabel,
-          failedChecksColumns.columnPosition.toString,
-          failedChecksColumns.leftFileColumnValue,
-          failedChecksColumns.rightFileColumnValue
+          bothColumnsFailedChecks.columnLabel,
+          bothColumnsFailedChecks.columnPosition.toString,
+          bothColumnsFailedChecks.leftFileColumnValue,
+          bothColumnsFailedChecks.rightFileColumnValue
         )
         val columnComparisonTableRowText = rowsDivider :: columnComparisonRows
-          .map(failedChecksColumnsFormatter(_))
+          .map(bothColumnsFailedChecksFormatter(_))
         loop(
           restOfColumnComparisons,
           sizes,
           invalidColumnsFormatter,
           reportingColumnsFormatter,
-          failedChecksColumnsFormatter,
+          bothColumnsFailedChecksFormatter,
+          leftColumnFailedChecksFormatter: ColumnComparisonTableRowFormat,
+          rightColumnFailedChecksFormatter: ColumnComparisonTableRowFormat,
+          rowsDivider,
+          columnComparisonTableRowText :: accumulator
+        )
+      case (leftColumnFailedChecks: LeftColumnFailedChecks) :: restOfColumnComparisons =>
+        val columnComparisonRows = ColumnComparisonTableRow(
+          sizes,
+          leftColumnFailedChecks.columnLabel,
+          leftColumnFailedChecks.columnPosition.toString,
+          leftColumnFailedChecks.leftFileColumnValue,
+          leftColumnFailedChecks.rightFileColumnValue
+        )
+        val columnComparisonTableRowText = rowsDivider :: columnComparisonRows
+          .map(leftColumnFailedChecksFormatter(_))
+        loop(
+          restOfColumnComparisons,
+          sizes,
+          invalidColumnsFormatter,
+          reportingColumnsFormatter,
+          bothColumnsFailedChecksFormatter,
+          leftColumnFailedChecksFormatter: ColumnComparisonTableRowFormat,
+          rightColumnFailedChecksFormatter: ColumnComparisonTableRowFormat,
+          rowsDivider,
+          columnComparisonTableRowText :: accumulator
+        )
+      case (rightColumnFailedChecks: RightColumnFailedChecks) :: restOfColumnComparisons =>
+        val columnComparisonRows = ColumnComparisonTableRow(
+          sizes,
+          rightColumnFailedChecks.columnLabel,
+          rightColumnFailedChecks.columnPosition.toString,
+          rightColumnFailedChecks.leftFileColumnValue,
+          rightColumnFailedChecks.rightFileColumnValue
+        )
+        val columnComparisonTableRowText = rowsDivider :: columnComparisonRows
+          .map(rightColumnFailedChecksFormatter(_))
+        loop(
+          restOfColumnComparisons,
+          sizes,
+          invalidColumnsFormatter,
+          reportingColumnsFormatter,
+          bothColumnsFailedChecksFormatter,
+          leftColumnFailedChecksFormatter: ColumnComparisonTableRowFormat,
+          rightColumnFailedChecksFormatter: ColumnComparisonTableRowFormat,
           rowsDivider,
           columnComparisonTableRowText :: accumulator
         )
@@ -181,7 +254,9 @@ object ColumnComparisonTable {
       sizes,
       invalidColumnsFormatter,
       reportingColumnsFormatter,
-      failedChecksColumnsFormatter,
+      bothColumnsFailedChecksFormatter,
+      leftColumnFailedChecksFormatter: ColumnComparisonTableRowFormat,
+      rightColumnFailedChecksFormatter: ColumnComparisonTableRowFormat,
       rowsDivider,
       Nil
     )

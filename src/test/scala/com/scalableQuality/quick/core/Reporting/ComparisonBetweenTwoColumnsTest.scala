@@ -1,6 +1,6 @@
 package com.scalableQuality.quick.core.Reporting
 
-import com.scalableQuality.quick.core.Reporting.InvalidColumns.FailedChecksColumns
+import com.scalableQuality.quick.core.Reporting.InvalidColumns.BothColumnsFailedChecks
 import com.scalableQuality.quick.core.fileComponentDescriptions.FixedColumnDescription
 import com.scalableQuality.quick.mantle.parsing.RawRow
 import org.scalatest.prop.{GeneratorDrivenPropertyChecks, TableDrivenPropertyChecks}
@@ -182,7 +182,7 @@ class ComparisonBetweenTwoColumnsTest
           case Right(columnDescription) =>
             val comparisonBetweenTwoColumns =
               columnDescription.compareTwoColumns(leftRawRow, rightRawRow)
-            comparisonBetweenTwoColumns shouldBe a[FailedChecksColumns]
+            comparisonBetweenTwoColumns shouldBe a[BothColumnsFailedChecks]
           case Left(_) =>
             columnDescriptionEither shouldBe a[Right[_, _]]
         }

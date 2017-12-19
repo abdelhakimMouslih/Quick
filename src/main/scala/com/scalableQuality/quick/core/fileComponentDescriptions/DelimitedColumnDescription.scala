@@ -37,7 +37,8 @@ class DelimitedColumnDescription(
       leftRow.flatMap(this.columnValue),
       rightRow.flatMap(this.columnValue),
       compare(leftRow, rightRow),
-      checkColumnValue(leftRow) && checkColumnValue(rightRow)
+      checkColumnValue(leftRow),
+      checkColumnValue(rightRow)
     )
   def checkColumnValue(row: Vector[String]): Boolean = {
     val value = columnValue(row)
