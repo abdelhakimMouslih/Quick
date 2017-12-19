@@ -1,9 +1,9 @@
 package com.scalableQuality.quick.mantle.parsing
 
-import com.scalableQuality.quick.core.fileComponentDescripts.OrderedRowDescription
+import com.scalableQuality.quick.core.fileComponentDescriptions.OrderedRowDescription
 import com.scalableQuality.quick.core.fileProcessingPhase.{
   RowsProcessingPhase,
-  ValidateAndMatchRows,
+  CheckAndValidateAndMatchRows,
   ValidateAndMatchTwoFiles
 }
 import com.scalableQuality.quick.mantle.constructFromXml._

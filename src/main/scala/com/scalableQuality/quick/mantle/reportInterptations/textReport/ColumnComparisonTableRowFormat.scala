@@ -28,7 +28,7 @@ object ColumnComparisonTableRowFormat {
     val labelColumnFormat = rightAlignFormat(sizes.labelColumnSize)
     val positionColumnFormat = rightAlignFormat(sizes.positionColumnSize)
     val valueColumnFormat = rightAlignFormat(sizes.valueColumnSize)
-    s"${borders.leftBorder}${labelColumnFormat}${borders.middleBorder}${positionColumnFormat}${borders.middleBorder}${valueColumnFormat}${borders.middleBorder}${valueColumnFormat}${borders.rightBorder}"
+    s"${borders.leftBorder}${labelColumnFormat}${borders.middleBorder}${positionColumnFormat}${borders.firstColumnBorder}${valueColumnFormat}${borders.secondColumnBorder}${valueColumnFormat}${borders.rightBorder}"
       .format(
         row.label,
         row.position,

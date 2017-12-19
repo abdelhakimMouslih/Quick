@@ -38,7 +38,7 @@ object FileDescriptionElemErrorMessages {
     val errorMessage = EncounteredError(
       s"searching for an UnorderedFileDescription with id = $id",
       s"""no UnorderedFileDescription elem is found with id ${id}""",
-      "please check that you provided an UnorderedFileDescription elem and the correct id"
+      "please Check that you provided an UnorderedFileDescription elem and the correct id"
     )
     Left(errorMessage)
   }
@@ -67,7 +67,7 @@ object FileDescriptionElemErrorMessages {
     val errorMessage = EncounteredError(
       "validating XML elements",
       "no UnorderedFileDescription elem is found",
-      "please check that you provided an UnorderedFileDescription"
+      "please Check that you provided an UnorderedFileDescription"
     )
     Left(errorMessage)
   }
