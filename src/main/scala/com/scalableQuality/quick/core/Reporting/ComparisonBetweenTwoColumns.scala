@@ -1,11 +1,7 @@
 package com.scalableQuality.quick.core.Reporting
 
-import com.scalableQuality.quick.core.fileComponentDescripts.{
-  ColumnDescriptionMetaData,
-  FixedColumnDescription
-}
-import com.scalableQuality.quick.core.others.{ReportingStage, ValidationStage}
-import com.scalableQuality.quick.mantle.parsing.RawRow
+import com.scalableQuality.quick.core.fileComponentDescriptions.ColumnDescriptionMetaData
+import com.scalableQuality.quick.core.phases.{ReportingStage, ValidationStage}
 
 sealed trait ComparisonBetweenTwoColumns
 

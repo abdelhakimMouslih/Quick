@@ -1,6 +1,6 @@
 package com.scalableQuality.quick.core.Reporting
 
-import com.scalableQuality.quick.core.fileComponentDescripts.FixedColumnDescription
+import com.scalableQuality.quick.core.fileComponentDescriptions.FixedColumnDescription
 import com.scalableQuality.quick.mantle.parsing.RawRow
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{FlatSpec, Matchers}

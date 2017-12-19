@@ -1,7 +1,6 @@
 package com.scalableQuality.quick.mantle.parsing
 
-import com.scalableQuality.quick.core.fileComponentDescripts.FixedColumnDescription
-import com.scalableQuality.quick.core.others.MatchAgainst
+import com.scalableQuality.quick.core.fileComponentDescriptions.FixedColumnDescription
 import com.scalableQuality.quick.mantle.constructFromXml.XMLHelperFunctions
 import com.scalableQuality.quick.mantle.error.{
   BunchOfErrors,

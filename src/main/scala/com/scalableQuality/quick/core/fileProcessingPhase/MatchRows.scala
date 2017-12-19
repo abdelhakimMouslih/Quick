@@ -1,7 +1,7 @@
 package com.scalableQuality.quick.core.fileProcessingPhase
 
 import com.scalableQuality.quick.core.Reporting.ValidationAndMatchingReport
-import com.scalableQuality.quick.core.fileComponentDescripts.OrderedRowDescription
+import com.scalableQuality.quick.core.fileComponentDescriptions.OrderedRowDescription
 import com.scalableQuality.quick.mantle.parsing.RawRow
 
 class MatchRows(
