@@ -1,6 +1,6 @@
 # Quick 
 
-[![Build Status](https://travis-ci.org/MouslihAbdelhakim/Quick.svg?branch=develop)](https://travis-ci.org/MouslihAbdelhakim/Quick) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Build Status](https://travis-ci.org/MouslihAbdelhakim/Quick.svg?branch=develop)](https://travis-ci.org/MouslihAbdelhakim/Quick) [![codecov](https://codecov.io/gh/MouslihAbdelhakim/Quick/branch/master/graph/badge.svg)](https://codecov.io/gh/MouslihAbdelhakim/Quick) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Quick is a customizable comparison tool that calculates and displays side by side differences between two flat files in an easy to read format.
 
