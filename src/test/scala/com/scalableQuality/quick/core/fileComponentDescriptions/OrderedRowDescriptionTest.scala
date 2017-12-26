@@ -69,14 +69,14 @@ class OrderedRowDescriptionTest
       startsAt="1"
       endsAt="11"
       useDuringValidation="true"
-      trimValue="true"
+      trimComparisonValue="true"
       />
     val secondColumnDescriptionElem = <ColumnDescription
       label="SecondColumn"
       startsAt="12"
       endsAt="23"
       useDuringValidation="true"
-      trimValue="true"
+      trimComparisonValue="true"
       />
 
     val thirdColumnDescriptionElem = <ColumnDescription
@@ -84,7 +84,7 @@ class OrderedRowDescriptionTest
       startsAt="24"
       endsAt="34"
       useDuringValidation="true"
-      trimValue="true"
+      trimComparisonValue="true"
       />
 
     val firstColumnDescriptionEither =
@@ -122,14 +122,14 @@ class OrderedRowDescriptionTest
       startsAt="1"
       endsAt="11"
       useDuringValidation="true"
-      ignoreValueCase="true"
+      ignoreComparisonValueCase="true"
       />
     val secondColumnDescriptionElem = <ColumnDescription
       label="SecondColumn"
       startsAt="12"
       endsAt="23"
       useDuringValidation="true"
-      ignoreValueCase="true"
+      ignoreComparisonValueCase="true"
       />
 
     val thirdColumnDescriptionElem = <ColumnDescription
@@ -137,7 +137,7 @@ class OrderedRowDescriptionTest
       startsAt="24"
       endsAt="34"
       useDuringValidation="true"
-      ignoreValueCase="true"
+      ignoreComparisonValueCase="true"
       />
 
     val firstColumnDescriptionEither =
@@ -175,16 +175,16 @@ class OrderedRowDescriptionTest
       startsAt="1"
       endsAt="11"
       useDuringValidation="true"
-      trimValue="true"
-      ignoreValueCase="true"
+      trimComparisonValue="true"
+      ignoreComparisonValueCase="true"
       />
     val secondColumnDescriptionElem = <ColumnDescription
       label="SecondColumn"
       startsAt="12"
       endsAt="23"
       useDuringValidation="true"
-      trimValue="true"
-      ignoreValueCase="true"
+      trimComparisonValue="true"
+      ignoreComparisonValueCase="true"
       />
 
     val thirdColumnDescriptionElem = <ColumnDescription
@@ -192,8 +192,8 @@ class OrderedRowDescriptionTest
       startsAt="24"
       endsAt="34"
       useDuringValidation="true"
-      trimValue="true"
-      ignoreValueCase="true"
+      trimComparisonValue="true"
+      ignoreComparisonValueCase="true"
       />
 
     val firstColumnDescriptionEither =
@@ -387,14 +387,14 @@ class OrderedRowDescriptionTest
       startsAt="1"
       endsAt="11"
       useDuringMatching="true"
-      trimValue="true"
+      trimComparisonValue="true"
       />
     val secondColumnDescriptionElem = <ColumnDescription
       label="SecondColumn"
       startsAt="12"
       endsAt="23"
       useDuringMatching="true"
-      trimValue="true"
+      trimComparisonValue="true"
       />
 
     val thirdColumnDescriptionElem = <ColumnDescription
@@ -402,7 +402,7 @@ class OrderedRowDescriptionTest
       startsAt="24"
       endsAt="34"
       useDuringMatching="true"
-      trimValue="true"
+      trimComparisonValue="true"
       />
 
     val firstColumnDescriptionEither =
@@ -440,14 +440,14 @@ class OrderedRowDescriptionTest
       startsAt="1"
       endsAt="11"
       useDuringMatching="true"
-      ignoreValueCase="true"
+      ignoreComparisonValueCase="true"
       />
     val secondColumnDescriptionElem = <ColumnDescription
       label="SecondColumn"
       startsAt="12"
       endsAt="23"
       useDuringMatching="true"
-      ignoreValueCase="true"
+      ignoreComparisonValueCase="true"
       />
 
     val thirdColumnDescriptionElem = <ColumnDescription
@@ -455,7 +455,7 @@ class OrderedRowDescriptionTest
       startsAt="24"
       endsAt="34"
       useDuringMatching="true"
-      ignoreValueCase="true"
+      ignoreComparisonValueCase="true"
       />
 
     val firstColumnDescriptionEither =
@@ -493,16 +493,16 @@ class OrderedRowDescriptionTest
       startsAt="1"
       endsAt="11"
       useDuringMatching="true"
-      trimValue="true"
-      ignoreValueCase="true"
+      trimComparisonValue="true"
+      ignoreComparisonValueCase="true"
       />
     val secondColumnDescriptionElem = <ColumnDescription
       label="SecondColumn"
       startsAt="12"
       endsAt="23"
       useDuringMatching="true"
-      trimValue="true"
-      ignoreValueCase="true"
+      trimComparisonValue="true"
+      ignoreComparisonValueCase="true"
       />
 
     val thirdColumnDescriptionElem = <ColumnDescription
@@ -510,8 +510,8 @@ class OrderedRowDescriptionTest
       startsAt="24"
       endsAt="34"
       useDuringMatching="true"
-      trimValue="true"
-      ignoreValueCase="true"
+      trimComparisonValue="true"
+      ignoreComparisonValueCase="true"
       />
 
     val firstColumnDescriptionEither =
@@ -704,20 +704,20 @@ class OrderedRowDescriptionTest
       label="FirstColumn"
       position="1"
       useDuringValidation="true"
-      trimValue="true"
+      trimComparisonValue="true"
       />
     val secondColumnDescriptionElem = <ColumnDescription
       label="SecondColumn"
       position="2"
       useDuringValidation="true"
-      trimValue="true"
+      trimComparisonValue="true"
       />
 
     val thirdColumnDescriptionElem = <ColumnDescription
       label="ThirdColumn"
       position="3"
       useDuringValidation="true"
-      trimValue="true"
+      trimComparisonValue="true"
       />
 
     val firstColumnDescriptionEither =
@@ -758,20 +758,20 @@ class OrderedRowDescriptionTest
       label="FirstColumn"
       position="1"
       useDuringValidation="true"
-      ignoreValueCase="true"
+      ignoreComparisonValueCase="true"
       />
     val secondColumnDescriptionElem = <ColumnDescription
       label="SecondColumn"
       position="2"
       useDuringValidation="true"
-      ignoreValueCase="true"
+      ignoreComparisonValueCase="true"
       />
 
     val thirdColumnDescriptionElem = <ColumnDescription
       label="ThirdColumn"
       position="3"
       useDuringValidation="true"
-      ignoreValueCase="true"
+      ignoreComparisonValueCase="true"
       />
 
     val firstColumnDescriptionEither =
@@ -812,23 +812,23 @@ class OrderedRowDescriptionTest
       label="FirstColumn"
       position="1"
       useDuringValidation="true"
-      trimValue="true"
-      ignoreValueCase="true"
+      trimComparisonValue="true"
+      ignoreComparisonValueCase="true"
       />
     val secondColumnDescriptionElem = <ColumnDescription
       label="SecondColumn"
       position="2"
       useDuringValidation="true"
-      trimValue="true"
-      ignoreValueCase="true"
+      trimComparisonValue="true"
+      ignoreComparisonValueCase="true"
       />
 
     val thirdColumnDescriptionElem = <ColumnDescription
       label="ThirdColumn"
       position="3"
       useDuringValidation="true"
-      trimValue="true"
-      ignoreValueCase="true"
+      trimComparisonValue="true"
+      ignoreComparisonValueCase="true"
       />
 
     val firstColumnDescriptionEither =
@@ -1028,20 +1028,20 @@ class OrderedRowDescriptionTest
       label="FirstColumn"
       position="1"
       useDuringMatching="true"
-      trimValue="true"
+      trimComparisonValue="true"
       />
     val secondColumnDescriptionElem = <ColumnDescription
       label="SecondColumn"
       position="2"
       useDuringMatching="true"
-      trimValue="true"
+      trimComparisonValue="true"
       />
 
     val thirdColumnDescriptionElem = <ColumnDescription
       label="ThirdColumn"
       position="3"
       useDuringMatching="true"
-      trimValue="true"
+      trimComparisonValue="true"
       />
 
     val firstColumnDescriptionEither =
@@ -1082,20 +1082,20 @@ class OrderedRowDescriptionTest
       label="FirstColumn"
       position="1"
       useDuringMatching="true"
-      ignoreValueCase="true"
+      ignoreComparisonValueCase="true"
       />
     val secondColumnDescriptionElem = <ColumnDescription
       label="SecondColumn"
       position="2"
       useDuringMatching="true"
-      ignoreValueCase="true"
+      ignoreComparisonValueCase="true"
       />
 
     val thirdColumnDescriptionElem = <ColumnDescription
       label="ThirdColumn"
       position="3"
       useDuringMatching="true"
-      ignoreValueCase="true"
+      ignoreComparisonValueCase="true"
       />
 
     val firstColumnDescriptionEither =
@@ -1136,23 +1136,23 @@ class OrderedRowDescriptionTest
       label="FirstColumn"
       position="1"
       useDuringMatching="true"
-      trimValue="true"
-      ignoreValueCase="true"
+      trimComparisonValue="true"
+      ignoreComparisonValueCase="true"
       />
     val secondColumnDescriptionElem = <ColumnDescription
       label="SecondColumn"
       position="2"
       useDuringMatching="true"
-      trimValue="true"
-      ignoreValueCase="true"
+      trimComparisonValue="true"
+      ignoreComparisonValueCase="true"
       />
 
     val thirdColumnDescriptionElem = <ColumnDescription
       label="ThirdColumn"
       position="3"
       useDuringMatching="true"
-      trimValue="true"
-      ignoreValueCase="true"
+      trimComparisonValue="true"
+      ignoreComparisonValueCase="true"
       />
 
     val firstColumnDescriptionEither =

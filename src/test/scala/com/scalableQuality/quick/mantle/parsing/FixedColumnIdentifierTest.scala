@@ -32,8 +32,8 @@ class FixedColumnIdentifierTest
       useDuringValidation="true"
       useDuringMatching="false"
       useDuringReporting="true"
-      trimValue="true"
-      ignoreValueCase="false"
+      trimComparisonValue="true"
+      ignoreComparisonValueCase="false"
       />
     val columnIdentifier =
       FixedColumnIdentifier(columnIdentifierElem.attributes)
@@ -112,7 +112,7 @@ class FixedColumnIdentifierTest
       useDuringValidation="true"
       useDuringMatching="false"
       useDuringReporting="true"
-      trimValue="true"
+      trimComparisonValue="true"
       misspelled="false"
       />
     val columnIdentifier =
@@ -131,7 +131,7 @@ class FixedColumnIdentifierTest
       useDuringValidation="true"
       useDuringMatching="false"
       useDuringReporting="true"
-      trimValue="true"
+      trimComparisonValue="true"
       ignoreCase="false"
       unknownAttribute="present"
       />

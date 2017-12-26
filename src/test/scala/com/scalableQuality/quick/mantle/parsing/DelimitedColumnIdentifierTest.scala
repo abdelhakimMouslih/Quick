@@ -28,8 +28,8 @@ class DelimitedColumnIdentifierTest
       useDuringValidation="true"
       useDuringMatching="false"
       useDuringReporting="true"
-      trimValue="true"
-      ignoreValueCase="false"
+      trimComparisonValue="true"
+      ignoreComparisonValueCase="false"
       />
     val columnIdentifier =
       DelimitedColumnIdentifier(columnIdentifierElem.attributes)
@@ -78,7 +78,7 @@ class DelimitedColumnIdentifierTest
       useDuringValidation="true"
       useDuringMatching="false"
       useDuringReporting="true"
-      trimValue="true"
+      trimComparisonValue="true"
       misspelled="false"
       />
     val columnIdentifier =
@@ -95,7 +95,7 @@ class DelimitedColumnIdentifierTest
       useDuringValidation="true"
       useDuringMatching="false"
       useDuringReporting="true"
-      trimValue="true"
+      trimComparisonValue="true"
       ignoreCase="false"
       unknown="present"
       />

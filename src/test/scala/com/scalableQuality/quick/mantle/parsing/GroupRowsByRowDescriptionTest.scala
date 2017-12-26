@@ -25,15 +25,15 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
   }
 
   it should
-    "return Right() when FileDescriptionsList contains only one UnorderedFileDescription and no parserId is present" in {
+    "return Right() when FilesDescriptionsList contains only one UnorderedFileDescription and no parserId is present" in {
     val unorderedFileDescription =
-      <FileDescriptionsList>
+      <FilesDescriptionsList>
         <UnorderedFileDescription>
           <FixedOrderedRowDescription label="first label" >
             <ColumnIdentifier matchAgainst="99" label="labeling" startsAt="300" length="48"/>
           </FixedOrderedRowDescription>
         </UnorderedFileDescription>
-      </FileDescriptionsList>
+      </FilesDescriptionsList>
     val fileDescriptionElem = FileDescriptionElem(
       unorderedFileDescription,
       "",
@@ -45,9 +45,9 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
   }
 
   it should
-    "return Right() when FileDescriptionsList contains multiple UnorderedFileDescription and a file description id is passed" in {
+    "return Right() when FilesDescriptionsList contains multiple UnorderedFileDescription and a file description id is passed" in {
     val unorderedFileDescription =
-      <FileDescriptionsList>
+      <FilesDescriptionsList>
         <UnorderedFileDescription id="firstDesc" >
           <FixedOrderedRowDescription label="first label" >
             <ColumnIdentifier matchAgainst="99" label="labeling" startsAt="300" length="48"/>
@@ -58,7 +58,7 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
             <ColumnIdentifier matchAgainst="99" label="labeling" startsAt="300" length="48"/>
           </FixedOrderedRowDescription>
         </UnorderedFileDescription>
-      </FileDescriptionsList>
+      </FilesDescriptionsList>
     val fileDescriptionElem = FileDescriptionElem(
       unorderedFileDescription,
       "",
@@ -70,9 +70,9 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
   }
 
   it should
-    "return Left() when FileDescriptionsList contains multiple UnorderedFileDescription and a wrong file description id is passed" in {
+    "return Left() when FilesDescriptionsList contains multiple UnorderedFileDescription and a wrong file description id is passed" in {
     val unorderedFileDescription =
-      <FileDescriptionsList>
+      <FilesDescriptionsList>
         <UnorderedFileDescription Id="firstDesc" >
           <FixedOrderedRowDescription label="first label" >
             <ColumnIdentifier matchAgainst="99" label="labeling" startsAt="300" length="48"/>
@@ -83,7 +83,7 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
             <ColumnIdentifier matchAgainst="99" label="labeling" startsAt="300" length="48"/>
           </FixedOrderedRowDescription>
         </UnorderedFileDescription>
-      </FileDescriptionsList>
+      </FilesDescriptionsList>
     val fileDescriptionElem = FileDescriptionElem(
       unorderedFileDescription,
       "",
@@ -95,15 +95,15 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
   }
 
   it should
-    "return Left if the root element is neither UnorderedFileDescription nor FileDescriptionsList" in {
+    "return Left if the root element is neither UnorderedFileDescription nor FilesDescriptionsList" in {
     val unorderedFileDescription =
-      <missSpelledFileDescriptionsList>
+      <missSpelledFilesDescriptionsList>
         <UnorderedFileDescription>
           <FixedOrderedRowDescription label="first label" >
             <ColumnIdentifier matchAgainst="99" label="labeling" startsAt="300" length="48"/>
           </FixedOrderedRowDescription>
         </UnorderedFileDescription>
-      </missSpelledFileDescriptionsList>
+      </missSpelledFilesDescriptionsList>
     val fileDescriptionElem = FileDescriptionElem(
       unorderedFileDescription,
       "",
@@ -115,15 +115,15 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
   }
 
   it should
-    "return Left if any of the child elements of FileDescriptionsList is not UnorderedFileDescription" in {
+    "return Left if any of the child elements of FilesDescriptionsList is not UnorderedFileDescription" in {
     val unorderedFileDescription =
-      <FileDescriptionsList>
+      <FilesDescriptionsList>
         <MisspelledUnorderedFileDescription id="firstDesc" >
           <FixedOrderedRowDescription label="first label" >
             <ColumnIdentifier matchAgainst="99" label="labeling" startsAt="300" length="48"/>
           </FixedOrderedRowDescription>
         </MisspelledUnorderedFileDescription>
-      </FileDescriptionsList>
+      </FilesDescriptionsList>
     val fileDescriptionElem = FileDescriptionElem(
       unorderedFileDescription,
       "",
@@ -152,10 +152,10 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
     RowToRowDescriptionMatcherEither shouldBe a[Left[_, _]]
   }
 
-  it should "return Left if no UnorderedFileDescription is provided inFileDescriptionsList" in {
+  it should "return Left if no UnorderedFileDescription is provided inFilesDescriptionsList" in {
     val unorderedFileDescription =
-      <FileDescriptionsList>
-      </FileDescriptionsList>
+      <FilesDescriptionsList>
+      </FilesDescriptionsList>
     val fileDescriptionElem = FileDescriptionElem(
       unorderedFileDescription,
       "",
@@ -168,10 +168,10 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
 
   it should "return Left if UnorderedFileDescription has no rows" in {
     val unorderedFileDescription =
-      <FileDescriptionsList>
+      <FilesDescriptionsList>
         <UnorderedFileDescription>
         </UnorderedFileDescription>
-      </FileDescriptionsList>
+      </FilesDescriptionsList>
     val fileDescriptionElem = FileDescriptionElem(
       unorderedFileDescription,
       "",
@@ -183,9 +183,9 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
   }
 
   it should
-    "return Left when FileDescriptionsList contains multiple UnorderedFileDescription and a file no description id is passed" in {
+    "return Left when FilesDescriptionsList contains multiple UnorderedFileDescription and a file no description id is passed" in {
     val unorderedFileDescription =
-      <FileDescriptionsList>
+      <FilesDescriptionsList>
         <UnorderedFileDescription id="firstDesc" >
           <FixedOrderedRowDescription label="first label" >
             <ColumnIdentifier matchAgainst="99" label="labeling" startsAt="300" length="48"/>
@@ -196,7 +196,7 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
             <ColumnIdentifier matchAgainst="99" label="labeling" startsAt="300" length="48"/>
           </FixedOrderedRowDescription>
         </UnorderedFileDescription>
-      </FileDescriptionsList>
+      </FilesDescriptionsList>
     val fileDescriptionElem = FileDescriptionElem(
       unorderedFileDescription,
       "",
@@ -208,15 +208,15 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
   }
 
   it should
-    "return Left when FileDescriptionsList contains one UnorderedFileDescription and the provided id is wrong" in {
+    "return Left when FilesDescriptionsList contains one UnorderedFileDescription and the provided id is wrong" in {
     val unorderedFileDescription =
-      <FileDescriptionsList>
+      <FilesDescriptionsList>
         <UnorderedFileDescription id="firstDesc" >
           <FixedOrderedRowDescription label="first label" >
             <ColumnIdentifier matchAgainst="99" label="labeling" startsAt="300" length="48"/>
           </FixedOrderedRowDescription>
         </UnorderedFileDescription>
-      </FileDescriptionsList>
+      </FilesDescriptionsList>
     val fileDescriptionElem = FileDescriptionElem(
       unorderedFileDescription,
       "",
@@ -228,15 +228,15 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
   }
 
   it should
-    "return Left if an unknown attribute is present in FileDescriptionsList" in {
+    "return Left if an unknown attribute is present in FilesDescriptionsList" in {
     val unorderedFileDescription =
-      <FileDescriptionsList unknown="attribute" >
+      <FilesDescriptionsList unknown="attribute" >
         <UnorderedFileDescription>
           <FixedOrderedRowDescription label="first label" >
             <ColumnIdentifier matchAgainst="99" label="labeling" startsAt="300" length="48"/>
           </FixedOrderedRowDescription>
         </UnorderedFileDescription>
-      </FileDescriptionsList>
+      </FilesDescriptionsList>
     val fileDescriptionElem = FileDescriptionElem(
       unorderedFileDescription,
       "",
@@ -250,13 +250,13 @@ class GroupRowsByRowDescriptionTest extends FlatSpec with Matchers {
   it should
     "return Left if an unknown attribute is present in UnorderedFileDescription" in {
     val unorderedFileDescription =
-      <FileDescriptionsList>
+      <FilesDescriptionsList>
         <UnorderedFileDescription id="sup" unknown="attribute" >
           <FixedOrderedRowDescription label="first label" >
             <ColumnIdentifier matchAgainst="99" label="labeling" startsAt="300" length="48"/>
           </FixedOrderedRowDescription>
         </UnorderedFileDescription>
-      </FileDescriptionsList>
+      </FilesDescriptionsList>
     val fileDescriptionElem = FileDescriptionElem(
       unorderedFileDescription,
       "",

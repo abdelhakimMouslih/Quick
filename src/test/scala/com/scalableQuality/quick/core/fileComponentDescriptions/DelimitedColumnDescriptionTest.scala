@@ -23,15 +23,15 @@ class DelimitedColumnDescriptionTest
   }
 
   it should
-    "accepts all the following attributes, label, startsAt, endsAt, useDuringValidation, useDuringMatching, useDuringReporting, trimValue, ignoreValueCase" in {
+    "accepts all the following attributes, label, startsAt, endsAt, useDuringValidation, useDuringMatching, useDuringReporting,  trimComparisonValue, ignoreComparisonValueCase" in {
     val columnDescriptionElem = <ColumnDescription
       label="this is a column in russian accent"
       position="1"
       useDuringValidation="true"
       useDuringMatching="false"
       useDuringReporting="true"
-      trimValue="true"
-      ignoreValueCase="false" />
+       trimComparisonValue="true"
+      ignoreComparisonValueCase="false" />
     val columnDescription =
       DelimitedColumnDescription(columnDescriptionElem.attributes)
     columnDescription shouldBe a[Right[_, _]]
@@ -42,8 +42,8 @@ class DelimitedColumnDescriptionTest
      "useDuringValidation",
      "useDuringMatching",
      "useDuringReporting",
-     "trimValue",
-     "ignoreValueCase"),
+     " trimComparisonValue",
+     "ignoreComparisonValueCase"),
     ("P", "true", "false", "true", "false", "true"),
     ("1", "BlaBla", "false", "true", "false", "true"),
     ("1", "true", "BlaBla", "true", "false", "true"),
@@ -58,16 +58,16 @@ class DelimitedColumnDescriptionTest
        useDuringValidation: String,
        useDuringMatching: String,
        useDuringReporting: String,
-       trimValue: String,
-       ignoreValueCase: String) =>
+        trimComparisonValue: String,
+       ignoreComparisonValueCase: String) =>
         val columnDescriptionElem = <ColumnDescription
           label="this is a column in russian accent"
           position={position}
           useDuringValidation={useDuringValidation}
           useDuringMatching={useDuringMatching}
           useDuringReporting={useDuringReporting}
-          trimValue={trimValue}
-          ignoreValueCase={ignoreValueCase}
+           trimComparisonValue={ trimComparisonValue}
+          ignoreComparisonValueCase={ignoreComparisonValueCase}
           />
         val columnDescription =
           DelimitedColumnDescription(columnDescriptionElem.attributes)
@@ -100,7 +100,7 @@ class DelimitedColumnDescriptionTest
       useDuringValidation="true"
       useDuringMatching="false"
       useDuringReporting="true"
-      trimValue="true"
+       trimComparisonValue="true"
       misspelled="false"
       />
     val columnDescription =
@@ -116,8 +116,8 @@ class DelimitedColumnDescriptionTest
       useDuringValidation="true"
       useDuringMatching="false"
       useDuringReporting="true"
-      trimValue="true"
-      ignoreValueCase="false"
+       trimComparisonValue="true"
+      ignoreComparisonValueCase="false"
       unknown="present"
       />
     val columnDescription =

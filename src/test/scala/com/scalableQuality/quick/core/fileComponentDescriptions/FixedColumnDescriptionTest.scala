@@ -32,7 +32,7 @@ class FixedColumnDescriptionTest
   }
 
   it should
-    "accepts all the following attributes, label, startsAt, endsAt, useDuringValidation, useDuringMatching, useDuringReporting, trimValue, ignoreValueCase" in {
+    "accepts all the following attributes, label, startsAt, endsAt, useDuringValidation, useDuringMatching, useDuringReporting, trimComparisonValue, ignoreComparisonValueCase" in {
     val columnDescriptionElem = <ColumnDescription
     label="this is a column in russian accent"
     startsAt="1"
@@ -41,8 +41,8 @@ class FixedColumnDescriptionTest
     useDuringValidation="true"
     useDuringMatching="false"
     useDuringReporting="true"
-    trimValue="true"
-    ignoreValueCase="false" />
+    trimComparisonValue="true"
+    ignoreComparisonValueCase="false" />
     val columnDescription =
       FixedColumnDescription(columnDescriptionElem.attributes)
     columnDescription shouldBe a[Right[_, _]]
@@ -57,7 +57,7 @@ class FixedColumnDescriptionTest
       useDuringValidation="true"
       useDuringMatching="false"
       useDuringReporting="true"
-      trimValue="true"
+      trimComparisonValue="true"
       misspelledAttribute="false"
       />
     val columnDescription =
@@ -74,8 +74,8 @@ class FixedColumnDescriptionTest
       useDuringValidation="true"
       useDuringMatching="false"
       useDuringReporting="true"
-      trimValue="true"
-      ignoreValueCase="false"
+      trimComparisonValue="true"
+      ignoreComparisonValueCase="false"
       unknown="present" />
     val columnDescription =
       FixedColumnDescription(columnDescriptionElem.attributes)
@@ -89,8 +89,8 @@ class FixedColumnDescriptionTest
      "useDuringValidation",
      "useDuringMatching",
      "useDuringReporting",
-     "trimValue",
-     "ignoreValueCase"),
+     "trimComparisonValue",
+     "ignoreComparisonValueCase"),
     ("Z", "3", "3", "true", "false", "true", "false", "true"),
     ("1", "Z", "3", "true", "false", "true", "false", "true"),
     ("1", "3", "Z", "true", "false", "true", "false", "true"),
@@ -109,8 +109,8 @@ class FixedColumnDescriptionTest
        useDuringValidation: String,
        useDuringMatching: String,
        useDuringReporting: String,
-       trimValue: String,
-       ignoreValueCase: String) =>
+       trimComparisonValue: String,
+       ignoreComparisonValueCase: String) =>
         val columnDescriptionElem = <ColumnDescription
       label="this is a column in russian accent"
       startsAt={startsAt}
@@ -119,8 +119,8 @@ class FixedColumnDescriptionTest
       useDuringValidation={useDuringValidation}
       useDuringMatching={useDuringMatching}
       useDuringReporting={useDuringReporting}
-      trimValue={trimValue}
-      ignoreValueCase={ignoreValueCase}
+      trimComparisonValue={trimComparisonValue}
+      ignoreComparisonValueCase={ignoreComparisonValueCase}
       />
         val columnDescription =
           FixedColumnDescription(columnDescriptionElem.attributes)

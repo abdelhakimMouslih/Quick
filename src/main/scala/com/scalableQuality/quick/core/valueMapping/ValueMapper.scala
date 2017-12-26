@@ -70,11 +70,11 @@ object ValueMapper {
 
   private val defaultValueMapperInclusion = Right(false)
   private val trimKey = AttributeValueExtractor(
-    "trimValue",
+    "trimComparisonValue",
     AttributeValueConversion.toBoolean,
     defaultValueMapperInclusion)
   private val ignoreCaseKey = AttributeValueExtractor(
-    "ignoreValueCase",
+    "ignoreComparisonValueCase",
     AttributeValueConversion.toBoolean,
     defaultValueMapperInclusion)
   val listOfAttributesKeys = List(trimKey, ignoreCaseKey)

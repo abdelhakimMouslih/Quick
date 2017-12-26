@@ -160,7 +160,7 @@ object FileDescriptionElem {
 
   }
 
-  private val fileDescriptionsListElemLabel = "FileDescriptionsList"
+  private val fileDescriptionsListElemLabel = "FilesDescriptionsList"
   private val fileDescriptionElemLabel = "UnorderedFileDescription"
   private val fileDescriptionIdAttributeKey =
     AttributeValueExtractor("Id", AttributeValueConversion.extractValue)

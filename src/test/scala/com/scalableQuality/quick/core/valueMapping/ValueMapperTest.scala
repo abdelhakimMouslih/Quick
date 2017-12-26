@@ -24,7 +24,7 @@ class ValueMapperTest
 
   it should "should handle upper case boolean values" in {
     val columnDescription =
-      <ColumnDescription trimValue="TRUE" ignoreValueCase="TRUE" />
+      <ColumnDescription  trimComparisonValue="TRUE" ignoreComparisonValueCase="TRUE" />
     val valueMapperEither = ValueMapper(columnDescription.attributes)
     val inputString = Some(" PraiseTheSun ")
     val expectedString = Some("PRAISETHESUN")
@@ -38,22 +38,22 @@ class ValueMapperTest
   }
 
   val invalidBooleans = Table(
-    ("trimValue", "ignoreValueCase"),
+    ("trimComparisonValue", "ignoreComparisonValueCase"),
     ("bla", "true"),
     ("false", "bla")
   )
   it should "return Left[ErrorMessage, ValueMapper] if any of attributes are invalid booleans" in
-    forAll(invalidBooleans) { (trimValue: String, ignoreValueCase: String) =>
+    forAll(invalidBooleans) { ( trimComparisonValue: String, ignoreComparisonValueCase: String) =>
       val columnDescription = <ColumnDescription
-      trimValue={trimValue}
-      ignoreValueCase={ignoreValueCase}
+       trimComparisonValue={ trimComparisonValue}
+      ignoreComparisonValueCase={ignoreComparisonValueCase}
       />
       val valueMapperEither = ValueMapper(columnDescription.attributes)
       valueMapperEither shouldBe a[Left[_, _]]
     }
 
-  "ValueMapper.apply(Option[String])" should "returned a string with no trailing or leading space chars when trimValue is true " in {
-    val columnDescription = <ColumnDescription trimValue="true" />
+  "ValueMapper.apply(Option[String])" should "returned a string with no trailing or leading space chars when  trimComparisonValue is true " in {
+    val columnDescription = <ColumnDescription  trimComparisonValue="true" />
     val valueMapperEither = ValueMapper(columnDescription.attributes)
     val inputString = Some(" Praise The Sun ")
     val expectedString = Some("Praise The Sun")
@@ -66,8 +66,8 @@ class ValueMapperTest
     }
   }
 
-  it should "return an upper case string when ignoreValueCase is true " in {
-    val columnDescription = <ColumnDescription ignoreValueCase="true" />
+  it should "return an upper case string when ignoreComparisonValueCase is true " in {
+    val columnDescription = <ColumnDescription ignoreComparisonValueCase="true" />
     val valueMapperEither = ValueMapper(columnDescription.attributes)
     val inputString = Some(" PraiseTheSun ")
     val expectedString = Some(" PRAISETHESUN ")
@@ -80,9 +80,9 @@ class ValueMapperTest
     }
   }
 
-  it should "return an upper case string with no leading and trailing space when ignoreValueCase and trimValue are true " in {
+  it should "return an upper case string with no leading and trailing space when ignoreComparisonValueCase and  trimComparisonValue are true " in {
     val columnDescription =
-      <ColumnDescription trimValue="true" ignoreValueCase="true" />
+      <ColumnDescription  trimComparisonValue="true" ignoreComparisonValueCase="true" />
     val valueMapperEither = ValueMapper(columnDescription.attributes)
     val inputString = Some(" Praise The Sun ")
     val expectedString = Some("PRAISE THE SUN")
