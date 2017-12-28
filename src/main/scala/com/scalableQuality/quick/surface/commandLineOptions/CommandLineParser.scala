@@ -35,7 +35,7 @@ object CommandLineParser {
         }
         .optional()
 
-      opt[Unit]('u', "unknown")
+      opt[Unit]('u', "unknownRows")
         .action { (_, config) =>
           config.copy(ignoreUnknownRows = true)
         }
