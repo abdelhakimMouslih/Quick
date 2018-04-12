@@ -28,6 +28,8 @@ class CheckColumnValue(
             previousPreValidationResult && preValidationFunction(columnValue)
         }
     }
+
+  def checksAreDefined: Boolean = ! checks.isEmpty
 }
 
 object CheckColumnValue {
