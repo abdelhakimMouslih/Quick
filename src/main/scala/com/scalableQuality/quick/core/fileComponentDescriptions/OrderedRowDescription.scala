@@ -48,6 +48,7 @@ class OrderedRowDescription(
   }
 
   def isMatchable: Boolean = rowDivider.isMatchable
+  def isValidatable: Boolean = rowDivider.usableDuringValidation
 
   private def validationValuesOf(
       row: RawRow
