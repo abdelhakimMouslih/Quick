@@ -39,7 +39,7 @@ class DelimitedColumnDescription(
     columnValueChecks(value)
   }
 
-  def  usableDuringValidation: Boolean = shouldUseDuring(ValidationStage) && columnValueChecks.checksAreDefined
+  def  usableDuringValidation: Boolean = shouldUseDuring(ValidationStage) || columnValueChecks.checksAreDefined
 
   private def checkColumnValue(maybeStrings: Option[Vector[String]]): Boolean =
     maybeStrings
