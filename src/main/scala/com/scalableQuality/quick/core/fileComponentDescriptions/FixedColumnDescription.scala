@@ -39,7 +39,7 @@ class FixedColumnDescription(
     columnValueChecks(value)
   }
 
-  def usableDuringValidation: Boolean = shouldUseDuring(ValidationStage) && columnValueChecks.checksAreDefined
+  def usableDuringValidation: Boolean = shouldUseDuring(ValidationStage) || columnValueChecks.checksAreDefined
 
   private def checkColumnValue(maybeRow: Option[RawRow]): Boolean =
     maybeRow

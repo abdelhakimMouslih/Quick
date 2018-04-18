@@ -630,4 +630,225 @@ class DelimitedRowDividerTest
     }
   }
 
+  "DelimitedRowDivider.usableDuringValidation" should
+    "return true if all column descriptions have default values" in {
+    val firstColumnDescriptionElem = <ColumnDescription
+      label="firstColumn"
+      position="1"
+      />
+    val secondColumnDescriptionElem = <ColumnDescription
+      label="secondColumn"
+      position="4"
+      />
+
+    val thirdColumnDescriptionElem = <ColumnDescription
+      label="thirdColumn"
+      position="8"
+      />
+    val firstColumnDescriptionEither =
+      DelimitedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither =
+      DelimitedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither =
+      DelimitedColumnDescription(thirdColumnDescriptionElem.attributes)
+
+    val delimiterEither = LiteralDelimiter(";")
+
+    (firstColumnDescriptionEither,
+      secondColumnDescriptionEither,
+      thirdColumnDescriptionEither,
+      delimiterEither) match {
+      case (Right(firstColumnDescription),
+      Right(secondColumnDescription),
+      Right(thirdColumnDescription),
+        Right(delimiter)) =>
+        val columnDescriptionList = List(firstColumnDescription,
+          secondColumnDescription,
+          thirdColumnDescription)
+        val delimitedRowDivider = DelimitedRowDivider(columnDescriptionList, delimiter)
+        delimitedRowDivider.usableDuringValidation shouldBe true
+      case _ => fail
+    }
+  }
+
+  it should
+    "return true if at least one column descriptions should be used during validation" in {
+    val firstColumnDescriptionElem = <ColumnDescription
+      label="firstColumn"
+      position="1"
+      useDuringValidation="true"
+      />
+    val secondColumnDescriptionElem = <ColumnDescription
+      label="secondColumn"
+      position="4"
+      checkColumnValueExists="false"
+      />
+
+    val thirdColumnDescriptionElem = <ColumnDescription
+      label="thirdColumn"
+      position="8"
+      checkColumnValueExists="false"
+      />
+    val firstColumnDescriptionEither =
+      DelimitedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither =
+      DelimitedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither =
+      DelimitedColumnDescription(thirdColumnDescriptionElem.attributes)
+
+    val delimiterEither = LiteralDelimiter(";")
+
+    (firstColumnDescriptionEither,
+      secondColumnDescriptionEither,
+      thirdColumnDescriptionEither,
+      delimiterEither) match {
+      case (Right(firstColumnDescription),
+      Right(secondColumnDescription),
+      Right(thirdColumnDescription),
+      Right(delimiter)) =>
+        val columnDescriptionList = List(firstColumnDescription,
+          secondColumnDescription,
+          thirdColumnDescription)
+        val delimitedRowDivider = DelimitedRowDivider(columnDescriptionList, delimiter)
+        delimitedRowDivider.usableDuringValidation shouldBe true
+      case _ => fail
+    }
+  }
+
+  it should
+    "return true if at more than one column descriptions should be used during validation" in {
+    val firstColumnDescriptionElem = <ColumnDescription
+      label="firstColumn"
+      position="1"
+      useDuringValidation="true"
+      checkColumnValueExists="false"
+      />
+    val secondColumnDescriptionElem = <ColumnDescription
+      label="secondColumn"
+      position="4"
+      useDuringValidation="true"
+      checkColumnValueExists="false"
+      />
+
+    val thirdColumnDescriptionElem = <ColumnDescription
+      label="thirdColumn"
+      position="8"
+      useDuringValidation="true"
+      checkColumnValueExists="false"
+      />
+    val firstColumnDescriptionEither =
+      DelimitedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither =
+      DelimitedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither =
+      DelimitedColumnDescription(thirdColumnDescriptionElem.attributes)
+
+    val delimiterEither = LiteralDelimiter(";")
+
+    (firstColumnDescriptionEither,
+      secondColumnDescriptionEither,
+      thirdColumnDescriptionEither,
+      delimiterEither) match {
+      case (Right(firstColumnDescription),
+      Right(secondColumnDescription),
+      Right(thirdColumnDescription),
+      Right(delimiter)) =>
+        val columnDescriptionList = List(firstColumnDescription,
+          secondColumnDescription,
+          thirdColumnDescription)
+        val delimitedRowDivider = DelimitedRowDivider(columnDescriptionList, delimiter)
+        delimitedRowDivider.usableDuringValidation shouldBe true
+      case _ => fail
+    }
+  }
+
+  it should
+    "return true if at least one column descriptions should be checked" in {
+    val firstColumnDescriptionElem = <ColumnDescription
+      label="firstColumn"
+      position="1"
+      checkColumnValueMatches=".?"
+      checkColumnValueExists="false"
+      />
+    val secondColumnDescriptionElem = <ColumnDescription
+      label="secondColumn"
+      position="4"
+      checkColumnValueExists="false"
+      />
+
+    val thirdColumnDescriptionElem = <ColumnDescription
+      label="thirdColumn"
+      position="8"
+      checkColumnValueExists="false"
+      />
+    val firstColumnDescriptionEither =
+      DelimitedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither =
+      DelimitedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither =
+      DelimitedColumnDescription(thirdColumnDescriptionElem.attributes)
+
+    val delimiterEither = LiteralDelimiter(";")
+
+    (firstColumnDescriptionEither,
+      secondColumnDescriptionEither,
+      thirdColumnDescriptionEither,
+      delimiterEither) match {
+      case (Right(firstColumnDescription),
+      Right(secondColumnDescription),
+      Right(thirdColumnDescription),
+      Right(delimiter)) =>
+        val columnDescriptionList = List(firstColumnDescription,
+          secondColumnDescription,
+          thirdColumnDescription)
+        val delimitedRowDivider = DelimitedRowDivider(columnDescriptionList, delimiter)
+        delimitedRowDivider.usableDuringValidation shouldBe true
+      case _ => fail
+    }
+  }
+
+  it should
+    "return false if all columns should not be used during validation and have all checks deactivated" in {
+    val firstColumnDescriptionElem = <ColumnDescription
+      label="firstColumn"
+      position="1"
+      checkColumnValueExists="false"
+      />
+    val secondColumnDescriptionElem = <ColumnDescription
+      label="secondColumn"
+      position="2"
+      checkColumnValueExists="false"
+      />
+
+    val thirdColumnDescriptionElem = <ColumnDescription
+      label="thirdColumn"
+      position="3"
+      checkColumnValueExists="false"
+      />
+    val firstColumnDescriptionEither =
+      DelimitedColumnDescription(firstColumnDescriptionElem.attributes)
+    val secondColumnDescriptionEither =
+      DelimitedColumnDescription(secondColumnDescriptionElem.attributes)
+    val thirdColumnDescriptionEither =
+      DelimitedColumnDescription(thirdColumnDescriptionElem.attributes)
+
+    val delimiterEither = LiteralDelimiter(";")
+
+    (firstColumnDescriptionEither,
+      secondColumnDescriptionEither,
+      thirdColumnDescriptionEither,
+      delimiterEither) match {
+      case (Right(firstColumnDescription),
+      Right(secondColumnDescription),
+      Right(thirdColumnDescription),
+      Right(delimiter)) =>
+        val columnDescriptionList = List(firstColumnDescription,
+          secondColumnDescription,
+          thirdColumnDescription)
+        val delimitedRowDivider = DelimitedRowDivider(columnDescriptionList, delimiter)
+        delimitedRowDivider.usableDuringValidation shouldBe false
+      case _ => fail
+    }
+  }
+
 }
