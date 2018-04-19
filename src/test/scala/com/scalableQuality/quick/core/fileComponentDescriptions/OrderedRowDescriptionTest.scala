@@ -1292,8 +1292,8 @@ class OrderedRowDescriptionTest
     }
   }
 
-  "OrderedRowDescription.check" should "always only checks column presence if no checks are present" in {
-    val rawRow = RawRow("FirstColumnSecondColumnThir", 1)
+  "OrderedRowDescription.check" should "check column value existance by default" in {
+    val rawRow = RawRow("FirstColumnSecond", 1)
     val firstColumnDescriptionElem = <ColumnDescription
       label="FirstColumn"
       startsAt="1"
