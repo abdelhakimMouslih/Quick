@@ -1,16 +1,9 @@
 package com.scalableQuality.quick.core.fileComponentDescriptions
 
-import com.scalableQuality.quick.core.Reporting.{
-  InvalidColumns,
-  IrrelevantColumns,
-  ReportingColumns,
-  ValidColumns
-}
-import com.scalableQuality.quick.core.phases.{
-  MatchingStage,
-  ReportingStage,
-  ValidationStage
-}
+import com.scalableQuality.quick.core.Reporting.{InvalidColumns, IrrelevantColumns, ReportingColumns, ValidColumns}
+import com.scalableQuality.quick.core.checks.CheckColumnValue
+import com.scalableQuality.quick.core.phases.{MatchingStage, ReportingStage, ShouldUseDuring, ValidationStage}
+import com.scalableQuality.quick.core.valueMapping.ValueMapper
 import com.scalableQuality.quick.mantle.parsing.{LiteralDelimiter, RawRow}
 import org.scalatest.{FlatSpec, Matchers}
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
@@ -849,6 +842,44 @@ class DelimitedRowDividerTest
         delimitedRowDivider.usableDuringValidation shouldBe false
       case _ => fail
     }
+  }
+
+  "DelimitedRowDivider.equals" should "return true if the arguments contains the same column description" in {
+    val delimitedColumnDescription = List(DelimitedColumnDescription(
+      ColumnDescriptionMetaData("","",ShouldUseDuring(true, true, true)),
+      DelimitedPosition(1),
+      ValueMapper(Nil),
+      CheckColumnValue(Nil)
+    ))
+
+    val delimiter = LiteralDelimiter(";").right.get
+
+    val firstDelimitedRowDivider = DelimitedRowDivider(
+      delimitedColumnDescription,delimiter
+    )
+
+    val secondDelimitedRowDivider = DelimitedRowDivider(
+      delimitedColumnDescription,delimiter
+    )
+
+    firstDelimitedRowDivider.equals(secondDelimitedRowDivider) shouldBe true
+  }
+
+  it should "return false if argument is of other type" in  {
+    val delimitedColumnDescription = List(DelimitedColumnDescription(
+      ColumnDescriptionMetaData("","",ShouldUseDuring(true, true, true)),
+      DelimitedPosition(1),
+      ValueMapper(Nil),
+      CheckColumnValue(Nil)
+    ))
+
+    val delimiter = LiteralDelimiter(";").right.get
+
+    val firstDelimitedRowDivider = DelimitedRowDivider(
+      delimitedColumnDescription,delimiter
+    )
+
+    firstDelimitedRowDivider.equals("") shouldBe false
   }
 
 }

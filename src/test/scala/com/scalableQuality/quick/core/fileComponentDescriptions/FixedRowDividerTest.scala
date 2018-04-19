@@ -1,16 +1,9 @@
 package com.scalableQuality.quick.core.fileComponentDescriptions
 
-import com.scalableQuality.quick.core.Reporting.{
-  InvalidColumns,
-  IrrelevantColumns,
-  ReportingColumns,
-  ValidColumns
-}
-import com.scalableQuality.quick.core.phases.{
-  MatchingStage,
-  ReportingStage,
-  ValidationStage
-}
+import com.scalableQuality.quick.core.Reporting.{InvalidColumns, IrrelevantColumns, ReportingColumns, ValidColumns}
+import com.scalableQuality.quick.core.checks.CheckColumnValue
+import com.scalableQuality.quick.core.phases.{MatchingStage, ReportingStage, ShouldUseDuring, ValidationStage}
+import com.scalableQuality.quick.core.valueMapping.ValueMapper
 import com.scalableQuality.quick.mantle.parsing.RawRow
 import org.scalatest.{FlatSpec, Matchers}
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
@@ -840,6 +833,42 @@ class FixedRowDividerTest
         val columnDescriptionList = Nil
         val fixedRowDivider = FixedRowDivider(columnDescriptionList)
         fixedRowDivider.usableDuringValidation shouldBe false
+  }
+
+  "FixedRowDivider.equals" should "return false if passed an object of an other type" in {
+    val columnDescriptionList = Nil
+    val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+    fixedRowDivider.equals("string") shouldBe false
+  }
+
+  it should "return true if it has the same columnDescriptions List" in {
+    val columnDescription = List(
+      FixedColumnDescription(
+        ColumnDescriptionMetaData("", "", ShouldUseDuring(false, false, false)),
+        FixedPosition(1, Some(2), None).right.get,
+        ValueMapper(Nil),
+        CheckColumnValue(Nil)
+      )
+    )
+
+    val firstFixedRowDivider = FixedRowDivider(columnDescription)
+    val secondFixedRowDivider = FixedRowDivider(columnDescription)
+    firstFixedRowDivider.equals(secondFixedRowDivider) shouldBe true
+  }
+
+  it should "return false if two column descriptions list are different" in {
+    val firstColumnDescriptionList = Nil
+    val secondColumnDescriptionList = List(
+      FixedColumnDescription(
+        ColumnDescriptionMetaData("", "", ShouldUseDuring(false, false, false)),
+        FixedPosition(1, Some(2), None).right.get,
+        ValueMapper(Nil),
+        CheckColumnValue(Nil)
+      )
+    )
+    val firstFixedRowDivider = FixedRowDivider(firstColumnDescriptionList)
+    val secondFixedRowDivider = FixedRowDivider(secondColumnDescriptionList)
+    firstFixedRowDivider.equals(secondFixedRowDivider) shouldBe false
   }
 
 }
