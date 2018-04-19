@@ -39,10 +39,6 @@ object CheckColumnValue {
   ): CheckColumnValue = new CheckColumnValue(checks)
 
   def apply(
-      checks: Check*
-  ): CheckColumnValue = new CheckColumnValue(checks.toList)
-
-  def apply(
       metaData: MetaData): Either[UnrecoverableError, CheckColumnValue] = {
     val attributesValuesExtractor = AttributesValuesExtractor(
       metaData,

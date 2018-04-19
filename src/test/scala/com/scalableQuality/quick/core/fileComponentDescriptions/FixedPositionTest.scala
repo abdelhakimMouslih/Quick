@@ -113,6 +113,12 @@ class FixedPositionTest
     fixedLengthPositionTest shouldBe a[Left[_, _]]
   }
 
+  it should "return Left[ErrorMessage,FixedPosition] when both endsAt and length are missing" in {
+    val fixedLengthPositionTest =
+      FixedPosition(1,None, None)
+    fixedLengthPositionTest shouldBe a[Left[_, _]]
+  }
+
   "FixedPosition.extractColumnValue" should "return Some(subString) where the first char is at (startsAt - 1) and the last at (endsAt - 1)" in {
     val fixedLengthPositionTestEither = FixedPosition(
       7,
