@@ -835,4 +835,11 @@ class FixedRowDividerTest
     }
   }
 
+  it should
+    "return false if rowdevider contains no column description" in {
+        val columnDescriptionList = Nil
+        val fixedRowDivider = FixedRowDivider(columnDescriptionList)
+        fixedRowDivider.usableDuringValidation shouldBe false
+  }
+
 }
